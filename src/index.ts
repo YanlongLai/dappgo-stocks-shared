@@ -165,10 +165,3 @@ export {
   type TickerDict,
   type CompletenessResult,
 } from './utils/data-completeness';
-export {
-  createPersistedStore,
-  type AsyncStorageLike,
-  type StoreInitializer,
-  type CreatePersistedStoreConfig,
-  type PersistedStoreHook,
-} from './stores/createPersistedStore';
