@@ -46,8 +46,28 @@ for the barrel export.
 1. Each util MUST have a matching `<name>.test.ts` next to it
 2. Tests use `ts-jest` preset (configured in `package.json`)
 3. No React, no React Native, no theme imports — pure TS only
+4. **NEVER add `react` / `react-native` / `zustand` / any React-hook
+   library to `dependencies` OR `devDependencies`.** Even devDeps land
+   in `node_modules/` and Metro will bundle TWO copies of React (one
+   from here, one from each consumer app), causing a runtime crash:
+   `Cannot read property 'useCallback' of null`. If a peer is truly
+   required, list it in `peerDependencies` with
+   `peerDependenciesMeta.optional: true` and skip its install locally.
+   Validation: `ls node_modules/react/package.json` must NOT find the
+   file. See [postmortem 2026-05-23](../dappgo-stocks-meta/docs/postmortems/2026-05-23-shared-dual-react-crash.md).
 
 ## Before you finish
+
+**MANDATORY guard against the dual-React class of bug:**
+
+```bash
+# Must NOT exist — fail the commit if either does
+[ ! -e node_modules/react ] && [ ! -e node_modules/zustand ] || {
+  echo "✗ dual-React risk: react/zustand leaked into node_modules"
+  exit 1
+}
+```
+
 
 ```bash
 pnpm exec tsc --noEmit
