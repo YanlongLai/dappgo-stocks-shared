@@ -11,6 +11,13 @@
  * import via `dappgo-stocks-shared`.
  */
 
+export {
+  DAPPGO_PRODUCTS,
+  DAPPGO_PROMOTION_COPY,
+  getDappGoSiblingProducts,
+  type DappGoApp,
+  type DappGoLanguage,
+} from './dappgo-products';
 export { verdictLabel } from './verdict-label';
 export { explainVerdict, type VerdictExplain } from './verdict-explain';
 export { daysUntil } from './days-until';

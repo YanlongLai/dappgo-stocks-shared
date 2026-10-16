@@ -1,0 +1,35 @@
+schema_version: 0.1.0
+id: MOBILE-PRODUCT-LINKS-20261015
+project: dappgo-studio
+title: Consistent bilingual DappGo product promotion and live store destinations
+status: proposed
+risk: low
+question: Can all three settings cards share truthful bilingual product copy and verified platform-specific destinations?
+hypotheses:
+  - A pure shared catalog and identical native card remove unavailable placeholders and platform-language drift.
+artifacts:
+  prd: artifacts/MOBILE-PRODUCT-LINKS-20261015/PRD.md
+  tdd: artifacts/MOBILE-PRODUCT-LINKS-20261015/TDD.md
+  experiment: artifacts/MOBILE-PRODUCT-LINKS-20261015/EVIDENCE.md
+assignment:
+  producer: mobile-engineer
+  peer_reviewer: qa-engineer
+  director: engineering-director
+  assurance: independent-review
+budget:
+  token_limit: 20000
+  max_iterations: 5
+  deadline: '2026-10-22'
+acceptance_criteria:
+  - Public website catalog and six live store URLs match the frozen product catalog.
+  - Each app excludes itself and routes iOS to App Store and Android to Google Play with correct localized descriptions.
+  - Native card styling accessibility and link-failure feedback are consistent and regression tested.
+  - Verified source is promoted separately from binary submission and no unresolved Analytics blocker is concealed.
+evidence: []
+decision: pending
+provenance:
+  codex_task_id: 01a141c5-8985-7853-a8a7-b479936ed1e4
+  host_id: local
+  repository: https://github.com/YanlongLai/dappgo-stocks-shared.git
+  branch: feature/mobile-product-links-20261015
+  worktree: mobile-product-links-20261015-dappgo-stocks-shared
