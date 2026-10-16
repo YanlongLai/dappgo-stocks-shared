@@ -17,7 +17,9 @@
     "./sec-form-color": "./src/sec-form-color.ts",
     "./compute-ma": "./src/compute-ma.ts",
     "./sector-aggregate": "./src/sector-aggregate.ts",
-    "./ticker-aggregate": "./src/ticker-aggregate.ts"
+    "./ticker-aggregate": "./src/ticker-aggregate.ts",
+    "./ads/*": "./src/ads/*.ts",
+    "./src/ads/*": "./src/ads/*.ts"
   },
   "devDependencies": {
     "@types/jest": "^29.5.0",
