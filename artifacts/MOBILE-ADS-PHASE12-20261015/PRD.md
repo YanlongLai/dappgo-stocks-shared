@@ -1,0 +1,5 @@
+# Mobile ads phases one and two
+
+Owner confirmed the preceding plan. Deliver purpose-specific consent, withdrawal propagation, placement measurement and shared admission policies for Options/US/TW on iOS and Android. Maintain 15 minute active threshold and four hour per-format cooldown; add cross-format separation without increasing frequency. Core content remains usable without ads, analytics or fill. Do not add bidding, formats, tracking identifiers, credential changes or costs. Platform review and installation are separate acceptance gates from source merge.
+
+Acceptance: consent state never inferred from canRequestAds; denied/unknown purpose stays denied; withdrawal immediately suppresses events and stale cached ads; fullscreen ads mutually exclusive and only shown at safe boundaries; placement lifecycle and revenue instrumentation excludes personal data and avoids duplicate Firebase ad_impression events; deterministic tests plus platform device matrix; exact source/artifact/store readback before completion. Product Director: accepted within Owner-confirmed scope.

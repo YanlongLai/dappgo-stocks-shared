@@ -1,0 +1,37 @@
+schema_version: 0.1.0
+id: MOBILE-ADS-PHASE12-20261015
+project: dappgo-studio
+title: Consent-safe shared mobile advertising and measurement phases one and two
+status: proposed
+risk: high
+question: Can three apps share safe ad policies and accurate consent-aware placement measurement without increasing advertising frequency?
+hypotheses:
+  - Purpose-specific consent and shared full-screen admission prevent privacy and overlapping-ad regressions.
+artifacts:
+  prd: artifacts/MOBILE-ADS-PHASE12-20261015/PRD.md
+  tdd: artifacts/MOBILE-ADS-PHASE12-20261015/TDD.md
+  experiment: artifacts/MOBILE-ADS-PHASE12-20261015/EVIDENCE.md
+assignment:
+  producer: mobile-engineer
+  peer_reviewer: qa-engineer
+  director: engineering-director
+  assurance: independent-review
+budget:
+  token_limit: 80000
+  max_iterations: 5
+  deadline: '2026-10-22'
+acceptance_criteria:
+  - Purpose-specific consent and withdrawal prevent unauthorized analytics and personalization.
+  - Shared pure TypeScript policies cover full-screen mutex cooldown and safe transitions without increasing frequency.
+  - Placement-aware measurement is sanitized consent-gated and avoids duplicate automatic revenue events.
+  - All three applications pass source tests and independent review on exact release commits.
+  - iOS and Android artifacts and store release states are verified independently before completion.
+  - Only verified completed owned worktrees are cleaned and credentials remain unchanged.
+evidence: []
+decision: pending
+provenance:
+  codex_task_id: 01a141c5-8985-7853-a8a7-b479936ed1e4
+  host_id: local
+  repository: https://github.com/YanlongLai/dappgo-stocks-shared.git
+  branch: feature/mobile-ads-phase12-20261015
+  worktree: mobile-ads-phase12-20261015-dappgo-stocks-shared
