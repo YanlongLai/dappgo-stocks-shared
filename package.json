@@ -10,6 +10,7 @@
   },
   "exports": {
     ".": "./src/index.ts",
+    "./dappgo-products": "./src/dappgo-products.ts",
     "./verdict-label": "./src/verdict-label.ts",
     "./verdict-explain": "./src/verdict-explain.ts",
     "./days-until": "./src/days-until.ts",
