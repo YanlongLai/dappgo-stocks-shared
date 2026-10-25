@@ -26,3 +26,9 @@ test('preserves SDK major units, deduplicates paid, and gates each event at call
   state = { canRequestAds: false, analyticsStorage: true };
   report('clicked'); expect(emit).toHaveBeenCalledTimes(1);
 });
+
+test('sector banner placement has its own validated metadata and honors measurement consent', () => {
+  const sector: AdMetadata = { ...meta, placement: 'sectors_after_second' };
+  expect(adMeasurement(sector, 'loaded', consent)?.params.placement_id).toBe('us_stocks_ios_sectors_after_second');
+  expect(adMeasurement(sector, 'loaded', { ...consent, analyticsStorage: false })).toBeNull();
+});

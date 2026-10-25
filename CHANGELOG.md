@@ -1,3 +1,10 @@
+## 0.3.0
+
+- Add bounded cold-start App Open tickets that wait for verified free access and consent, expire before content, and retain fullscreen ownership through native close/error.
+- Use a five-minute active-use threshold and automatic fullscreen interval at natural page transitions; keep explicit AI summary rewarded admission and shared ownership.
+- Add the `sectors_after_second` banner placement.
+- Promote the previously hash-guarded AI summary rewarded policy into the shared source.
+
 # Changelog
 
 All notable changes to this project will be documented in this file.

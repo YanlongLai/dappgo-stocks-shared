@@ -1,6 +1,6 @@
 {
   "name": "dappgo-stocks-shared",
-  "version": "0.2.1",
+  "version": "0.3.0",
   "description": "Shared pure-TypeScript utilities for the DappGo Stocks family (TW + US apps).",
   "main": "src/index.ts",
   "types": "src/index.ts",

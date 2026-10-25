@@ -2,10 +2,11 @@ import type { AdApp } from './route-policy';
 export const BANNER_PLACEMENTS = [
   'dashboard_primary', 'dashboard_secondary', 'favorites_footer', 'signals_footer',
   'search_footer', 'detail_primary', 'detail_secondary', 'report_footer',
+  'sectors_after_second',
 ] as const;
 export type BannerPlacement = typeof BANNER_PLACEMENTS[number];
-export type AdPlacement = BannerPlacement | 'app_open_resume' | 'app_open_startup' | 'research_exit';
-export type AdFormat = 'banner' | 'app_open' | 'interstitial';
+export type AdPlacement = BannerPlacement | 'app_open_resume' | 'app_open_startup' | 'research_exit' | 'ai_summary_reveal';
+export type AdFormat = 'banner' | 'app_open' | 'interstitial' | 'rewarded';
 export const AD_LIFECYCLE = [
   'request', 'loaded', 'load_failed', 'show_attempt', 'opened', 'exposure', 'show_failed', 'closed', 'clicked', 'paid',
 ] as const;
@@ -18,6 +19,7 @@ function validMetadata(meta: AdMetadata): boolean {
   if (!['options', 'us_stocks', 'tw_stocks'].includes(meta.app) || !['ios', 'android'].includes(meta.platform)) return false;
   if (meta.format === 'banner') return (BANNER_PLACEMENTS as readonly string[]).includes(meta.placement);
   if (meta.format === 'app_open') return ['app_open_startup', 'app_open_resume'].includes(meta.placement);
+  if (meta.format === 'rewarded') return meta.placement === 'ai_summary_reveal';
   return meta.format === 'interstitial' && meta.placement === 'research_exit';
 }
 

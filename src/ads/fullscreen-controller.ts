@@ -1,5 +1,6 @@
-import { FullscreenAdmission, type AdmissionToken, type FullscreenFormat } from './admission';
+import { FullscreenAdmission, type AdmissionToken, type FullscreenFormat, type FullscreenTrigger } from './admission';
 import type { AdLifecycle } from './telemetry';
+import { startStartupAppOpenController } from './startup-app-open-controller';
 
 export type FullscreenAdEvent = 'loaded' | 'opened' | 'closed' | 'error' | 'clicked' | 'paid';
 export type FullscreenAd = {
@@ -16,20 +17,32 @@ export type FullscreenDependencies = {
   consent(): Consent;
   subscribeConsent(listener: () => void): () => void;
   foreground(): boolean;
+  background?(): boolean;
   // Omitted/unknown routes deny app-open; evaluated again at presentation time.
   appOpenRouteAllowed?(): boolean;
   subscribeForeground(listener: (active: boolean) => void): () => void;
   create(): FullscreenAd;
   persistExposure(timestamp: number): void;
-  reporter(startup: boolean): (event: AdLifecycle, paid?: unknown) => void;
+  reporter(startup: boolean, trigger?: FullscreenTrigger): (event: AdLifecycle, paid?: unknown) => void;
   now(): number;
-  // Options uses warm resumes only; US/TW retain their existing startup opportunity.
+  // Explicit startup-only mode never reuses cold-start inventory on warm resumes.
+  appOpenMode?: 'legacy' | 'startup-only';
+  startupDecision?(): 'pending' | 'allowed' | 'denied';
+  // Identity/privacy/SDK preparation has its own budget, before inventory loading.
+  startupReadinessMs?: number;
   startupWindowMs: number;
 };
-export type FullscreenController = { startupReady: Promise<void>; showIfEligible(): Promise<boolean>; stop(): void };
+export type FullscreenController = {
+  startupReady: Promise<void>;
+  isReadyToShow(trigger?: FullscreenTrigger): boolean;
+  refreshInventory(): void;
+  showIfEligible(trigger?: FullscreenTrigger): Promise<boolean>;
+  stop(): void;
+};
 
 /** Dependency-free lifecycle; SDK, consent, clocks and persistence are injected. */
 export function startFullscreenController(deps: FullscreenDependencies): FullscreenController {
+  if (deps.format === 'app_open' && deps.appOpenMode === 'startup-only') return startStartupAppOpenController(deps);
   let resolveStartup!: () => void;
   const startupReady = new Promise<void>((resolve) => { resolveStartup = resolve; });
   let stopped = false;
@@ -72,16 +85,17 @@ export function startFullscreenController(deps: FullscreenDependencies): Fullscr
     if (stopped || retryTimer || !deps.consent().canRequestAds) return;
     retryTimer = setTimeout(() => { retryTimer = null; load(); }, 30_000);
   };
-  const eligible = () => {
+  const eligible = (trigger: FullscreenTrigger = 'automatic') => {
+    if (deps.format === 'rewarded') return trigger === 'rewarded_opt_in';
     if (deps.format === 'app_open') return launchCount >= 3;
     const active = activeMs + (activeStartedAt === null ? 0 : Math.max(0, deps.now() - activeStartedAt));
-    return Number.isFinite(active) && active >= 15 * 60 * 1000;
+    return Number.isFinite(active) && active >= 5 * 60 * 1000;
   };
 
-  const show = async (startup = false): Promise<boolean> => {
+  const show = async (startup = false, trigger: FullscreenTrigger = 'automatic'): Promise<boolean> => {
     const entry = current;
     if (stopped || token || !prepared || !sdkReady || !entry || entry.loadedAt === null ||
-        !eligible() || !deps.consent().canRequestAds || !deps.foreground()) return false;
+        !eligible(trigger) || !deps.consent().canRequestAds || !deps.foreground()) return false;
     if (deps.format === 'app_open' && deps.appOpenRouteAllowed?.() !== true) return false;
     const age = deps.now() - entry.loadedAt;
     if (age < 0 || age >= (deps.format === 'app_open' ? 4 : 1) * 60 * 60 * 1000) {
@@ -91,12 +105,13 @@ export function startFullscreenController(deps: FullscreenDependencies): Fullscr
     const owned = deps.admission.acquire(deps.format, {
       now: deps.now(), foreground: deps.foreground(), canRequestAds: deps.consent().canRequestAds,
       safeBoundary: deps.format !== 'app_open' || deps.appOpenRouteAllowed?.() === true,
+      trigger,
     });
     if (!owned) return false;
     token = owned;
     // Warm presentations keep the request's reporter and its per-ad paid dedup.
     // Startup gets its presentation placement before any paid callback is accepted.
-    if (startup) entry.report = deps.reporter(true);
+    if (startup || deps.format === 'rewarded') entry.report = deps.reporter(startup, trigger);
     entry.report('show_attempt');
     if (startup) {
       startupOpen = false;
@@ -225,7 +240,27 @@ export function startFullscreenController(deps: FullscreenDependencies): Fullscr
 
   return {
     startupReady,
-    showIfEligible: () => show(),
+    isReadyToShow: (trigger = 'automatic') => {
+      const entry = current;
+      if (stopped || token || !prepared || !sdkReady || !entry || entry.invalidated ||
+          entry.loadedAt === null || !eligible(trigger) || !deps.foreground() ||
+          !deps.consent().canRequestAds) return false;
+      const age = deps.now() - entry.loadedAt;
+      if (!Number.isFinite(age) || age < 0 || age >= (deps.format === 'app_open' ? 4 : 1) * 60 * 60 * 1000) return false;
+      return deps.admission.canAcquire(deps.format, {
+        now: deps.now(), foreground: deps.foreground(), canRequestAds: deps.consent().canRequestAds,
+        safeBoundary: deps.format !== 'app_open' || deps.appOpenRouteAllowed?.() === true, trigger,
+      });
+    },
+    refreshInventory: () => {
+      if (stopped || token || !deps.foreground()) return;
+      if (current?.loadedAt !== null && current?.loadedAt !== undefined) {
+        const age = deps.now() - current.loadedAt;
+        if (!Number.isFinite(age) || age < 0 || age >= (deps.format === 'app_open' ? 4 : 1) * 60 * 60 * 1000) clear();
+      }
+      load();
+    },
+    showIfEligible: (trigger) => show(false, trigger),
     stop: () => {
       stopped = true;
       settleStartup();
