@@ -1,0 +1,1410 @@
+{
+  "src/ads/ad-privacy-options.ts": {
+    "target": "src/mobile/ads/ad-privacy-options.ts",
+    "summary": "Moved to `src/mobile/ads/ad-privacy-options.ts`; shared pure implementation.",
+    "followup": {
+      "us_stocks": "Thin re-export from `dappgo-stocks-shared/mobile/ads/ad-privacy-options`.",
+      "tw_stocks": "Thin re-export from `dappgo-stocks-shared/mobile/ads/ad-privacy-options`.",
+      "options": "Thin re-export from `dappgo-stocks-shared/mobile/ads/ad-privacy-options`."
+    }
+  },
+  "src/ads/admob.ts": {
+    "target": "src/mobile/ads/admob.ts",
+    "summary": "Moved to `src/mobile/ads/admob.ts`; shared pure implementation.",
+    "followup": {
+      "us_stocks": "Thin re-export from `dappgo-stocks-shared/mobile/ads/admob`.",
+      "tw_stocks": "Thin re-export from `dappgo-stocks-shared/mobile/ads/admob`.",
+      "options": "Thin re-export from `dappgo-stocks-shared/mobile/ads/admob`."
+    }
+  },
+  "src/ads/ai-summary-interstitial.ts": {
+    "target": "src/mobile/ads/ai-summary-interstitial.ts",
+    "summary": "Moved to `src/mobile/ads/ai-summary-interstitial.ts`; shared pure implementation.",
+    "followup": {
+      "us_stocks": "Thin re-export from `dappgo-stocks-shared/mobile/ads/ai-summary-interstitial`.",
+      "tw_stocks": "Thin re-export from `dappgo-stocks-shared/mobile/ads/ai-summary-interstitial`.",
+      "options": "Thin re-export from `dappgo-stocks-shared/mobile/ads/ai-summary-interstitial`."
+    }
+  },
+  "src/ads/ai-summary-interstitial.test.ts": {
+    "target": "src/mobile/ads/ai-summary-interstitial.test.ts",
+    "summary": "Moved with `src/mobile/ads/ai-summary-interstitial.ts`.",
+    "followup": {
+      "us_stocks": "Delete after package tests cover `src/mobile/ads/ai-summary-interstitial.ts`.",
+      "tw_stocks": "Delete after package tests cover `src/mobile/ads/ai-summary-interstitial.ts`.",
+      "options": "Delete after package tests cover `src/mobile/ads/ai-summary-interstitial.ts`."
+    }
+  },
+  "src/ads/ai-summary-rewarded-types.ts": {
+    "target": "src/mobile/ads/ai-summary-rewarded-types.ts",
+    "summary": "Moved to `src/mobile/ads/ai-summary-rewarded-types.ts`; shared pure implementation.",
+    "followup": {
+      "us_stocks": "Thin re-export from `dappgo-stocks-shared/mobile/ads/ai-summary-rewarded-types`.",
+      "tw_stocks": "Thin re-export from `dappgo-stocks-shared/mobile/ads/ai-summary-rewarded-types`.",
+      "options": "Thin re-export from `dappgo-stocks-shared/mobile/ads/ai-summary-rewarded-types`."
+    }
+  },
+  "src/ads/ai-summary-rewarded.ts": {
+    "target": "src/mobile/ads/ai-summary-rewarded.ts",
+    "summary": "Moved to `src/mobile/ads/ai-summary-rewarded.ts`; shared pure implementation.",
+    "followup": {
+      "us_stocks": "Thin re-export from `dappgo-stocks-shared/mobile/ads/ai-summary-rewarded`.",
+      "tw_stocks": "Thin re-export from `dappgo-stocks-shared/mobile/ads/ai-summary-rewarded`.",
+      "options": "Thin re-export from `dappgo-stocks-shared/mobile/ads/ai-summary-rewarded`."
+    }
+  },
+  "src/ads/app-access.ts": {
+    "target": "src/mobile/ads/app-access.ts",
+    "summary": "Moved to `src/mobile/ads/app-access.ts`; shared pure implementation.",
+    "followup": {
+      "us_stocks": "Thin re-export from `dappgo-stocks-shared/mobile/ads/app-access`.",
+      "tw_stocks": "Thin re-export from `dappgo-stocks-shared/mobile/ads/app-access`.",
+      "options": "Thin re-export from `dappgo-stocks-shared/mobile/ads/app-access`."
+    }
+  },
+  "src/ads/app-access.test.ts": {
+    "target": "src/mobile/ads/app-access.test.ts",
+    "summary": "Moved with `src/mobile/ads/app-access.ts`.",
+    "followup": {
+      "us_stocks": "Delete after package tests cover `src/mobile/ads/app-access.ts`.",
+      "tw_stocks": "Delete after package tests cover `src/mobile/ads/app-access.ts`.",
+      "options": "Delete after package tests cover `src/mobile/ads/app-access.ts`."
+    }
+  },
+  "src/ads/app-open-ad.ts": {
+    "target": "src/mobile/ads/app-open-ad.ts",
+    "summary": "Moved to `src/mobile/ads/app-open-ad.ts`; shared pure implementation.",
+    "followup": {
+      "us_stocks": "Thin re-export from `dappgo-stocks-shared/mobile/ads/app-open-ad`.",
+      "tw_stocks": "Thin re-export from `dappgo-stocks-shared/mobile/ads/app-open-ad`.",
+      "options": "Thin re-export from `dappgo-stocks-shared/mobile/ads/app-open-ad`."
+    }
+  },
+  "src/ads/app-open-ad.types.ts": {
+    "target": "src/mobile/ads/app-open-ad.types.ts",
+    "summary": "Moved to `src/mobile/ads/app-open-ad.types.ts`; shared pure implementation.",
+    "followup": {
+      "us_stocks": "Thin re-export from `dappgo-stocks-shared/mobile/ads/app-open-ad.types`.",
+      "tw_stocks": "Thin re-export from `dappgo-stocks-shared/mobile/ads/app-open-ad.types`.",
+      "options": "Thin re-export from `dappgo-stocks-shared/mobile/ads/app-open-ad.types`."
+    }
+  },
+  "src/ads/collapsible-banner-policy.ts": {
+    "target": "src/mobile/ads/collapsible-banner-policy.ts",
+    "summary": "Moved to `src/mobile/ads/collapsible-banner-policy.ts`; shared pure implementation.",
+    "followup": {
+      "us_stocks": "Thin re-export from `dappgo-stocks-shared/mobile/ads/collapsible-banner-policy`.",
+      "tw_stocks": "Thin re-export from `dappgo-stocks-shared/mobile/ads/collapsible-banner-policy`.",
+      "options": "Thin re-export from `dappgo-stocks-shared/mobile/ads/collapsible-banner-policy`."
+    }
+  },
+  "src/ads/collapsible-banner-policy.test.ts": {
+    "target": "src/mobile/ads/collapsible-banner-policy.test.ts",
+    "summary": "Moved with `src/mobile/ads/collapsible-banner-policy.ts`.",
+    "followup": {
+      "us_stocks": "Delete after package tests cover `src/mobile/ads/collapsible-banner-policy.ts`.",
+      "tw_stocks": "Delete after package tests cover `src/mobile/ads/collapsible-banner-policy.ts`.",
+      "options": "Delete after package tests cover `src/mobile/ads/collapsible-banner-policy.ts`."
+    }
+  },
+  "src/ads/interstitial-ad.ts": {
+    "target": "src/mobile/ads/interstitial-ad.ts",
+    "summary": "Moved to `src/mobile/ads/interstitial-ad.ts`; shared pure implementation.",
+    "followup": {
+      "us_stocks": "Thin re-export from `dappgo-stocks-shared/mobile/ads/interstitial-ad`.",
+      "tw_stocks": "Thin re-export from `dappgo-stocks-shared/mobile/ads/interstitial-ad`.",
+      "options": "Thin re-export from `dappgo-stocks-shared/mobile/ads/interstitial-ad`."
+    }
+  },
+  "src/ads/interstitial-policy.ts": {
+    "target": "src/mobile/ads/interstitial-policy.ts",
+    "summary": "Moved to `src/mobile/ads/interstitial-policy.ts`; shared pure implementation.",
+    "followup": {
+      "us_stocks": "Thin re-export from `dappgo-stocks-shared/mobile/ads/interstitial-policy`.",
+      "tw_stocks": "Thin re-export from `dappgo-stocks-shared/mobile/ads/interstitial-policy`.",
+      "options": "Thin re-export from `dappgo-stocks-shared/mobile/ads/interstitial-policy`."
+    }
+  },
+  "src/ads/interstitial-policy.test.ts": {
+    "target": "src/mobile/ads/interstitial-policy.test.ts",
+    "summary": "Moved with `src/mobile/ads/interstitial-policy.ts`.",
+    "followup": {
+      "us_stocks": "Delete after package tests cover `src/mobile/ads/interstitial-policy.ts`.",
+      "tw_stocks": "Delete after package tests cover `src/mobile/ads/interstitial-policy.ts`.",
+      "options": "Delete after package tests cover `src/mobile/ads/interstitial-policy.ts`."
+    }
+  },
+  "src/ads/ui-ad-access.ts": {
+    "target": "src/mobile/ads/ui-ad-access.ts",
+    "summary": "Moved to `src/mobile/ads/ui-ad-access.ts`; shared pure implementation.",
+    "followup": {
+      "us_stocks": "Thin re-export from `dappgo-stocks-shared/mobile/ads/ui-ad-access`.",
+      "tw_stocks": "Thin re-export from `dappgo-stocks-shared/mobile/ads/ui-ad-access`.",
+      "options": "Thin re-export from `dappgo-stocks-shared/mobile/ads/ui-ad-access`."
+    }
+  },
+  "src/purchases/ad-free-reconciliation.ts": {
+    "target": "src/mobile/purchases/ad-free-reconciliation.ts",
+    "summary": "Moved to `src/mobile/purchases/ad-free-reconciliation.ts`; shared pure implementation.",
+    "followup": {
+      "us_stocks": "Thin re-export from `dappgo-stocks-shared/mobile/purchases/ad-free-reconciliation`.",
+      "tw_stocks": "Thin re-export from `dappgo-stocks-shared/mobile/purchases/ad-free-reconciliation`.",
+      "options": "Thin re-export from `dappgo-stocks-shared/mobile/purchases/ad-free-reconciliation`."
+    }
+  },
+  "src/purchases/ad-free-reconciliation.test.ts": {
+    "target": "src/mobile/purchases/ad-free-reconciliation.test.ts",
+    "summary": "Pure regression coverage moved to `src/mobile/purchases/ad-free-reconciliation.test.ts`; app integration assertions remain local.",
+    "followup": {
+      "us_stocks": "Delete duplicated pure-core assertions after switching imports; retain app adapter/config/native integration assertions.",
+      "tw_stocks": "Delete duplicated pure-core assertions after switching imports; retain app adapter/config/native integration assertions.",
+      "options": "Delete duplicated pure-core assertions after switching imports; retain app adapter/config/native integration assertions."
+    }
+  },
+  "src/purchases/ad-free-state.ts": {
+    "target": "src/mobile/purchases/ad-free-state.ts",
+    "summary": "Moved to `src/mobile/purchases/ad-free-state.ts`; shared pure implementation.",
+    "followup": {
+      "us_stocks": "Thin re-export from `dappgo-stocks-shared/mobile/purchases/ad-free-state`.",
+      "tw_stocks": "Thin re-export from `dappgo-stocks-shared/mobile/purchases/ad-free-state`.",
+      "options": "Thin re-export from `dappgo-stocks-shared/mobile/purchases/ad-free-state`."
+    }
+  },
+  "src/purchases/ad-free.web.ts": {
+    "target": "src/mobile/purchases/ad-free.web.ts",
+    "summary": "Moved to `src/mobile/purchases/ad-free.web.ts`; shared pure implementation.",
+    "followup": {
+      "us_stocks": "Thin re-export from `dappgo-stocks-shared/mobile/purchases/ad-free.web`.",
+      "tw_stocks": "Thin re-export from `dappgo-stocks-shared/mobile/purchases/ad-free.web`.",
+      "options": "Thin re-export from `dappgo-stocks-shared/mobile/purchases/ad-free.web`."
+    }
+  },
+  "src/purchases/ad-free.web.test.ts": {
+    "target": "src/mobile/purchases/ad-free.web.test.ts",
+    "summary": "Pure browser fallback assertions moved to `src/mobile/purchases/ad-free.web.test.ts`; native SDK mock is virtual in Node.",
+    "followup": {
+      "us_stocks": "Keep `web-app.json` adsMode wiring assertion in app; delete duplicated pure fallback assertions now covered by shared tests.",
+      "tw_stocks": "Keep `web-app.json` adsMode wiring assertion in app; delete duplicated pure fallback assertions now covered by shared tests.",
+      "options": "Keep `web-app.json` adsMode wiring assertion in app; delete duplicated pure fallback assertions now covered by shared tests."
+    }
+  },
+  "src/purchases/store-operation.ts": {
+    "target": "src/mobile/purchases/store-operation.ts",
+    "summary": "Moved to `src/mobile/purchases/store-operation.ts`; shared pure implementation.",
+    "followup": {
+      "us_stocks": "Thin re-export from `dappgo-stocks-shared/mobile/purchases/store-operation`.",
+      "tw_stocks": "Thin re-export from `dappgo-stocks-shared/mobile/purchases/store-operation`.",
+      "options": "Thin re-export from `dappgo-stocks-shared/mobile/purchases/store-operation`."
+    }
+  },
+  "src/updates/update-access.ts": {
+    "target": "src/mobile/updates/update-access.ts",
+    "summary": "Moved to `src/mobile/updates/update-access.ts`; shared pure implementation.",
+    "followup": {
+      "us_stocks": "Thin re-export from `dappgo-stocks-shared/mobile/updates/update-access`.",
+      "tw_stocks": "Thin re-export from `dappgo-stocks-shared/mobile/updates/update-access`.",
+      "options": "Thin re-export from `dappgo-stocks-shared/mobile/updates/update-access`."
+    }
+  },
+  "src/updates/version-controller.ts": {
+    "target": "src/mobile/updates/version-controller.ts",
+    "summary": "Moved to `src/mobile/updates/version-controller.ts`; shared pure implementation.",
+    "followup": {
+      "us_stocks": "Thin re-export from `dappgo-stocks-shared/mobile/updates/version-controller`.",
+      "tw_stocks": "Thin re-export from `dappgo-stocks-shared/mobile/updates/version-controller`.",
+      "options": "Thin re-export from `dappgo-stocks-shared/mobile/updates/version-controller`."
+    }
+  },
+  "src/updates/version-controller.test.ts": {
+    "target": "src/mobile/updates/version-controller.test.ts",
+    "summary": "Moved with `src/mobile/updates/version-controller.ts`.",
+    "followup": {
+      "us_stocks": "Delete after package tests cover `src/mobile/updates/version-controller.ts`.",
+      "tw_stocks": "Delete after package tests cover `src/mobile/updates/version-controller.ts`.",
+      "options": "Delete after package tests cover `src/mobile/updates/version-controller.ts`."
+    }
+  },
+  "src/updates/version-policy.ts": {
+    "target": "src/mobile/updates/version-policy.ts",
+    "summary": "Moved to `src/mobile/updates/version-policy.ts`; shared pure implementation.",
+    "followup": {
+      "us_stocks": "Thin re-export from `dappgo-stocks-shared/mobile/updates/version-policy`.",
+      "tw_stocks": "Thin re-export from `dappgo-stocks-shared/mobile/updates/version-policy`.",
+      "options": "Thin re-export from `dappgo-stocks-shared/mobile/updates/version-policy`."
+    }
+  },
+  "src/updates/version-policy.test.ts": {
+    "target": "src/mobile/updates/version-policy.test.ts",
+    "summary": "Moved with `src/mobile/updates/version-policy.ts`.",
+    "followup": {
+      "us_stocks": "Delete after package tests cover `src/mobile/updates/version-policy.ts`.",
+      "tw_stocks": "Delete after package tests cover `src/mobile/updates/version-policy.ts`.",
+      "options": "Delete after package tests cover `src/mobile/updates/version-policy.ts`."
+    }
+  },
+  "src/data/mappers.ts": {
+    "target": "src/mobile/data/mappers.ts",
+    "summary": "Moved to `src/mobile/data/mappers.ts`; shared pure implementation. Options retains its divergent implementation.",
+    "followup": {
+      "us_stocks": "Thin re-export from `dappgo-stocks-shared/mobile/data/mappers`.",
+      "tw_stocks": "Thin re-export from `dappgo-stocks-shared/mobile/data/mappers`.",
+      "options": "Keep app implementation: Options has different matrix enrichment/mapping."
+    }
+  },
+  "src/data/schema-validator.ts": {
+    "target": "src/mobile/data/schema-validator.ts",
+    "summary": "Moved to `src/mobile/data/schema-validator.ts`; shared pure implementation.",
+    "followup": {
+      "us_stocks": "Thin re-export from `dappgo-stocks-shared/mobile/data/schema-validator`.",
+      "tw_stocks": "Thin re-export from `dappgo-stocks-shared/mobile/data/schema-validator`."
+    }
+  },
+  "src/data/schema-validator.test.ts": {
+    "target": "src/mobile/data/schema-validator.test.ts",
+    "summary": "Moved with `src/mobile/data/schema-validator.ts`.",
+    "followup": {
+      "us_stocks": "Delete after package tests cover `src/mobile/data/schema-validator.ts`.",
+      "tw_stocks": "Delete after package tests cover `src/mobile/data/schema-validator.ts`."
+    }
+  },
+  "src/data/ohlc-generator.ts": {
+    "target": "src/mobile/data/ohlc-generator.ts",
+    "summary": "Moved to `src/mobile/data/ohlc-generator.ts`; shared pure implementation.",
+    "followup": {
+      "us_stocks": "Thin re-export from `dappgo-stocks-shared/mobile/data/ohlc-generator`.",
+      "tw_stocks": "Thin re-export from `dappgo-stocks-shared/mobile/data/ohlc-generator`.",
+      "options": "Thin re-export from `dappgo-stocks-shared/mobile/data/ohlc-generator`."
+    }
+  },
+  "src/data/sample-prices.ts": {
+    "target": "src/mobile/data/sample-prices.ts",
+    "summary": "Moved to `src/mobile/data/sample-prices.ts`; shared pure implementation.",
+    "followup": {
+      "us_stocks": "Thin re-export from `dappgo-stocks-shared/mobile/data/sample-prices`.",
+      "tw_stocks": "Thin re-export from `dappgo-stocks-shared/mobile/data/sample-prices`."
+    }
+  },
+  "src/data/privacy-config.ts": {
+    "target": "src/mobile/data/privacy-config.ts",
+    "summary": "Moved to `src/mobile/data/privacy-config.ts`; shared pure implementation.",
+    "followup": {
+      "us_stocks": "Thin re-export from `dappgo-stocks-shared/mobile/data/privacy-config`.",
+      "tw_stocks": "Thin re-export from `dappgo-stocks-shared/mobile/data/privacy-config`."
+    }
+  },
+  "src/data/crashlytics.web.ts": {
+    "target": "src/mobile/data/crashlytics.web.ts",
+    "summary": "Moved to `src/mobile/data/crashlytics.web.ts`; shared pure implementation.",
+    "followup": {
+      "us_stocks": "Thin re-export from `dappgo-stocks-shared/mobile/data/crashlytics.web`.",
+      "tw_stocks": "Thin re-export from `dappgo-stocks-shared/mobile/data/crashlytics.web`.",
+      "options": "Thin re-export from `dappgo-stocks-shared/mobile/data/crashlytics.web`."
+    }
+  },
+  "src/data/ensure-user-doc.web.ts": {
+    "target": "src/mobile/data/ensure-user-doc.web.ts",
+    "summary": "Moved to `src/mobile/data/ensure-user-doc.web.ts`; shared pure implementation.",
+    "followup": {
+      "us_stocks": "Thin re-export from `dappgo-stocks-shared/mobile/data/ensure-user-doc.web`.",
+      "tw_stocks": "Thin re-export from `dappgo-stocks-shared/mobile/data/ensure-user-doc.web`.",
+      "options": "Thin re-export from `dappgo-stocks-shared/mobile/data/ensure-user-doc.web`."
+    }
+  },
+  "src/data/notifications.web.ts": {
+    "target": "src/mobile/data/notifications.web.ts",
+    "summary": "Moved to `src/mobile/data/notifications.web.ts`; shared pure implementation.",
+    "followup": {
+      "us_stocks": "Thin re-export from `dappgo-stocks-shared/mobile/data/notifications.web`.",
+      "tw_stocks": "Thin re-export from `dappgo-stocks-shared/mobile/data/notifications.web`.",
+      "options": "Thin named re-export of `requestPermissions`, `scheduleDailyReminder`, `cancelDailyReminder` from shared `mobile/data/notifications.web`; retain the current Options API."
+    }
+  },
+  "src/data/secure-keys.web.ts": {
+    "target": "src/mobile/data/secure-keys.web.ts",
+    "summary": "Moved to `src/mobile/data/secure-keys.web.ts`; shared pure implementation.",
+    "followup": {
+      "us_stocks": "Thin re-export from `dappgo-stocks-shared/mobile/data/secure-keys.web`.",
+      "tw_stocks": "Thin re-export from `dappgo-stocks-shared/mobile/data/secure-keys.web`.",
+      "options": "Thin re-export from `dappgo-stocks-shared/mobile/data/secure-keys.web`."
+    }
+  },
+  "src/utils/bollinger-bands.ts": {
+    "target": "src/mobile/utils/bollinger-bands.ts",
+    "summary": "Moved to `src/mobile/utils/bollinger-bands.ts`; shared pure implementation.",
+    "followup": {
+      "us_stocks": "Thin re-export from `dappgo-stocks-shared/mobile/utils/bollinger-bands`.",
+      "tw_stocks": "Thin re-export from `dappgo-stocks-shared/mobile/utils/bollinger-bands`."
+    }
+  },
+  "src/utils/bollinger-bands.test.ts": {
+    "target": "src/mobile/utils/bollinger-bands.test.ts",
+    "summary": "Moved with `src/mobile/utils/bollinger-bands.ts`.",
+    "followup": {
+      "us_stocks": "Delete after package tests cover `src/mobile/utils/bollinger-bands.ts`.",
+      "tw_stocks": "Delete after package tests cover `src/mobile/utils/bollinger-bands.ts`."
+    }
+  },
+  "src/utils/buy-back-simulator.ts": {
+    "target": "src/mobile/utils/buy-back-simulator.ts",
+    "summary": "Moved to `src/mobile/utils/buy-back-simulator.ts`; shared pure implementation.",
+    "followup": {
+      "us_stocks": "Thin re-export from `dappgo-stocks-shared/mobile/utils/buy-back-simulator`.",
+      "tw_stocks": "Thin re-export from `dappgo-stocks-shared/mobile/utils/buy-back-simulator`."
+    }
+  },
+  "src/utils/__tests__/buy-back-simulator.test.ts": {
+    "target": "src/mobile/utils/buy-back-simulator.test.ts",
+    "summary": "Moved with `src/mobile/utils/buy-back-simulator.ts`.",
+    "followup": {
+      "us_stocks": "Delete after package tests cover `src/mobile/utils/buy-back-simulator.ts`.",
+      "tw_stocks": "Delete after package tests cover `src/mobile/utils/buy-back-simulator.ts`."
+    }
+  },
+  "src/utils/candle-layout.ts": {
+    "target": "src/mobile/utils/candle-layout.ts",
+    "summary": "Moved to `src/mobile/utils/candle-layout.ts`; shared pure implementation.",
+    "followup": {
+      "us_stocks": "Thin re-export from `dappgo-stocks-shared/mobile/utils/candle-layout`.",
+      "tw_stocks": "Thin re-export from `dappgo-stocks-shared/mobile/utils/candle-layout`."
+    }
+  },
+  "src/utils/__tests__/candle-layout.test.ts": {
+    "target": "src/mobile/utils/candle-layout.test.ts",
+    "summary": "Moved with `src/mobile/utils/candle-layout.ts`.",
+    "followup": {
+      "us_stocks": "Delete after package tests cover `src/mobile/utils/candle-layout.ts`.",
+      "tw_stocks": "Delete after package tests cover `src/mobile/utils/candle-layout.ts`."
+    }
+  },
+  "src/utils/compute-ma.ts": {
+    "target": "src/mobile/utils/compute-ma.ts",
+    "summary": "Moved to `src/mobile/utils/compute-ma.ts`; shared pure implementation.",
+    "followup": {
+      "us_stocks": "Thin re-export from `dappgo-stocks-shared/mobile/utils/compute-ma`.",
+      "tw_stocks": "Thin re-export from `dappgo-stocks-shared/mobile/utils/compute-ma`."
+    }
+  },
+  "src/utils/compute-ma.test.ts": {
+    "target": "src/mobile/utils/compute-ma.test.ts",
+    "summary": "Moved with `src/mobile/utils/compute-ma.ts`.",
+    "followup": {
+      "us_stocks": "Delete after package tests cover `src/mobile/utils/compute-ma.ts`.",
+      "tw_stocks": "Delete after package tests cover `src/mobile/utils/compute-ma.ts`."
+    }
+  },
+  "src/utils/contribution-bars.ts": {
+    "target": "src/mobile/utils/contribution-bars.ts",
+    "summary": "Moved to `src/mobile/utils/contribution-bars.ts`; shared pure implementation.",
+    "followup": {
+      "us_stocks": "Thin re-export from `dappgo-stocks-shared/mobile/utils/contribution-bars`.",
+      "tw_stocks": "Thin re-export from `dappgo-stocks-shared/mobile/utils/contribution-bars`."
+    }
+  },
+  "src/utils/contribution-display.ts": {
+    "target": "src/mobile/utils/contribution-display.ts",
+    "summary": "Moved to `src/mobile/utils/contribution-display.ts`; shared pure implementation.",
+    "followup": {
+      "us_stocks": "Thin re-export from `dappgo-stocks-shared/mobile/utils/contribution-display`.",
+      "tw_stocks": "Thin re-export from `dappgo-stocks-shared/mobile/utils/contribution-display`."
+    }
+  },
+  "src/utils/__tests__/contribution-display.test.ts": {
+    "target": "src/mobile/utils/contribution-display.test.ts",
+    "summary": "Moved with `src/mobile/utils/contribution-display.ts`.",
+    "followup": {
+      "us_stocks": "Delete after package tests cover `src/mobile/utils/contribution-display.ts`.",
+      "tw_stocks": "Delete after package tests cover `src/mobile/utils/contribution-display.ts`."
+    }
+  },
+  "src/utils/dashboard-top-mover.ts": {
+    "target": "src/mobile/utils/dashboard-top-mover.ts",
+    "summary": "Moved to `src/mobile/utils/dashboard-top-mover.ts`; shared pure implementation.",
+    "followup": {
+      "us_stocks": "Thin re-export from `dappgo-stocks-shared/mobile/utils/dashboard-top-mover`.",
+      "tw_stocks": "Thin re-export from `dappgo-stocks-shared/mobile/utils/dashboard-top-mover`."
+    }
+  },
+  "src/utils/__tests__/dashboard-top-mover.test.ts": {
+    "target": "src/mobile/utils/dashboard-top-mover.test.ts",
+    "summary": "Moved with `src/mobile/utils/dashboard-top-mover.ts`.",
+    "followup": {
+      "us_stocks": "Delete after package tests cover `src/mobile/utils/dashboard-top-mover.ts`.",
+      "tw_stocks": "Delete after package tests cover `src/mobile/utils/dashboard-top-mover.ts`."
+    }
+  },
+  "src/utils/data-coverage.ts": {
+    "target": "src/mobile/utils/data-coverage.ts",
+    "summary": "Moved to `src/mobile/utils/data-coverage.ts`; shared pure implementation. Options retains its divergent implementation.",
+    "followup": {
+      "us_stocks": "Thin re-export from `dappgo-stocks-shared/mobile/utils/data-coverage`.",
+      "tw_stocks": "Thin re-export from `dappgo-stocks-shared/mobile/utils/data-coverage`.",
+      "options": "Keep app implementation: Options has different universe-contract and coverage resolution."
+    }
+  },
+  "src/utils/data-coverage.test.ts": {
+    "target": "src/mobile/utils/data-coverage.test.ts",
+    "summary": "Moved with `src/mobile/utils/data-coverage.ts`.",
+    "followup": {
+      "us_stocks": "Delete after package tests cover `src/mobile/utils/data-coverage.ts`.",
+      "tw_stocks": "Delete after package tests cover `src/mobile/utils/data-coverage.ts`.",
+      "options": "Delete after package tests cover `src/mobile/utils/data-coverage.ts`."
+    }
+  },
+  "src/utils/deep-link.ts": {
+    "target": "src/mobile/utils/deep-link.ts",
+    "summary": "Moved to `src/mobile/utils/deep-link.ts`; shared pure implementation.",
+    "followup": {
+      "us_stocks": "Thin re-export from `dappgo-stocks-shared/mobile/utils/deep-link`.",
+      "tw_stocks": "Thin re-export from `dappgo-stocks-shared/mobile/utils/deep-link`."
+    }
+  },
+  "src/utils/__tests__/deep-link.test.ts": {
+    "target": "src/mobile/utils/deep-link.test.ts",
+    "summary": "Moved with `src/mobile/utils/deep-link.ts`.",
+    "followup": {
+      "us_stocks": "Delete after package tests cover `src/mobile/utils/deep-link.ts`.",
+      "tw_stocks": "Delete after package tests cover `src/mobile/utils/deep-link.ts`."
+    }
+  },
+  "src/utils/earnings-calendar.ts": {
+    "target": "src/mobile/utils/earnings-calendar.ts",
+    "summary": "Moved to `src/mobile/utils/earnings-calendar.ts`; shared pure implementation.",
+    "followup": {
+      "us_stocks": "Thin re-export from `dappgo-stocks-shared/mobile/utils/earnings-calendar`.",
+      "tw_stocks": "Thin re-export from `dappgo-stocks-shared/mobile/utils/earnings-calendar`.",
+      "options": "Thin re-export from `dappgo-stocks-shared/mobile/utils/earnings-calendar`."
+    }
+  },
+  "src/utils/earnings-calendar.test.ts": {
+    "target": "src/mobile/utils/earnings-calendar.test.ts",
+    "summary": "Moved with `src/mobile/utils/earnings-calendar.ts`.",
+    "followup": {
+      "us_stocks": "Delete after package tests cover `src/mobile/utils/earnings-calendar.ts`.",
+      "tw_stocks": "Delete after package tests cover `src/mobile/utils/earnings-calendar.ts`.",
+      "options": "Delete after package tests cover `src/mobile/utils/earnings-calendar.ts`."
+    }
+  },
+  "src/utils/empty-state-detector.ts": {
+    "target": "src/mobile/utils/empty-state-detector.ts",
+    "summary": "Moved to `src/mobile/utils/empty-state-detector.ts`; shared pure implementation.",
+    "followup": {
+      "us_stocks": "Thin re-export from `dappgo-stocks-shared/mobile/utils/empty-state-detector`.",
+      "tw_stocks": "Thin re-export from `dappgo-stocks-shared/mobile/utils/empty-state-detector`."
+    }
+  },
+  "src/utils/__tests__/empty-state-detector.test.ts": {
+    "target": "src/mobile/utils/empty-state-detector.test.ts",
+    "summary": "Moved with `src/mobile/utils/empty-state-detector.ts`.",
+    "followup": {
+      "us_stocks": "Delete after package tests cover `src/mobile/utils/empty-state-detector.ts`.",
+      "tw_stocks": "Delete after package tests cover `src/mobile/utils/empty-state-detector.ts`."
+    }
+  },
+  "src/utils/highlight-markers.ts": {
+    "target": "src/mobile/utils/highlight-markers.ts",
+    "summary": "Moved to `src/mobile/utils/highlight-markers.ts`; shared pure implementation.",
+    "followup": {
+      "us_stocks": "Thin re-export from `dappgo-stocks-shared/mobile/utils/highlight-markers`.",
+      "tw_stocks": "Thin re-export from `dappgo-stocks-shared/mobile/utils/highlight-markers`.",
+      "options": "Thin re-export from `dappgo-stocks-shared/mobile/utils/highlight-markers`."
+    }
+  },
+  "src/utils/highlight-markers.test.ts": {
+    "target": "src/mobile/utils/highlight-markers.test.ts",
+    "summary": "Moved with `src/mobile/utils/highlight-markers.ts`.",
+    "followup": {
+      "us_stocks": "Delete after package tests cover `src/mobile/utils/highlight-markers.ts`.",
+      "tw_stocks": "Delete after package tests cover `src/mobile/utils/highlight-markers.ts`.",
+      "options": "Delete after package tests cover `src/mobile/utils/highlight-markers.ts`."
+    }
+  },
+  "src/utils/hot-rank-board.ts": {
+    "target": "src/mobile/utils/hot-rank-board.ts",
+    "summary": "Moved to `src/mobile/utils/hot-rank-board.ts`; shared pure implementation.",
+    "followup": {
+      "us_stocks": "Thin re-export from `dappgo-stocks-shared/mobile/utils/hot-rank-board`.",
+      "tw_stocks": "Thin re-export from `dappgo-stocks-shared/mobile/utils/hot-rank-board`."
+    }
+  },
+  "src/utils/__tests__/hot-rank-board.test.ts": {
+    "target": "src/mobile/utils/hot-rank-board.test.ts",
+    "summary": "Moved with `src/mobile/utils/hot-rank-board.ts`.",
+    "followup": {
+      "us_stocks": "Delete after package tests cover `src/mobile/utils/hot-rank-board.ts`.",
+      "tw_stocks": "Delete after package tests cover `src/mobile/utils/hot-rank-board.ts`."
+    }
+  },
+  "src/utils/insight-sort.ts": {
+    "target": "src/mobile/utils/insight-sort.ts",
+    "summary": "Moved to `src/mobile/utils/insight-sort.ts`; shared pure implementation.",
+    "followup": {
+      "us_stocks": "Thin re-export from `dappgo-stocks-shared/mobile/utils/insight-sort`.",
+      "tw_stocks": "Thin re-export from `dappgo-stocks-shared/mobile/utils/insight-sort`."
+    }
+  },
+  "src/utils/__tests__/insight-sort.test.ts": {
+    "target": "src/mobile/utils/insight-sort.test.ts",
+    "summary": "Moved with `src/mobile/utils/insight-sort.ts`.",
+    "followup": {
+      "us_stocks": "Delete after package tests cover `src/mobile/utils/insight-sort.ts`.",
+      "tw_stocks": "Delete after package tests cover `src/mobile/utils/insight-sort.ts`."
+    }
+  },
+  "src/utils/insight-types.ts": {
+    "target": "src/mobile/utils/insight-types.ts",
+    "summary": "Moved to `src/mobile/utils/insight-types.ts`; shared pure implementation.",
+    "followup": {
+      "us_stocks": "Thin re-export from `dappgo-stocks-shared/mobile/utils/insight-types`.",
+      "tw_stocks": "Thin re-export from `dappgo-stocks-shared/mobile/utils/insight-types`."
+    }
+  },
+  "src/utils/market-status.ts": {
+    "target": "src/mobile/utils/market-status.ts",
+    "summary": "Moved to `src/mobile/utils/market-status.ts`; shared pure implementation.",
+    "followup": {
+      "us_stocks": "Thin re-export from `dappgo-stocks-shared/mobile/utils/market-status`.",
+      "tw_stocks": "Thin re-export from `dappgo-stocks-shared/mobile/utils/market-status`.",
+      "options": "Thin re-export from `dappgo-stocks-shared/mobile/utils/market-status`."
+    }
+  },
+  "src/utils/market-status.test.ts": {
+    "target": "src/mobile/utils/market-status.test.ts",
+    "summary": "Moved with `src/mobile/utils/market-status.ts`.",
+    "followup": {
+      "us_stocks": "Delete after package tests cover `src/mobile/utils/market-status.ts`.",
+      "tw_stocks": "Delete after package tests cover `src/mobile/utils/market-status.ts`.",
+      "options": "Delete after package tests cover `src/mobile/utils/market-status.ts`."
+    }
+  },
+  "src/utils/native-presentation.ts": {
+    "target": "src/mobile/utils/native-presentation.ts",
+    "summary": "Moved to `src/mobile/utils/native-presentation.ts`; shared pure implementation.",
+    "followup": {
+      "us_stocks": "Thin re-export from `dappgo-stocks-shared/mobile/utils/native-presentation`.",
+      "tw_stocks": "Thin re-export from `dappgo-stocks-shared/mobile/utils/native-presentation`.",
+      "options": "Thin re-export from `dappgo-stocks-shared/mobile/utils/native-presentation`."
+    }
+  },
+  "src/utils/native-presentation.test.ts": {
+    "target": "src/mobile/utils/native-presentation.test.ts",
+    "summary": "Moved with `src/mobile/utils/native-presentation.ts`.",
+    "followup": {
+      "us_stocks": "Delete after package tests cover `src/mobile/utils/native-presentation.ts`.",
+      "tw_stocks": "Delete after package tests cover `src/mobile/utils/native-presentation.ts`.",
+      "options": "Delete after package tests cover `src/mobile/utils/native-presentation.ts`."
+    }
+  },
+  "src/utils/onboarding-state.ts": {
+    "target": "src/mobile/utils/onboarding-state.ts",
+    "summary": "Moved to `src/mobile/utils/onboarding-state.ts`; shared pure implementation.",
+    "followup": {
+      "us_stocks": "Thin re-export from `dappgo-stocks-shared/mobile/utils/onboarding-state`.",
+      "tw_stocks": "Thin re-export from `dappgo-stocks-shared/mobile/utils/onboarding-state`.",
+      "options": "Thin re-export from `dappgo-stocks-shared/mobile/utils/onboarding-state`."
+    }
+  },
+  "src/utils/__tests__/onboarding-state.test.ts": {
+    "target": "src/mobile/utils/onboarding-state.test.ts",
+    "summary": "Moved with `src/mobile/utils/onboarding-state.ts`.",
+    "followup": {
+      "us_stocks": "Delete after package tests cover `src/mobile/utils/onboarding-state.ts`.",
+      "tw_stocks": "Delete after package tests cover `src/mobile/utils/onboarding-state.ts`.",
+      "options": "Delete after package tests cover `src/mobile/utils/onboarding-state.ts`."
+    }
+  },
+  "src/utils/report-sections.ts": {
+    "target": "src/mobile/utils/report-sections.ts",
+    "summary": "Moved to `src/mobile/utils/report-sections.ts`; shared pure implementation.",
+    "followup": {
+      "us_stocks": "Thin re-export from `dappgo-stocks-shared/mobile/utils/report-sections`.",
+      "tw_stocks": "Thin re-export from `dappgo-stocks-shared/mobile/utils/report-sections`."
+    }
+  },
+  "src/utils/report-sections.test.ts": {
+    "target": "src/mobile/utils/report-sections.test.ts",
+    "summary": "Moved with `src/mobile/utils/report-sections.ts`.",
+    "followup": {
+      "us_stocks": "Delete after package tests cover `src/mobile/utils/report-sections.ts`."
+    }
+  },
+  "src/utils/responsive-layout.ts": {
+    "target": "src/mobile/utils/responsive-layout.ts",
+    "summary": "Moved to `src/mobile/utils/responsive-layout.ts`; shared pure implementation.",
+    "followup": {
+      "us_stocks": "Thin re-export from `dappgo-stocks-shared/mobile/utils/responsive-layout`.",
+      "tw_stocks": "Thin re-export from `dappgo-stocks-shared/mobile/utils/responsive-layout`.",
+      "options": "Thin re-export from `dappgo-stocks-shared/mobile/utils/responsive-layout`."
+    }
+  },
+  "src/utils/responsive-layout.test.ts": {
+    "target": "src/mobile/utils/responsive-layout.test.ts",
+    "summary": "Moved with `src/mobile/utils/responsive-layout.ts`.",
+    "followup": {
+      "us_stocks": "Delete after package tests cover `src/mobile/utils/responsive-layout.ts`.",
+      "tw_stocks": "Delete after package tests cover `src/mobile/utils/responsive-layout.ts`.",
+      "options": "Delete after package tests cover `src/mobile/utils/responsive-layout.ts`."
+    }
+  },
+  "src/utils/rotation-safe-layout.ts": {
+    "target": "src/mobile/utils/rotation-safe-layout.ts",
+    "summary": "Moved to `src/mobile/utils/rotation-safe-layout.ts`; shared pure implementation.",
+    "followup": {
+      "us_stocks": "Thin re-export from `dappgo-stocks-shared/mobile/utils/rotation-safe-layout`.",
+      "tw_stocks": "Thin re-export from `dappgo-stocks-shared/mobile/utils/rotation-safe-layout`.",
+      "options": "Thin re-export from `dappgo-stocks-shared/mobile/utils/rotation-safe-layout`."
+    }
+  },
+  "src/utils/rotation-safe-layout.test.ts": {
+    "target": "src/mobile/utils/rotation-safe-layout.test.ts",
+    "summary": "Moved with `src/mobile/utils/rotation-safe-layout.ts`.",
+    "followup": {
+      "us_stocks": "Delete after package tests cover `src/mobile/utils/rotation-safe-layout.ts`.",
+      "tw_stocks": "Delete after package tests cover `src/mobile/utils/rotation-safe-layout.ts`.",
+      "options": "Delete after package tests cover `src/mobile/utils/rotation-safe-layout.ts`."
+    }
+  },
+  "src/utils/search-history.ts": {
+    "target": "src/mobile/utils/search-history.ts",
+    "summary": "Moved to `src/mobile/utils/search-history.ts`; shared pure implementation. Options retains its divergent implementation.",
+    "followup": {
+      "us_stocks": "Thin re-export from `dappgo-stocks-shared/mobile/utils/search-history`.",
+      "tw_stocks": "Thin re-export from `dappgo-stocks-shared/mobile/utils/search-history`.",
+      "options": "Keep app implementation: Options has different symbol normalization and minimum-query behavior."
+    }
+  },
+  "src/utils/search-history.test.ts": {
+    "target": "src/mobile/utils/search-history.test.ts",
+    "summary": "Moved with `src/mobile/utils/search-history.ts`.",
+    "followup": {
+      "us_stocks": "Delete after package tests cover `src/mobile/utils/search-history.ts`.",
+      "tw_stocks": "Delete after package tests cover `src/mobile/utils/search-history.ts`."
+    }
+  },
+  "src/utils/__tests__/search-history.test.ts": {
+    "target": "src/mobile/utils/search-history.test.ts",
+    "summary": "Moved with `src/mobile/utils/search-history.ts`.",
+    "followup": {
+      "us_stocks": "Delete after package tests cover `src/mobile/utils/search-history.ts`.",
+      "options": "Delete after package tests cover `src/mobile/utils/search-history.ts`."
+    }
+  },
+  "src/utils/sentiment-dot.ts": {
+    "target": "src/mobile/utils/sentiment-dot.ts",
+    "summary": "Moved to `src/mobile/utils/sentiment-dot.ts`; shared pure implementation.",
+    "followup": {
+      "us_stocks": "Thin re-export from `dappgo-stocks-shared/mobile/utils/sentiment-dot`.",
+      "tw_stocks": "Thin re-export from `dappgo-stocks-shared/mobile/utils/sentiment-dot`."
+    }
+  },
+  "src/utils/__tests__/sentiment-dot.test.ts": {
+    "target": "src/mobile/utils/sentiment-dot.test.ts",
+    "summary": "Moved with `src/mobile/utils/sentiment-dot.ts`.",
+    "followup": {
+      "us_stocks": "Delete after package tests cover `src/mobile/utils/sentiment-dot.ts`.",
+      "tw_stocks": "Delete after package tests cover `src/mobile/utils/sentiment-dot.ts`."
+    }
+  },
+  "src/utils/settings-rows.ts": {
+    "target": "src/mobile/utils/settings-rows.ts",
+    "summary": "Moved to `src/mobile/utils/settings-rows.ts`; shared pure implementation.",
+    "followup": {
+      "us_stocks": "Thin re-export from `dappgo-stocks-shared/mobile/utils/settings-rows`.",
+      "tw_stocks": "Thin re-export from `dappgo-stocks-shared/mobile/utils/settings-rows`."
+    }
+  },
+  "src/utils/signal-labels.ts": {
+    "target": "src/mobile/utils/signal-labels.ts",
+    "summary": "Moved to `src/mobile/utils/signal-labels.ts`; shared pure implementation.",
+    "followup": {
+      "us_stocks": "Thin re-export from `dappgo-stocks-shared/mobile/utils/signal-labels`.",
+      "tw_stocks": "Thin re-export from `dappgo-stocks-shared/mobile/utils/signal-labels`."
+    }
+  },
+  "src/utils/signal-labels.test.ts": {
+    "target": "src/mobile/utils/signal-labels.test.ts",
+    "summary": "Moved with `src/mobile/utils/signal-labels.ts`.",
+    "followup": {
+      "us_stocks": "Delete after package tests cover `src/mobile/utils/signal-labels.ts`.",
+      "tw_stocks": "Delete after package tests cover `src/mobile/utils/signal-labels.ts`."
+    }
+  },
+  "src/utils/stale-detection.ts": {
+    "target": "src/mobile/utils/stale-detection.ts",
+    "summary": "Moved to `src/mobile/utils/stale-detection.ts`; shared pure implementation.",
+    "followup": {
+      "us_stocks": "Thin re-export from `dappgo-stocks-shared/mobile/utils/stale-detection`.",
+      "tw_stocks": "Thin re-export from `dappgo-stocks-shared/mobile/utils/stale-detection`.",
+      "options": "Thin re-export from `dappgo-stocks-shared/mobile/utils/stale-detection`."
+    }
+  },
+  "src/utils/stale-detection.test.ts": {
+    "target": "src/mobile/utils/stale-detection.test.ts",
+    "summary": "Moved with `src/mobile/utils/stale-detection.ts`.",
+    "followup": {
+      "us_stocks": "Delete after package tests cover `src/mobile/utils/stale-detection.ts`.",
+      "tw_stocks": "Delete after package tests cover `src/mobile/utils/stale-detection.ts`.",
+      "options": "Delete after package tests cover `src/mobile/utils/stale-detection.ts`."
+    }
+  },
+  "src/utils/stock-navigation.ts": {
+    "target": "src/mobile/utils/stock-navigation.ts",
+    "summary": "Moved to `src/mobile/utils/stock-navigation.ts`; shared pure implementation.",
+    "followup": {
+      "us_stocks": "Thin re-export from `dappgo-stocks-shared/mobile/utils/stock-navigation`.",
+      "tw_stocks": "Thin re-export from `dappgo-stocks-shared/mobile/utils/stock-navigation`."
+    }
+  },
+  "src/utils/__tests__/stock-navigation.test.ts": {
+    "target": "src/mobile/utils/stock-navigation.test.ts",
+    "summary": "Moved with `src/mobile/utils/stock-navigation.ts`.",
+    "followup": {
+      "us_stocks": "Delete after package tests cover `src/mobile/utils/stock-navigation.ts`.",
+      "tw_stocks": "Delete after package tests cover `src/mobile/utils/stock-navigation.ts`."
+    }
+  },
+  "src/utils/summary-highlights.ts": {
+    "target": "src/mobile/utils/summary-highlights.ts",
+    "summary": "Moved to `src/mobile/utils/summary-highlights.ts`; shared pure implementation.",
+    "followup": {
+      "us_stocks": "Thin re-export from `dappgo-stocks-shared/mobile/utils/summary-highlights`.",
+      "tw_stocks": "Thin re-export from `dappgo-stocks-shared/mobile/utils/summary-highlights`."
+    }
+  },
+  "src/utils/summary-highlights.test.ts": {
+    "target": "src/mobile/utils/summary-highlights.test.ts",
+    "summary": "Moved with `src/mobile/utils/summary-highlights.ts`.",
+    "followup": {
+      "us_stocks": "Delete after package tests cover `src/mobile/utils/summary-highlights.ts`.",
+      "tw_stocks": "Delete after package tests cover `src/mobile/utils/summary-highlights.ts`."
+    }
+  },
+  "src/utils/tab-badges.ts": {
+    "target": "src/mobile/utils/tab-badges.ts",
+    "summary": "Moved to `src/mobile/utils/tab-badges.ts`; shared pure implementation.",
+    "followup": {
+      "us_stocks": "Thin re-export from `dappgo-stocks-shared/mobile/utils/tab-badges`.",
+      "tw_stocks": "Thin re-export from `dappgo-stocks-shared/mobile/utils/tab-badges`."
+    }
+  },
+  "src/utils/__tests__/tab-badges.test.ts": {
+    "target": "src/mobile/utils/tab-badges.test.ts",
+    "summary": "Moved with `src/mobile/utils/tab-badges.ts`.",
+    "followup": {
+      "us_stocks": "Delete after package tests cover `src/mobile/utils/tab-badges.ts`.",
+      "tw_stocks": "Delete after package tests cover `src/mobile/utils/tab-badges.ts`."
+    }
+  },
+  "src/utils/theme-mode.ts": {
+    "target": "src/mobile/utils/theme-mode.ts",
+    "summary": "Moved to `src/mobile/utils/theme-mode.ts`; shared pure implementation.",
+    "followup": {
+      "us_stocks": "Thin re-export from `dappgo-stocks-shared/mobile/utils/theme-mode`.",
+      "tw_stocks": "Thin re-export from `dappgo-stocks-shared/mobile/utils/theme-mode`."
+    }
+  },
+  "src/utils/ticker-filter.ts": {
+    "target": "src/mobile/utils/ticker-filter.ts",
+    "summary": "Moved to `src/mobile/utils/ticker-filter.ts`; shared pure implementation.",
+    "followup": {
+      "us_stocks": "Thin re-export from `dappgo-stocks-shared/mobile/utils/ticker-filter`.",
+      "tw_stocks": "Thin re-export from `dappgo-stocks-shared/mobile/utils/ticker-filter`."
+    }
+  },
+  "src/utils/__tests__/ticker-filter.test.ts": {
+    "target": "src/mobile/utils/ticker-filter.test.ts",
+    "summary": "Moved with `src/mobile/utils/ticker-filter.ts`.",
+    "followup": {
+      "us_stocks": "Delete after package tests cover `src/mobile/utils/ticker-filter.ts`.",
+      "tw_stocks": "Delete after package tests cover `src/mobile/utils/ticker-filter.ts`."
+    }
+  },
+  "src/utils/top-movers-board.ts": {
+    "target": "src/mobile/utils/top-movers-board.ts",
+    "summary": "Moved to `src/mobile/utils/top-movers-board.ts`; shared pure implementation.",
+    "followup": {
+      "us_stocks": "Thin re-export from `dappgo-stocks-shared/mobile/utils/top-movers-board`.",
+      "tw_stocks": "Thin re-export from `dappgo-stocks-shared/mobile/utils/top-movers-board`."
+    }
+  },
+  "src/utils/__tests__/top-movers-board.test.ts": {
+    "target": "src/mobile/utils/top-movers-board.test.ts",
+    "summary": "Moved with `src/mobile/utils/top-movers-board.ts`.",
+    "followup": {
+      "us_stocks": "Delete after package tests cover `src/mobile/utils/top-movers-board.ts`.",
+      "tw_stocks": "Delete after package tests cover `src/mobile/utils/top-movers-board.ts`."
+    }
+  },
+  "src/utils/verdict-factors.ts": {
+    "target": "src/mobile/utils/verdict-factors.ts",
+    "summary": "Moved to `src/mobile/utils/verdict-factors.ts`; shared pure implementation.",
+    "followup": {
+      "us_stocks": "Thin re-export from `dappgo-stocks-shared/mobile/utils/verdict-factors`.",
+      "tw_stocks": "Thin re-export from `dappgo-stocks-shared/mobile/utils/verdict-factors`."
+    }
+  },
+  "src/utils/verdict-factors.test.ts": {
+    "target": "src/mobile/utils/verdict-factors.test.ts",
+    "summary": "Moved with `src/mobile/utils/verdict-factors.ts`.",
+    "followup": {
+      "us_stocks": "Delete after package tests cover `src/mobile/utils/verdict-factors.ts`.",
+      "tw_stocks": "Delete after package tests cover `src/mobile/utils/verdict-factors.ts`."
+    }
+  },
+  "src/utils/verdict-label.ts": {
+    "target": "src/mobile/utils/verdict-label.ts",
+    "summary": "Moved to `src/mobile/utils/verdict-label.ts`; shared pure implementation.",
+    "followup": {
+      "us_stocks": "Thin re-export from `dappgo-stocks-shared/mobile/utils/verdict-label`.",
+      "tw_stocks": "Thin re-export from `dappgo-stocks-shared/mobile/utils/verdict-label`."
+    }
+  },
+  "src/utils/verdict-label.test.ts": {
+    "target": "src/mobile/utils/verdict-label.test.ts",
+    "summary": "Moved with `src/mobile/utils/verdict-label.ts`.",
+    "followup": {
+      "us_stocks": "Delete after package tests cover `src/mobile/utils/verdict-label.ts`.",
+      "tw_stocks": "Delete after package tests cover `src/mobile/utils/verdict-label.ts`."
+    }
+  },
+  "src/utils/verdict-score.ts": {
+    "target": "src/mobile/utils/verdict-score.ts",
+    "summary": "Moved to `src/mobile/utils/verdict-score.ts`; shared pure implementation.",
+    "followup": {
+      "us_stocks": "Thin re-export from `dappgo-stocks-shared/mobile/utils/verdict-score`.",
+      "tw_stocks": "Thin re-export from `dappgo-stocks-shared/mobile/utils/verdict-score`."
+    }
+  },
+  "src/utils/__tests__/verdict-score.test.ts": {
+    "target": "src/mobile/utils/verdict-score.test.ts",
+    "summary": "Moved with `src/mobile/utils/verdict-score.ts`.",
+    "followup": {
+      "us_stocks": "Delete after package tests cover `src/mobile/utils/verdict-score.ts`.",
+      "tw_stocks": "Delete after package tests cover `src/mobile/utils/verdict-score.ts`."
+    }
+  },
+  "src/utils/version-tap.ts": {
+    "target": "src/mobile/utils/version-tap.ts",
+    "summary": "Moved to `src/mobile/utils/version-tap.ts`; shared pure implementation.",
+    "followup": {
+      "us_stocks": "Thin re-export from `dappgo-stocks-shared/mobile/utils/version-tap`.",
+      "tw_stocks": "Thin re-export from `dappgo-stocks-shared/mobile/utils/version-tap`."
+    }
+  },
+  "src/utils/__tests__/version-tap.test.ts": {
+    "target": "src/mobile/utils/version-tap.test.ts",
+    "summary": "Moved with `src/mobile/utils/version-tap.ts`.",
+    "followup": {
+      "us_stocks": "Delete after package tests cover `src/mobile/utils/version-tap.ts`.",
+      "tw_stocks": "Delete after package tests cover `src/mobile/utils/version-tap.ts`."
+    }
+  },
+  "src/utils/vwap-display.ts": {
+    "target": "src/mobile/utils/vwap-display.ts",
+    "summary": "Moved to `src/mobile/utils/vwap-display.ts`; shared pure implementation.",
+    "followup": {
+      "us_stocks": "Thin re-export from `dappgo-stocks-shared/mobile/utils/vwap-display`.",
+      "tw_stocks": "Thin re-export from `dappgo-stocks-shared/mobile/utils/vwap-display`."
+    }
+  },
+  "src/utils/__tests__/vwap-display.test.ts": {
+    "target": "src/mobile/utils/vwap-display.test.ts",
+    "summary": "Moved with `src/mobile/utils/vwap-display.ts`.",
+    "followup": {
+      "us_stocks": "Delete after package tests cover `src/mobile/utils/vwap-display.ts`.",
+      "tw_stocks": "Delete after package tests cover `src/mobile/utils/vwap-display.ts`."
+    }
+  },
+  "src/utils/watchlist-toggle.ts": {
+    "target": "src/mobile/utils/watchlist-toggle.ts",
+    "summary": "Moved to `src/mobile/utils/watchlist-toggle.ts`; shared pure implementation.",
+    "followup": {
+      "us_stocks": "Thin re-export from `dappgo-stocks-shared/mobile/utils/watchlist-toggle`.",
+      "tw_stocks": "Thin re-export from `dappgo-stocks-shared/mobile/utils/watchlist-toggle`."
+    }
+  },
+  "src/utils/__tests__/watchlist-toggle.test.ts": {
+    "target": "src/mobile/utils/watchlist-toggle.test.ts",
+    "summary": "Moved with `src/mobile/utils/watchlist-toggle.ts`.",
+    "followup": {
+      "us_stocks": "Delete after package tests cover `src/mobile/utils/watchlist-toggle.ts`.",
+      "tw_stocks": "Delete after package tests cover `src/mobile/utils/watchlist-toggle.ts`."
+    }
+  },
+  "src/utils/web-search-shortcut.ts": {
+    "target": "src/mobile/utils/web-search-shortcut.ts",
+    "summary": "Moved to `src/mobile/utils/web-search-shortcut.ts`; shared pure implementation.",
+    "followup": {
+      "us_stocks": "Thin re-export from `dappgo-stocks-shared/mobile/utils/web-search-shortcut`.",
+      "tw_stocks": "Thin re-export from `dappgo-stocks-shared/mobile/utils/web-search-shortcut`.",
+      "options": "Thin re-export from `dappgo-stocks-shared/mobile/utils/web-search-shortcut`."
+    }
+  },
+  "src/utils/web-search-shortcut.test.ts": {
+    "target": "src/mobile/utils/web-search-shortcut.test.ts",
+    "summary": "Moved with `src/mobile/utils/web-search-shortcut.ts`.",
+    "followup": {
+      "us_stocks": "Delete after package tests cover `src/mobile/utils/web-search-shortcut.ts`.",
+      "tw_stocks": "Delete after package tests cover `src/mobile/utils/web-search-shortcut.ts`.",
+      "options": "Delete after package tests cover `src/mobile/utils/web-search-shortcut.ts`."
+    }
+  },
+  "src/utils/weekly-movers-format.ts": {
+    "target": "src/mobile/utils/weekly-movers-format.ts",
+    "summary": "Moved to `src/mobile/utils/weekly-movers-format.ts`; shared pure implementation.",
+    "followup": {
+      "us_stocks": "Thin re-export from `dappgo-stocks-shared/mobile/utils/weekly-movers-format`.",
+      "tw_stocks": "Thin re-export from `dappgo-stocks-shared/mobile/utils/weekly-movers-format`."
+    }
+  },
+  "src/utils/__tests__/weekly-movers-format.test.ts": {
+    "target": "src/mobile/utils/weekly-movers-format.test.ts",
+    "summary": "Moved with `src/mobile/utils/weekly-movers-format.ts`.",
+    "followup": {
+      "us_stocks": "Delete after package tests cover `src/mobile/utils/weekly-movers-format.ts`.",
+      "tw_stocks": "Delete after package tests cover `src/mobile/utils/weekly-movers-format.ts`."
+    }
+  },
+  "src/utils/data-hash.ts": {
+    "target": "src/mobile/data/data-hash.ts",
+    "summary": "Moved to `src/mobile/data/data-hash.ts`; shared pure implementation.",
+    "followup": {
+      "us_stocks": "Thin re-export from `dappgo-stocks-shared/mobile/data/data-hash`.",
+      "tw_stocks": "Thin re-export from `dappgo-stocks-shared/mobile/data/data-hash`.",
+      "options": "Thin re-export from `dappgo-stocks-shared/mobile/data/data-hash`."
+    }
+  },
+  "src/utils/__tests__/data-hash.test.ts": {
+    "target": "src/mobile/data/data-hash.test.ts",
+    "summary": "Moved with `src/mobile/data/data-hash.ts`.",
+    "followup": {
+      "us_stocks": "Delete after package tests cover `src/mobile/data/data-hash.ts`.",
+      "tw_stocks": "Delete after package tests cover `src/mobile/data/data-hash.ts`."
+    }
+  },
+  "src/utils/types.ts": {
+    "target": "src/mobile/utils/types.ts",
+    "summary": "Moved identical US/TW types to `src/mobile/utils/types.ts`; Options’ richer domain types stay in its app.",
+    "followup": {
+      "us_stocks": "Thin re-export from `dappgo-stocks-shared/mobile/utils/types`.",
+      "tw_stocks": "Thin re-export from `dappgo-stocks-shared/mobile/utils/types`."
+    }
+  },
+  "src/i18n/locale.ts": {
+    "target": "src/mobile/i18n/locale.ts",
+    "summary": "Moved to `src/mobile/i18n/locale.ts`; shared pure implementation.",
+    "followup": {
+      "us_stocks": "Thin re-export from `dappgo-stocks-shared/mobile/i18n/locale`."
+    }
+  },
+  "src/i18n/locale.test.ts": {
+    "target": "src/mobile/i18n/locale.test.ts",
+    "summary": "Moved with `src/mobile/i18n/locale.ts`.",
+    "followup": {
+      "us_stocks": "Delete after package tests cover `src/mobile/i18n/locale.ts`."
+    }
+  },
+  "src/i18n/translate.ts": {
+    "target": "src/mobile/i18n/translate.ts",
+    "summary": "Moved to `src/mobile/i18n/translate.ts`; shared pure implementation.",
+    "followup": {
+      "us_stocks": "Thin re-export from `dappgo-stocks-shared/mobile/i18n/translate`."
+    }
+  },
+  "src/i18n/translate.test.ts": {
+    "target": "src/mobile/i18n/translate.test.ts",
+    "summary": "Moved with `src/mobile/i18n/translate.ts`.",
+    "followup": {
+      "us_stocks": "Delete after package tests cover `src/mobile/i18n/translate.ts`."
+    }
+  },
+  "src/i18n/catalog-validation.ts": {
+    "target": "src/mobile/i18n/catalog-validation.ts",
+    "summary": "Moved to `src/mobile/i18n/catalog-validation.ts`; shared pure implementation.",
+    "followup": {
+      "us_stocks": "Thin re-export from `dappgo-stocks-shared/mobile/i18n/catalog-validation`."
+    }
+  },
+  "src/data/public-request.ts": {
+    "target": "src/mobile/data/public-request.ts",
+    "summary": "Moved to `src/mobile/data/public-request.ts`; shared pure implementation.",
+    "followup": {
+      "us_stocks": "Thin named re-export of `publicJsonRequest` from shared `mobile/data/public-request`; preserve the US export surface.",
+      "tw_stocks": "Thin re-export from `dappgo-stocks-shared/mobile/data/public-request`.",
+      "options": "Keep `publicDataRequest` native adapter; it deliberately passes caller RequestInit through."
+    }
+  },
+  "src/data/public-request.web.ts": {
+    "target": "src/mobile/data/public-request.web.ts",
+    "summary": "Moved to `src/mobile/data/public-request.web.ts`; shared pure implementation.",
+    "followup": {
+      "us_stocks": "Thin named re-export of `publicJsonRequest` from shared `mobile/data/public-request.web`.",
+      "tw_stocks": "Thin re-export from `dappgo-stocks-shared/mobile/data/public-request.web`."
+    }
+  },
+  "src/ads/AnalyticsConsentControl.web.tsx": {
+    "summary": "Kept: React component boundary; platform selection and UI remain in apps."
+  },
+  "src/ads/admob-config.test.ts": {
+    "target": "src/mobile/ads/admob-config.test.ts",
+    "summary": "Pure regression coverage moved to `src/mobile/ads/admob-config.test.ts`; app integration assertions remain local.",
+    "followup": {
+      "us_stocks": "Delete duplicated pure-core assertions after switching imports; retain app adapter/config/native integration assertions.",
+      "tw_stocks": "Delete duplicated pure-core assertions after switching imports; retain app adapter/config/native integration assertions.",
+      "options": "Delete duplicated pure-core assertions after switching imports; retain app adapter/config/native integration assertions."
+    }
+  },
+  "src/ads/admob-config.ts": {
+    "target": "src/mobile/ads/admob-config.ts",
+    "summary": "Moved to `src/mobile/ads/admob-config.ts`; bind `createAdUnitCatalog` with an explicit app profile. ",
+    "followup": {
+      "us_stocks": "Thin adapter: bind `createAdUnitCatalog(appProfile)` once and re-export the existing API. ",
+      "tw_stocks": "Thin adapter: bind `createAdUnitCatalog(appProfile)` once and re-export the existing API. ",
+      "options": "Thin adapter: bind `createAdUnitCatalog(appProfile)` once and re-export the existing API. "
+    }
+  },
+  "src/ads/ai-summary-fullscreen-policy.test.ts": {
+    "target": "src/mobile/ads/rewarded-admission.test.ts",
+    "summary": "Already covered by the shared rewarded-admission regression suite, now relocated to mobile/ads.",
+    "followup": {
+      "us_stocks": "Delete duplicated admission/controller assertions covered by shared rewarded-admission tests; retain native rewarded SDK tests.",
+      "tw_stocks": "Delete duplicated admission/controller assertions covered by shared rewarded-admission tests; retain native rewarded SDK tests.",
+      "options": "Delete duplicated admission/controller assertions covered by shared rewarded-admission tests; retain native rewarded SDK tests."
+    }
+  },
+  "src/ads/app-open-policy.test.ts": {
+    "target": "src/mobile/ads/app-open-policy.test.ts",
+    "summary": "Pure regression coverage moved to `src/mobile/ads/app-open-policy.test.ts`; app integration assertions remain local.",
+    "followup": {
+      "us_stocks": "Delete duplicated pure-core assertions after switching imports; retain app adapter/config/native integration assertions.",
+      "tw_stocks": "Delete duplicated pure-core assertions after switching imports; retain app adapter/config/native integration assertions.",
+      "options": "Delete duplicated pure-core assertions after switching imports; retain app adapter/config/native integration assertions."
+    }
+  },
+  "src/ads/app-open-policy.ts": {
+    "target": "src/mobile/ads/app-open-policy.ts",
+    "summary": "Moved to `src/mobile/ads/app-open-policy.ts`; bind `createAppOpenPolicy` with an explicit app profile. Preserve US/TW 4-hour and Options 5-minute resume cooldowns; absent Options startup constants remain undefined.",
+    "followup": {
+      "us_stocks": "Thin adapter: bind `createAppOpenPolicy(appProfile)` once and re-export the existing API. Preserve US/TW 4-hour and Options 5-minute resume cooldowns; absent Options startup constants remain undefined.",
+      "tw_stocks": "Thin adapter: bind `createAppOpenPolicy(appProfile)` once and re-export the existing API. Preserve US/TW 4-hour and Options 5-minute resume cooldowns; absent Options startup constants remain undefined.",
+      "options": "Thin adapter: bind `createAppOpenPolicy(appProfile)` once and re-export the existing API. Preserve US/TW 4-hour and Options 5-minute resume cooldowns; absent Options startup constants remain undefined."
+    }
+  },
+  "src/ads/interstitial-route-policy.test.ts": {
+    "target": "src/mobile/ads/interstitial-route-policy.test.ts",
+    "summary": "Pure regression coverage moved to `src/mobile/ads/interstitial-route-policy.test.ts`; app integration assertions remain local.",
+    "followup": {
+      "us_stocks": "Delete duplicated pure-core assertions after switching imports; retain app adapter/config/native integration assertions.",
+      "tw_stocks": "Delete duplicated pure-core assertions after switching imports; retain app adapter/config/native integration assertions.",
+      "options": "Delete duplicated pure-core assertions after switching imports; retain app adapter/config/native integration assertions."
+    }
+  },
+  "src/ads/interstitial-route-policy.ts": {
+    "target": "src/mobile/ads/interstitial-route-policy.ts",
+    "summary": "Moved to `src/mobile/ads/interstitial-route-policy.ts`; bind `createInterstitialRoutePolicy` with an explicit app profile. ",
+    "followup": {
+      "us_stocks": "Thin adapter: bind `createInterstitialRoutePolicy(appProfile)` once and re-export the existing API. ",
+      "tw_stocks": "Thin adapter: bind `createInterstitialRoutePolicy(appProfile)` once and re-export the existing API. ",
+      "options": "Thin adapter: bind `createInterstitialRoutePolicy(appProfile)` once and re-export the existing API. "
+    }
+  },
+  "src/data/auth.web.ts": {
+    "target": "src/mobile/data/auth.web.ts",
+    "summary": "Moved pure anonymous-auth fallback to `src/mobile/data/auth.web.ts`; Options retains its narrower named export surface.",
+    "followup": {
+      "us_stocks": "Thin re-export from `dappgo-stocks-shared/mobile/data/auth.web`.",
+      "tw_stocks": "Thin re-export from `dappgo-stocks-shared/mobile/data/auth.web`.",
+      "options": "Thin named re-export of `ensureAuth` and `onUid` from shared `mobile/data/auth.web`; preserve the current Options API."
+    }
+  },
+  "src/data/cache.test.ts": {
+    "target": "src/mobile/data/cache.test.ts",
+    "summary": "Pure regression coverage moved to `src/mobile/data/cache.test.ts`; app integration assertions remain local.",
+    "followup": {
+      "us_stocks": "Delete duplicated pure-core assertions after switching imports; retain app adapter/config/native integration assertions.",
+      "tw_stocks": "Delete duplicated pure-core assertions after switching imports; retain app adapter/config/native integration assertions.",
+      "options": "Delete duplicated pure-core assertions after switching imports; retain app adapter/config/native integration assertions."
+    }
+  },
+  "src/data/cache.ts": {
+    "target": "src/mobile/data/cache.ts",
+    "summary": "Moved to `src/mobile/data/cache.ts`; bind `createMemoryCache` with an explicit app profile. Keep a single bound in-memory cache instance per app.",
+    "followup": {
+      "us_stocks": "Thin adapter: bind `createMemoryCache(appProfile)` once and re-export the existing API. Keep a single bound in-memory cache instance per app.",
+      "tw_stocks": "Thin adapter: bind `createMemoryCache(appProfile)` once and re-export the existing API. Keep a single bound in-memory cache instance per app.",
+      "options": "Thin adapter: bind `createMemoryCache(appProfile)` once and re-export the existing API. Keep a single bound in-memory cache instance per app."
+    }
+  },
+  "src/data/device-id.web.ts": {
+    "summary": "Kept: browser storage/identity adapter, outside the pure mobile core."
+  },
+  "src/data/fetch-with-timeout.ts": {
+    "target": "src/mobile/data/fetch-with-timeout.ts",
+    "summary": "Moved to `src/mobile/data/fetch-with-timeout.ts`; factory requires fetch implementation and forwards caller abort.",
+    "followup": {
+      "us_stocks": "Thin adapter: export `fetchWithTimeout = createFetchWithTimeout(fetch)`; keep platform request preparation at the call site. The shared helper preserves external abort as Options already does.",
+      "tw_stocks": "Thin adapter: export `fetchWithTimeout = createFetchWithTimeout(fetch)`; keep platform request preparation at the call site. The shared helper preserves external abort as Options already does."
+    }
+  },
+  "src/data/parser.ts": {
+    "target": "src/mobile/data/parser.ts",
+    "summary": "Moved to `src/mobile/data/parser.ts`; bind `createReportParser` with an explicit app profile. ",
+    "followup": {
+      "us_stocks": "Thin adapter: bind `createReportParser(appProfile)` once and re-export the existing API. ",
+      "tw_stocks": "Thin adapter: bind `createReportParser(appProfile)` once and re-export the existing API. ",
+      "options": "Keep `extractTickerMetrics` and its market-specific helpers; bind/re-export only `parseReport` from `createReportParser(appProfile)`. Preserve English date/timestamp patterns."
+    }
+  },
+  "src/data/schema.ts": {
+    "summary": "Kept: US/TW validation fields and rich dashboard types differ; retain market schema adapters."
+  },
+  "src/purchases/ad-free-catalog.ts": {
+    "target": "src/mobile/purchases/ad-free-catalog.ts",
+    "summary": "Moved to `src/mobile/purchases/ad-free-catalog.ts`; bind `createAdFreeCatalog` with an explicit app profile. Keep each app’s iOS lifetime product namespace.",
+    "followup": {
+      "us_stocks": "Thin adapter: bind `createAdFreeCatalog(appProfile)` once and re-export the existing API. Keep each app’s iOS lifetime product namespace.",
+      "tw_stocks": "Thin adapter: bind `createAdFreeCatalog(appProfile)` once and re-export the existing API. Keep each app’s iOS lifetime product namespace.",
+      "options": "Thin adapter: bind `createAdFreeCatalog(appProfile)` once and re-export the existing API. Keep each app’s iOS lifetime product namespace."
+    }
+  },
+  "src/purchases/ad-free.test.ts": {
+    "target": "src/mobile/purchases/ad-free.test.ts",
+    "summary": "Pure regression coverage moved to `src/mobile/purchases/ad-free.test.ts`; app integration assertions remain local.",
+    "followup": {
+      "us_stocks": "Delete duplicated pure-core assertions after switching imports; retain app adapter/config/native integration assertions.",
+      "tw_stocks": "Delete duplicated pure-core assertions after switching imports; retain app adapter/config/native integration assertions.",
+      "options": "Delete duplicated pure-core assertions after switching imports; retain app adapter/config/native integration assertions."
+    }
+  },
+  "src/utils/__tests__/ai-commentary.test.ts": {
+    "summary": "Kept: tests for divergent locale/catalog/market behavior; corresponding app module remains local."
+  },
+  "src/utils/__tests__/dashboard-tone.test.ts": {
+    "summary": "Kept: tests for divergent locale/catalog/market behavior; corresponding app module remains local."
+  },
+  "src/utils/__tests__/extra-indicators.test.ts": {
+    "summary": "Kept: tests embed copies of screen-local indicator functions; no independent module in inventory scope to move."
+  },
+  "src/utils/__tests__/glossary.test.ts": {
+    "summary": "Kept: tests for divergent locale/catalog/market behavior; corresponding app module remains local."
+  },
+  "src/utils/__tests__/multi-period-pills.test.ts": {
+    "summary": "Kept: tests for divergent locale/catalog/market behavior; corresponding app module remains local."
+  },
+  "src/utils/__tests__/verdict-color.test.ts": {
+    "target": "src/mobile/utils/verdict-color.test.ts",
+    "summary": "Pure regression coverage moved to `src/mobile/utils/verdict-color.test.ts`; app integration assertions remain local.",
+    "followup": {
+      "us_stocks": "Delete duplicated pure-core assertions after switching imports; retain app adapter/config/native integration assertions.",
+      "tw_stocks": "Delete duplicated pure-core assertions after switching imports; retain app adapter/config/native integration assertions."
+    }
+  },
+  "src/utils/ai-commentary.ts": {
+    "summary": "Kept: locale fallback/selection algorithms differ, beyond app constants."
+  },
+  "src/utils/constants.test.ts": {
+    "summary": "Kept: app universe/retention configuration tests; relevant extraction constants are copied to three shared profile fixtures."
+  },
+  "src/utils/deep-links.test.ts": {
+    "target": "src/mobile/utils/deep-links.test.ts",
+    "summary": "Pure regression coverage moved to `src/mobile/utils/deep-links.test.ts`; app integration assertions remain local.",
+    "followup": {
+      "us_stocks": "Delete duplicated pure-core assertions after switching imports; retain app adapter/config/native integration assertions.",
+      "tw_stocks": "Delete duplicated pure-core assertions after switching imports; retain app adapter/config/native integration assertions.",
+      "options": "Delete duplicated pure-core assertions after switching imports; retain app adapter/config/native integration assertions."
+    }
+  },
+  "src/utils/deep-links.ts": {
+    "target": "src/mobile/utils/deep-links.ts",
+    "summary": "Moved to `src/mobile/utils/deep-links.ts`; bind `createDeepLinks` with an explicit app profile. US/TW’s existing legacy scheme is `dappgooptionsapp`; preserve it in this extraction.",
+    "followup": {
+      "us_stocks": "Thin adapter: bind `createDeepLinks(appProfile)` once and re-export the existing API. US/TW’s existing legacy scheme is `dappgooptionsapp`; preserve it in this extraction.",
+      "tw_stocks": "Thin adapter: bind `createDeepLinks(appProfile)` once and re-export the existing API. US/TW’s existing legacy scheme is `dappgooptionsapp`; preserve it in this extraction.",
+      "options": "Thin adapter: bind `createDeepLinks(appProfile)` once and re-export the existing API. US/TW’s existing legacy scheme is `dappgooptionsapp`; preserve it in this extraction."
+    }
+  },
+  "src/utils/glossary-linker.ts": {
+    "target": "src/mobile/utils/glossary-linker.ts",
+    "summary": "Moved matcher to `src/mobile/utils/glossary-linker.ts`; app catalogs and locale mapping are explicit factory dependencies.",
+    "followup": {
+      "us_stocks": "Thin adapter: bind `createGlossaryLinker(GLOSSARY_TERMS, resolveLanguage)`; keep the app catalog and existing locale mapping (`asLegacyLanguage` in US, bilingual identity in TW/Options).",
+      "tw_stocks": "Thin adapter: bind `createGlossaryLinker(GLOSSARY_TERMS, resolveLanguage)`; keep the app catalog and existing locale mapping (`asLegacyLanguage` in US, bilingual identity in TW/Options).",
+      "options": "Thin adapter: bind `createGlossaryLinker(GLOSSARY_TERMS, resolveLanguage)`; keep the app catalog and existing locale mapping (`asLegacyLanguage` in US, bilingual identity in TW/Options)."
+    }
+  },
+  "src/utils/glossary.ts": {
+    "summary": "Kept: market-specific editorial catalog, owned by each app."
+  },
+  "src/utils/news-aggregator.ts": {
+    "summary": "Kept: US feed and dashboard selection behavior differs from TW."
+  },
+  "src/utils/shared.ts": {
+    "summary": "Kept: already a thin re-export of the existing shared package barrel."
+  },
+  "src/utils/verdict-explain.test.ts": {
+    "summary": "Kept: tests for divergent locale/catalog/market behavior; corresponding app module remains local."
+  },
+  "src/ads/analytics-consent.ts": {
+    "target": "src/mobile/ads/analytics-consent.ts",
+    "summary": "Split core to `src/mobile/ads/analytics-consent.ts`; factory receives storage protocol; AsyncStorage adapter remains in app.",
+    "followup": {
+      "us_stocks": "Thin adapter: create one `createAnalyticsConsent(AsyncStorage)` controller; re-export its methods and the shared `ANALYTICS_CONSENT_KEY`. Keep storage imports in app.",
+      "tw_stocks": "Thin adapter: create one `createAnalyticsConsent(AsyncStorage)` controller; re-export its methods and the shared `ANALYTICS_CONSENT_KEY`. Keep storage imports in app.",
+      "options": "Thin adapter: create one `createAnalyticsConsent(AsyncStorage)` controller; re-export its methods and the shared `ANALYTICS_CONSENT_KEY`. Keep storage imports in app."
+    }
+  },
+  "src/ads/ad-request-options.ts": {
+    "target": "src/mobile/ads/ad-request-options.ts",
+    "summary": "Split pure request/identity policy to `src/mobile/ads/ad-request-options.ts`; platform/AppState reads remain in app.",
+    "followup": {
+      "us_stocks": "Keep native wrapper: pass `Platform.OS` and `AppState.currentState === \"active\"` to shared request policy; re-export structural consent types and `adRequestIdentity`.",
+      "tw_stocks": "Keep native wrapper: pass `Platform.OS` and `AppState.currentState === \"active\"` to shared request policy; re-export structural consent types and `adRequestIdentity`.",
+      "options": "Keep native wrapper: pass `Platform.OS` and `AppState.currentState === \"active\"` to shared request policy; re-export structural consent types and `adRequestIdentity`."
+    }
+  },
+  "src/ads/ad-measurement.ts": {
+    "target": "src/mobile/ads/ad-measurement.ts",
+    "summary": "Split profile-bound reporter to `src/mobile/ads/ad-measurement.ts`; Firebase/native platform adapter remains in app.",
+    "followup": {
+      "us_stocks": "Keep native wrapper: bind `createAdMeasurement(appProfile, platform, getAdConsentSnapshot, emit)`; keep `Platform` and `trackEvent` imports in app.",
+      "tw_stocks": "Keep native wrapper: bind `createAdMeasurement(appProfile, platform, getAdConsentSnapshot, emit)`; keep `Platform` and `trackEvent` imports in app.",
+      "options": "Keep native wrapper: bind `createAdMeasurement(appProfile, platform, getAdConsentSnapshot, emit)`; keep `Platform` and `trackEvent` imports in app."
+    }
+  },
+  "src/ads/startup-ad-decision.ts": {
+    "target": "src/mobile/startup/startup-ad-decision.ts",
+    "summary": "Moved structural startup decision to `src/mobile/startup/startup-ad-decision.ts`; no native type dependency remains.",
+    "followup": {
+      "us_stocks": "Thin re-export from `dappgo-stocks-shared/mobile/startup/startup-ad-decision`.",
+      "tw_stocks": "Thin re-export from `dappgo-stocks-shared/mobile/startup/startup-ad-decision`.",
+      "options": "Thin re-export from `dappgo-stocks-shared/mobile/startup/startup-ad-decision`."
+    }
+  },
+  "src/data/market-data.ts": {
+    "target": "src/mobile/data/source-chain.ts",
+    "summary": "Split US/TW duplicate delivery core into `source-chain.ts`, `latest-pointer.ts` and `data-hash.ts`; market schemas/cache/retry adapters remain in apps.",
+    "followup": {
+      "us_stocks": "Keep schema/cache/retry/report adapter; replace private `sourceUrls`, `fetchOrFallback`, `fetchJsonWithFallback`, pointer interface/path guard with profile-bound `createDataSourceChain`, `LatestPointer`, `parseLatestPointer`, `dashboardDataPath` and shared hash helper. Preserve request options."
+    }
+  },
+  "src/data/tw-data.ts": {
+    "target": "src/mobile/data/source-chain.ts",
+    "summary": "Split shared delivery/pointer/hash core to `src/mobile/data/{source-chain,latest-pointer,data-hash}.ts`; TW schema/cache/retry code remains.",
+    "followup": {
+      "tw_stocks": "Keep TW schema/cache/retry/report adapter; replace private source-chain helpers and pointer/path guard with the shared profile-bound core. Keep manifest locale normalization and request options."
+    }
+  },
+  "src/data/github-api.ts": {
+    "target": "src/mobile/data/source-chain.ts",
+    "summary": "Split common report-path/delivery/timeout/pointer helpers; app-specific report indexing and dashboard adapters remain.",
+    "followup": {
+      "us_stocks": "Keep delegating dashboard/report adapter; re-export shared `reportPathForLanguage`; use shared chain through market-data as today.",
+      "tw_stocks": "Keep report/index compatibility logic; re-export shared `reportPathForLanguage` where equivalent; use shared chain in tw-data without replacing language-index behavior.",
+      "options": "Keep schema/cache/report adapter; replace local `sourceUrls`, fetch fallback helpers, `LatestPointer`/path guard and `fetchWithTimeout` with shared cores. Bind fetch to `publicDataRequest`; re-export shared `reportPathForLanguage` and preserve timeout exports."
+    }
+  },
+  "src/i18n/format.ts": {
+    "target": "src/mobile/i18n/format.ts",
+    "summary": "Split pure Intl helpers to `src/mobile/i18n/format.ts`; locale is required and settings-store defaults stay in US adapter.",
+    "followup": {
+      "us_stocks": "Keep thin existing-signature wrappers: resolve default locale from settings store and pass it explicitly as the third argument to shared formatNumber/formatPercent/formatDate."
+    }
+  },
+  "src/i18n/content-locale.ts": {
+    "target": "src/mobile/i18n/content-locale.ts",
+    "summary": "Split conversion-selection core to `src/mobile/i18n/content-locale.ts`; OpenCC initialization and React hook stay in US adapter.",
+    "followup": {
+      "us_stocks": "Keep `toSimplified` with lazy OpenCC and `useContentLocale`; bind `createContentLocalizer(toSimplified)` and re-export `localizeContent`."
+    }
+  },
+  "src/constants/update-target.ts": {
+    "target": "src/mobile/updates/update-target.ts",
+    "summary": "Moved URL/identity selection to `src/mobile/updates/update-target.ts`; native store opening remains in apps.",
+    "followup": {
+      "us_stocks": "Thin adapter: bind/re-export `createUpdateTarget(appProfile)` with existing UPDATE_APPLICATION_ID and Apple ID.",
+      "tw_stocks": "Thin adapter: bind/re-export `createUpdateTarget(appProfile)` with existing UPDATE_APPLICATION_ID and Apple ID.",
+      "options": "Thin adapter: bind/re-export `createUpdateTarget(appProfile)` with existing UPDATE_APPLICATION_ID and Apple ID."
+    }
+  },
+  "src/updates/version-runtime.ts": {
+    "target": "src/mobile/updates/version-policy.ts",
+    "summary": "Native runtime remains in apps; profile-bound version-policy factory is shared.",
+    "followup": {
+      "us_stocks": "Keep Expo Application, AppState, interval and native lifecycle adapter; bind `createVersionPolicy(appProfile, { fetcher: fetch })` for checks, and import the shared VersionController.",
+      "tw_stocks": "Keep Expo Application, AppState, interval and native lifecycle adapter; bind `createVersionPolicy(appProfile, { fetcher: fetch })` for checks, and import the shared VersionController.",
+      "options": "Keep Expo Application, AppState, interval and native lifecycle adapter; bind `createVersionPolicy(appProfile, { fetcher: fetch })` for checks, and import the shared VersionController."
+    }
+  },
+  "src/utils/verdict-color.ts": {
+    "target": "src/mobile/utils/verdict-color.ts",
+    "summary": "Moved identical runtime color mapping to `src/mobile/utils/verdict-color.ts`; TW nullable type is compatible with US callers.",
+    "followup": {
+      "us_stocks": "Thin re-export from `dappgo-stocks-shared/mobile/utils/verdict-color` (including TW Verdict type).",
+      "tw_stocks": "Thin re-export from `dappgo-stocks-shared/mobile/utils/verdict-color` (including TW Verdict type)."
+    }
+  },
+  "src/ads/startup-ad-decision.test.ts": {
+    "target": "src/mobile/startup/startup-ad-decision.test.ts",
+    "summary": "Pure regression coverage moved to `src/mobile/startup/startup-ad-decision.test.ts`; app integration assertions remain local.",
+    "followup": {
+      "us_stocks": "Delete duplicated pure-core assertions after switching imports; retain app adapter/config/native integration assertions.",
+      "tw_stocks": "Delete duplicated pure-core assertions after switching imports; retain app adapter/config/native integration assertions.",
+      "options": "Delete duplicated pure-core assertions after switching imports; retain app adapter/config/native integration assertions."
+    }
+  },
+  "src/ads/analytics-consent.test.ts": {
+    "target": "src/mobile/ads/analytics-consent.test.ts",
+    "summary": "Pure regression coverage moved to `src/mobile/ads/analytics-consent.test.ts`; app integration assertions remain local.",
+    "followup": {
+      "us_stocks": "Delete duplicated pure-core assertions after switching imports; retain app adapter/config/native integration assertions.",
+      "tw_stocks": "Delete duplicated pure-core assertions after switching imports; retain app adapter/config/native integration assertions.",
+      "options": "Delete duplicated pure-core assertions after switching imports; retain app adapter/config/native integration assertions."
+    }
+  },
+  "src/i18n/format.test.ts": {
+    "target": "src/mobile/i18n/format.test.ts",
+    "summary": "Pure regression coverage moved to `src/mobile/i18n/format.test.ts`; app integration assertions remain local.",
+    "followup": {
+      "us_stocks": "Keep settings-store default-locale wrapper test; remove copied Intl/explicit-locale unit cases."
+    }
+  },
+  "src/i18n/catalog-validation.test.ts": {
+    "target": "src/mobile/i18n/catalog-validation.test.ts",
+    "summary": "Pure regression coverage moved to `src/mobile/i18n/catalog-validation.test.ts`; app integration assertions remain local.",
+    "followup": {
+      "us_stocks": "Keep real catalog completeness/compact-label tests in app; remove only generic validation unit cases copied to shared."
+    }
+  },
+  "src/mobile-profile.ts (new)": {
+    "summary": "App-owned composition root for AppProfile.",
+    "followup": {
+      "us_stocks": "Create/export one explicit AppProfile from current IDs, market/repository, cooldown, parser and cache constants; resolve environment/build values only in the app. Do not import test fixtures.",
+      "tw_stocks": "Create/export one explicit AppProfile from current IDs, market/repository, cooldown, parser and cache constants; resolve environment/build values only in the app. Do not import test fixtures.",
+      "options": "Create/export one explicit AppProfile from current IDs, market/repository, cooldown, parser and cache constants; resolve environment/build values only in the app. Do not import test fixtures."
+    }
+  },
+  "package.json": {
+    "summary": "WP6b dependency pin.",
+    "followup": {
+      "us_stocks": "Pin dappgo-stocks-shared 0.4.0 to its future full 40-character commit SHA codeload tarball; update lockfile and validate with frozen-lockfile install.",
+      "tw_stocks": "Pin dappgo-stocks-shared 0.4.0 to its future full 40-character commit SHA codeload tarball; update lockfile and validate with frozen-lockfile install.",
+      "options": "Pin dappgo-stocks-shared 0.4.0 to its future full 40-character commit SHA codeload tarball; update lockfile and validate with frozen-lockfile install."
+    }
+  },
+  "pnpm-lock.yaml": {
+    "summary": "WP6b dependency pin.",
+    "followup": {
+      "us_stocks": "Pin dappgo-stocks-shared 0.4.0 to its future full 40-character commit SHA codeload tarball; update lockfile and validate with frozen-lockfile install.",
+      "tw_stocks": "Pin dappgo-stocks-shared 0.4.0 to its future full 40-character commit SHA codeload tarball; update lockfile and validate with frozen-lockfile install.",
+      "options": "Pin dappgo-stocks-shared 0.4.0 to its future full 40-character commit SHA codeload tarball; update lockfile and validate with frozen-lockfile install."
+    }
+  },
+  "src/purchases/ad-free.ts": {
+    "target": "src/mobile/purchases/entitlement.ts",
+    "summary": "Split pure entitlement/customer-info patch, lifetime-package lookup, cancellation and recovery error mapping to `src/mobile/purchases/entitlement.ts`; native purchase state machine and SDK remain in apps.",
+    "followup": {
+      "us_stocks": "Keep native RevenueCat/key/identity/receipt/transaction adapter. Bind `createEntitlementPolicy(appProfile)`; publish `customerInfoPatch(info)` in syncCustomerInfo, use `findLifetimePackage(packages, store)` in loadOfferings, and import shared `isStoreCancellation`/`appleRecoveryErrorCode`. Keep native purchase/recovery tests.",
+      "tw_stocks": "Keep native RevenueCat/key/identity/receipt/transaction adapter. Bind `createEntitlementPolicy(appProfile)`; publish `customerInfoPatch(info)` in syncCustomerInfo, use `findLifetimePackage(packages, store)` in loadOfferings, and import shared `isStoreCancellation`/`appleRecoveryErrorCode`. Keep native purchase/recovery tests.",
+      "options": "Keep native RevenueCat/key/identity/receipt/transaction adapter. Bind `createEntitlementPolicy(appProfile)`; publish `customerInfoPatch(info)` in syncCustomerInfo, use `findLifetimePackage(packages, store)` in loadOfferings, and import shared `isStoreCancellation`/`appleRecoveryErrorCode`. Keep native purchase/recovery tests."
+    }
+  }
+}
