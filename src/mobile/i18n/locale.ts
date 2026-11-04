@@ -1,4 +1,4 @@
-export const SUPPORTED_LOCALES = ['en', 'zh-Hant', 'zh-Hans', 'ja', 'ko', 'es'] as const;
+export const SUPPORTED_LOCALES = ['en', 'zh-Hant', 'zh-Hans', 'ja', 'ko', 'es', 'de', 'fr', 'pt-BR'] as const;
 export type Locale = (typeof SUPPORTED_LOCALES)[number];
 
 export const LOCALE_LABELS: Record<Locale, string> = {
@@ -8,6 +8,9 @@ export const LOCALE_LABELS: Record<Locale, string> = {
   ja: '日本語',
   ko: '한국어',
   es: 'Español',
+  de: 'Deutsch',
+  fr: 'Français',
+  'pt-BR': 'Português (Brasil)',
 };
 
 export interface DeviceLocale {
@@ -26,7 +29,7 @@ export function isLocale(value: unknown): value is Locale {
 export function resolveDeviceLocale(locales: readonly DeviceLocale[] | null | undefined): Locale {
   for (const locale of locales ?? []) {
     const parts = (locale.languageTag ?? '').replace(/_/g, '-').toLowerCase().split('-');
-    const language = (locale.languageCode ?? parts[0]).toLowerCase();
+    const language = (locale.languageCode ?? parts[0]).toLowerCase().split('-')[0];
     if (language === 'zh') {
       const script = (locale.languageScriptCode ?? locale.scriptCode ?? parts.find(p => p === 'hans' || p === 'hant') ?? '').toLowerCase();
       if (script === 'hant') return 'zh-Hant';
@@ -34,6 +37,7 @@ export function resolveDeviceLocale(locales: readonly DeviceLocale[] | null | un
       const region = (locale.regionCode ?? parts.find(p => ['tw', 'hk', 'mo', 'cn', 'sg'].includes(p)) ?? '').toLowerCase();
       return ['tw', 'hk', 'mo'].includes(region) ? 'zh-Hant' : 'zh-Hans';
     }
+    if (language === 'pt') return 'pt-BR';
     if (isLocale(language)) return language;
   }
   return 'en';

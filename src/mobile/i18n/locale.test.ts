@@ -5,7 +5,8 @@ describe('resolveDeviceLocale', () => {
     ['en-US', 'en'], ['en-GB', 'en'], ['zh-TW', 'zh-Hant'], ['zh-HK', 'zh-Hant'],
     ['zh-MO', 'zh-Hant'], ['zh-CN', 'zh-Hans'], ['zh-SG', 'zh-Hans'], ['zh', 'zh-Hans'],
     ['zh-Hans-TW', 'zh-Hans'], ['zh-Hant-CN', 'zh-Hant'], ['zh_Hant_HK', 'zh-Hant'],
-    ['ja-JP', 'ja'], ['ko-KR', 'ko'], ['es-MX', 'es'], ['es-ES', 'es'], ['fr-FR', 'en'],
+    ['ja-JP', 'ja'], ['ko-KR', 'ko'], ['es-MX', 'es'], ['es-ES', 'es'], ['de-DE', 'de'], ['de-CH', 'de'],
+    ['fr-FR', 'fr'], ['fr-CA', 'fr'], ['pt-BR', 'pt-BR'], ['pt-PT', 'pt-BR'], ['pt', 'pt-BR'],
   ])('%s resolves to %s', (languageTag, expected) => {
     expect(resolveDeviceLocale([{ languageTag }])).toBe(expected);
   });
@@ -14,7 +15,7 @@ describe('resolveDeviceLocale', () => {
     expect(resolveDeviceLocale([{ languageCode: 'zh', regionCode: 'TW' }])).toBe('zh-Hant');
   });
   it('walks unsupported preferences in device order', () => {
-    expect(resolveDeviceLocale([{ languageTag: 'fr' }, { languageTag: 'ko-KR' }, { languageTag: 'ja' }])).toBe('ko');
+    expect(resolveDeviceLocale([{ languageTag: 'it-IT' }, { languageTag: 'ko-KR' }, { languageTag: 'ja' }])).toBe('ko');
   });
   it.each([null, undefined, [], [{ languageTag: null }]])('defaults safely for %s', locales => {
     expect(resolveDeviceLocale(locales)).toBe('en');
