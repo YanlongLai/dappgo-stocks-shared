@@ -1,0 +1,160 @@
+{
+  "us_stocks": {
+    "app": "us_stocks",
+    "applicationId": "com.dappgo.usstocksapp",
+    "appleId": "6768116546",
+    "adUnits": {
+      "banner": {
+        "ios": "ca-app-pub-7851819017318644/1377623824",
+        "android": "ca-app-pub-7851819017318644/2722495081"
+      },
+      "app_open": {
+        "ios": "ca-app-pub-7851819017318644/4851434558",
+        "android": "ca-app-pub-7851819017318644/3512544569"
+      },
+      "interstitial": {
+        "ios": "ca-app-pub-7851819017318644/4491929212",
+        "android": "ca-app-pub-7851819017318644/3539697782"
+      },
+      "rewarded": {
+        "ios": "ca-app-pub-7851819017318644/6938719458",
+        "android": "ca-app-pub-7851819017318644/9269369324"
+      }
+    },
+    "appOpen": {
+      "minimumLaunches": 3,
+      "resumeCooldownMs": 14400000,
+      "maxReferenceAgeMs": 14400000,
+      "startupWindowMs": 1500,
+      "startupShowFailOpenMs": 30000
+    },
+    "adFreeProduct": {
+      "ios": "com.dappgo.usstocksapp.removeads.lifetime",
+      "android": "remove_ads_lifetime",
+      "entitlement": "ad_free",
+      "price": "$4.99"
+    },
+    "data": {
+      "githubOwner": "YanlongLai",
+      "githubRepo": "us-stocks-daily-report",
+      "market": "us",
+      "gatewayBaseUrl": ""
+    },
+    "cache": {
+      "dashboardTtlMs": 1800000
+    },
+    "report": {
+      "datePattern": "每日選擇權策略報告 — (\\d{4}-\\d{2}-\\d{2})",
+      "dateFlags": "",
+      "generatedAtPattern": "產生時間[：:]\\s*(\\d{4}-\\d{2}-\\d{2}\\s+\\d{2}:\\d{2})",
+      "generatedAtFlags": "",
+      "tickerPattern": "^## ([A-Z]{1,5})$"
+    },
+    "legacyDeepLinkScheme": "dappgooptionsapp"
+  },
+  "tw_stocks": {
+    "app": "tw_stocks",
+    "applicationId": "com.dappgo.twstocksapp",
+    "appleId": "6768116538",
+    "adUnits": {
+      "banner": {
+        "ios": "ca-app-pub-7851819017318644/6421352936",
+        "android": "ca-app-pub-7851819017318644/5108271264"
+      },
+      "app_open": {
+        "ios": "ca-app-pub-7851819017318644/1956668743",
+        "android": "ca-app-pub-7851819017318644/4057227632"
+      },
+      "interstitial": {
+        "ios": "ca-app-pub-7851819017318644/9913534442",
+        "android": "ca-app-pub-7851819017318644/6984118774"
+      },
+      "rewarded": {
+        "ios": "ca-app-pub-7851819017318644/5956061847",
+        "android": "ca-app-pub-7851819017318644/7928241186"
+      }
+    },
+    "appOpen": {
+      "minimumLaunches": 3,
+      "resumeCooldownMs": 14400000,
+      "maxReferenceAgeMs": 14400000,
+      "startupWindowMs": 1500,
+      "startupShowFailOpenMs": 30000
+    },
+    "adFreeProduct": {
+      "ios": "com.dappgo.twstocksapp.removeads.lifetime",
+      "android": "remove_ads_lifetime",
+      "entitlement": "ad_free",
+      "price": "$4.99"
+    },
+    "data": {
+      "githubOwner": "YanlongLai",
+      "githubRepo": "tw-stocks-daily-report",
+      "market": "tw",
+      "gatewayBaseUrl": ""
+    },
+    "cache": {
+      "dashboardTtlMs": 1800000
+    },
+    "report": {
+      "datePattern": "每日選擇權策略報告 — (\\d{4}-\\d{2}-\\d{2})",
+      "dateFlags": "",
+      "generatedAtPattern": "產生時間[：:]\\s*(\\d{4}-\\d{2}-\\d{2}\\s+\\d{2}:\\d{2})",
+      "generatedAtFlags": "",
+      "tickerPattern": "^## ([A-Z0-9]{1,6})$"
+    },
+    "legacyDeepLinkScheme": "dappgooptionsapp"
+  },
+  "options": {
+    "app": "options",
+    "applicationId": "com.dappgo.optionsapp",
+    "appleId": "6768116720",
+    "adUnits": {
+      "banner": {
+        "ios": "ca-app-pub-7851819017318644/2690705492",
+        "android": "ca-app-pub-7851819017318644/9047516271"
+      },
+      "app_open": {
+        "ios": "ca-app-pub-7851819017318644/8790679565",
+        "android": "ca-app-pub-7851819017318644/8358425566"
+      },
+      "interstitial": {
+        "ios": "ca-app-pub-7851819017318644/8263653263",
+        "android": "ca-app-pub-7851819017318644/5637489921"
+      },
+      "rewarded": {
+        "ios": "ca-app-pub-7851819017318644/1582450992",
+        "android": "ca-app-pub-7851819017318644/5169593787"
+      }
+    },
+    "appOpen": {
+      "minimumLaunches": 3,
+      "resumeCooldownMs": 300000,
+      "maxReferenceAgeMs": 14400000
+    },
+    "adFreeProduct": {
+      "ios": "com.dappgo.optionsapp.removeads.lifetime",
+      "android": "remove_ads_lifetime",
+      "entitlement": "ad_free",
+      "price": "$4.99"
+    },
+    "data": {
+      "githubOwner": "YanlongLai",
+      "githubRepo": "options-daily-report",
+      "market": "options",
+      "gatewayBaseUrl": ""
+    },
+    "cache": {
+      "dashboardTtlMs": 1800000,
+      "usStocksMarketCapsKey": "us-stocks-market-caps"
+    },
+    "report": {
+      "datePattern": "\\b(\\d{4}-\\d{2}-\\d{2})\\b",
+      "dateFlags": "",
+      "generatedAtPattern": "(?:產生時間|Generated(?: at| time)?)[：:]?\\s*(\\d{4}-\\d{2}-\\d{2}\\s+\\d{2}:\\d{2})",
+      "generatedAtFlags": "i",
+      "tickerPattern": "^## ([A-Z]{1,5})$"
+    },
+    "legacyDeepLinkScheme": "dappgooptionsapp"
+  }
+}

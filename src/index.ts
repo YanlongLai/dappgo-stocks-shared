@@ -1,14 +1,14 @@
 /**
  * DappGo Stocks — Shared Utilities
  *
- * Pure-TypeScript helpers consumed by both `dappgo-tw-stocks-app` and
- * `dappgo-us-stocks-app`. No React, no React Native, no theme imports —
+ * Pure-TypeScript helpers consumed by the TW Stocks, US Stocks and Options
+ * apps. No React, no React Native, no theme imports —
  * keeps these test-runnable in plain Node and reusable from any future
  * web dashboard / CLI / server.
  *
  * To extend: add the new file to `src/`, export it here, ship a test
- * alongside. Then `npm install ../dappgo-stocks-shared` in each app and
- * import via `dappgo-stocks-shared`.
+ * alongside. Mobile modules use explicit `mobile/<area>/<name>` subpaths;
+ * apps pin a full commit SHA tarball as described in README.md.
  */
 
 export {

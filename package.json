@@ -1,7 +1,7 @@
 {
   "name": "dappgo-stocks-shared",
-  "version": "0.3.0",
-  "description": "Shared pure-TypeScript utilities for the DappGo Stocks family (TW + US apps).",
+  "version": "0.4.0",
+  "description": "Shared pure-TypeScript utilities and mobile logic for the DappGo app family.",
   "main": "src/index.ts",
   "types": "src/index.ts",
   "scripts": {
@@ -20,7 +20,9 @@
     "./sector-aggregate": "./src/sector-aggregate.ts",
     "./ticker-aggregate": "./src/ticker-aggregate.ts",
     "./ads/*": "./src/ads/*.ts",
-    "./src/ads/*": "./src/ads/*.ts"
+    "./src/ads/*": "./src/ads/*.ts",
+    "./mobile/*": "./src/mobile/*.ts",
+    "./src/mobile/*": "./src/mobile/*.ts"
   },
   "devDependencies": {
     "@types/jest": "^29.5.0",
@@ -33,7 +35,9 @@
     "testEnvironment": "node",
     "testMatch": [
       "<rootDir>/src/**/*.test.ts"
-    ]
+    ],
+    "cacheDirectory": "<rootDir>/node_modules/.cache/jest",
+    "maxWorkers": 2
   },
   "private": true,
   "license": "Proprietary"
