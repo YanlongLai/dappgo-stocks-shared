@@ -22,6 +22,11 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Versioning: [S
 ### Fixed
 - 
 
+## [0.4.2] - 2026-11-04
+
+### Changed
+- Allow foreground iOS ad requests after ATT denial or unavailability, using non-personalized ads unless personalization is authorized.
+
 ## [0.1.0] - 2026-05-05
 
 Initial documented release. Backfilled from git history.
