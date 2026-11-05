@@ -7,13 +7,18 @@ export type TrackingAdConsent = AdConsentSnapshot & Readonly<{
   trackingStatus?: TrackingAuthorization;
 }>;
 
-/** Adapter supplies Platform.OS and AppState; permission APIs stay in the app. */
+/**
+ * UMP consent is required on every platform. On iOS, foreground requests wait
+ * only while ATT is pending; granted, denied (including restricted), and
+ * unavailable/error states may request ads.
+ */
 export function canUseAdRequest(consent: TrackingAdConsent, platform: string, foreground: boolean): boolean {
   return consent.canRequestAds && (platform !== 'ios' || (
-    foreground && consent.trackingStatus === 'granted' && consent.trackingAuthorized === true
+    foreground && (consent.trackingStatus ?? 'pending') !== 'pending'
   ));
 }
 
+/** iOS uses non-personalized ads unless ATT and ad-personalization consent are both granted. */
 export function adRequestOptions(consent: TrackingAdConsent, platform: string) {
   return platform === 'ios'
     ? { requestNonPersonalizedAdsOnly: consent.trackingAuthorized !== true || consent.adPersonalization !== true }
