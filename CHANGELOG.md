@@ -11,6 +11,10 @@ All notable changes to this project will be documented in this file.
 
 Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Versioning: [SemVer](https://semver.org/).
 
+## 0.4.3
+
+- AI summary reveal: `aiSummaryRevealOffersAd()` tells the reveal control when the next slide offers a rewarded ad, and `SummaryRewardOffer.optedIn` marks a slide that was labelled as watching an ad so the native layer skips the second prompt.
+
 ## [Unreleased]
 
 ### Added

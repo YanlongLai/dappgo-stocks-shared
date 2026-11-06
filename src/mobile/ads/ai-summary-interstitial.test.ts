@@ -71,3 +71,19 @@ test('web fallback never requests a native reward', async () => {
   expect(controller.canOffer()).toBe(false); expect(await controller.offer(offer)).toBe('unavailable');
   register(controller); notify(); expect(await request(offer)).toBe(true);
 });
+
+test('aiSummaryRevealOffersAd reports when the next slide will offer a reward', async () => {
+  const { aiSummaryRevealOffersAd } = require('./ai-summary-interstitial');
+  expect(aiSummaryRevealOffersAd()).toBe(false);
+  const controller = makeController(); register(controller);
+  expect(aiSummaryRevealOffersAd()).toBe(false);
+  expect(await request(offer)).toBe(true); notify();
+  expect(aiSummaryRevealOffersAd()).toBe(true);
+  jest.mocked(controller.canOffer).mockReturnValueOnce(false);
+  expect(aiSummaryRevealOffersAd()).toBe(false);
+  expect(await request({ ...offer, optedIn: true })).toBe(true);
+  expect(controller.offer).toHaveBeenCalledWith(expect.objectContaining({ optedIn: true }));
+  expect(aiSummaryRevealOffersAd()).toBe(false);
+  notify();
+  expect(aiSummaryRevealOffersAd()).toBe(false);
+});

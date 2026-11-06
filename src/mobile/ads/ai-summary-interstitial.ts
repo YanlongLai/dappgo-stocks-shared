@@ -29,6 +29,15 @@ export function requestAiSummaryReveal(input: SummaryRewardOffer): boolean | Pro
   return result;
 }
 
+/**
+ * Whether the next reveal will offer a rewarded ad right now, so the reveal
+ * control can say so up front and count the slide itself as the opt-in.
+ */
+export function aiSummaryRevealOffersAd(): boolean {
+  if (pending || !nextRevealOffersAd || earnedCredit || !controller) return false;
+  try { return controller.canOffer(); } catch { return false; }
+}
+
 /** Call only when the intended summary actually opens, never on rotation. */
 export function notifyAiSummaryRevealed(): void {
   nextRevealOffersAd = !nextRevealOffersAd;
