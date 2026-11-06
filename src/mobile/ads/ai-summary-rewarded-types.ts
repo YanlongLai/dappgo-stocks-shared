@@ -6,6 +6,8 @@ export interface SummaryRewardOffer {
   watch: string;
   cancel: string;
   isCurrent: () => boolean;
+  /** The user chose to watch the ad on the reveal control itself (slide labelled "watch an ad"); skip the extra prompt. */
+  optedIn?: boolean;
 }
 
 export interface SummaryRewardController {
