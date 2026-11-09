@@ -39,7 +39,7 @@ import { verdictLabel, computeMA } from 'dappgo-stocks-shared';
 | `ads` | Fullscreen admission/controllers, consent/request policy, measurement, route and banner policy, app-access admission, analytics consent with injected storage |
 | `i18n` | Translation lookup, device locale resolution, catalog validation, Intl helpers requiring an explicit locale, engine-prose conversion selection |
 | `updates` | Version comparison/policy, version gate controller, access admission, profile-bound store targets |
-| `purchases` | Profile-bound product/entitlement lookup, entitlement state, recovery error policy, bounded reconciliation, store-operation admission |
+| `purchases` | Profile-bound product/entitlement lookup, entitlement state, recovery error policy, regular-price reference lookup, price presentation, post-interstitial card frequency rule, ad-free funnel event names, bounded reconciliation, store-operation admission |
 | `data` | CDN → optional gateway → GitHub Raw, pointer/hash parsing, injected-fetch timeouts, in-memory cache, portable data helpers |
 | `startup` | Startup entitlement/privacy/access decision; the existing startup fullscreen controller remains under `ads` |
 | `utils` | Duplicated portable layout, navigation, search, indicator, coverage and presentation helpers |

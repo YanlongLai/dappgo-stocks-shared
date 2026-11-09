@@ -31,3 +31,34 @@ test('unknown errors do not become cancellations and recovery stages keep their 
   expect(appleRecoveryErrorCode(null, true)).toBe('restore-failed');
   expect(appleRecoveryErrorCode({ code: 'network' }, true)).toBe('network');
 });
+
+describe('regular-price package lookup', () => {
+  const profile = APP_PROFILES[0];
+  const policy = createEntitlementPolicy(profile);
+  const promo = (store: 'ios' | 'android', extra = {}) => ({ identifier: '$rc_lifetime', packageType: 'LIFETIME', product: { identifier: profile.adFreeProduct[store], priceString: '$4.99', price: 4.99 }, ...extra });
+  const regular = (store: 'ios' | 'android') => ({ identifier: 'lifetime_regular', packageType: 'CUSTOM', product: { identifier: profile.adFreeProduct.regular[store], priceString: '$9.99', price: 9.99 } });
+
+  test.each(['ios', 'android'] as const)('profile carries distinct %s regular product ids', store => {
+    expect(profile.adFreeProduct.regular[store]).not.toBe(profile.adFreeProduct[store]);
+    expect(profile.adFreeProduct.regular[store]).toContain(store === 'ios' ? '.removeads.lifetime.regular' : 'remove_ads_lifetime_regular');
+  });
+  test.each(['ios', 'android'] as const)('%s: promo is sold, regular is only the reference', store => {
+    const list = [regular(store), promo(store)];
+    expect(policy.findLifetimePackage(list, store)).toBe(list[1]);
+    expect(policy.findRegularPackage(list, store)).toBe(list[0]);
+  });
+  test('after the promotion the lifetime slot holds the regular product and is the one sold', () => {
+    const slot = { identifier: '$rc_lifetime', packageType: 'LIFETIME', product: { identifier: profile.adFreeProduct.regular.ios, priceString: '$9.99', price: 9.99 } };
+    const list = [regular('ios'), slot];
+    expect(policy.findLifetimePackage(list, 'ios')).toBe(slot);
+  });
+  test('the reference package is never sold on its own', () => {
+    expect(policy.findLifetimePackage([regular('ios')], 'ios')).toBeNull();
+  });
+  test('missing regular package, null store or null list yield null', () => {
+    expect(policy.findRegularPackage([promo('ios')], 'ios')).toBeNull();
+    expect(policy.findRegularPackage([regular('ios')], null)).toBeNull();
+    expect(policy.findRegularPackage(null, 'ios')).toBeNull();
+    expect(policy.findLifetimePackage([promo('ios')], null)).toBeNull();
+  });
+});

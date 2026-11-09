@@ -25,7 +25,8 @@ export interface AppProfile {
     ios: string;
     android: string;
     entitlement: 'ad_free';
-    price: '$4.99';
+    /** Regular-price lifetime product: reference price only, never sold unless the offering exposes it as its lifetime package. */
+    regular: PlatformIds;
   }>;
   readonly data: Readonly<{
     githubOwner: string;
