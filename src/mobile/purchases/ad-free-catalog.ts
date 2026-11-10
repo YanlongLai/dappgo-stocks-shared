@@ -6,7 +6,7 @@ export type AdFreeProductConfig = AppProfile['adFreeProduct'];
 
 /** Native purchases/RevenueCat and their customer identity stay in each app. */
 export function createAdFreeCatalog(profile: AppProfile) {
-  const AD_FREE_PRODUCT: AdFreeProductConfig = Object.freeze({ ...profile.adFreeProduct });
+  const AD_FREE_PRODUCT: AdFreeProductConfig = Object.freeze({ ...profile.adFreeProduct, regular: Object.freeze({ ...profile.adFreeProduct.regular }) });
   return {
     AD_FREE_PRODUCT,
     productIdFor(store: AdFreeStore): string { return AD_FREE_PRODUCT[store]; },

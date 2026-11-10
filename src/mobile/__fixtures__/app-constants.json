@@ -32,7 +32,10 @@
       "ios": "com.dappgo.usstocksapp.removeads.lifetime",
       "android": "remove_ads_lifetime",
       "entitlement": "ad_free",
-      "price": "$4.99"
+      "regular": {
+        "ios": "com.dappgo.usstocksapp.removeads.lifetime.regular",
+        "android": "remove_ads_lifetime_regular"
+      }
     },
     "data": {
       "githubOwner": "YanlongLai",
@@ -85,7 +88,10 @@
       "ios": "com.dappgo.twstocksapp.removeads.lifetime",
       "android": "remove_ads_lifetime",
       "entitlement": "ad_free",
-      "price": "$4.99"
+      "regular": {
+        "ios": "com.dappgo.twstocksapp.removeads.lifetime.regular",
+        "android": "remove_ads_lifetime_regular"
+      }
     },
     "data": {
       "githubOwner": "YanlongLai",
@@ -136,7 +142,10 @@
       "ios": "com.dappgo.optionsapp.removeads.lifetime",
       "android": "remove_ads_lifetime",
       "entitlement": "ad_free",
-      "price": "$4.99"
+      "regular": {
+        "ios": "com.dappgo.optionsapp.removeads.lifetime.regular",
+        "android": "remove_ads_lifetime_regular"
+      }
     },
     "data": {
       "githubOwner": "YanlongLai",

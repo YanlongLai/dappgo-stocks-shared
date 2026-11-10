@@ -7,7 +7,14 @@ import type { AdFreeSnapshot } from './ad-free-state';
  * receipt sync and observer ownership remain in each app's ad-free.ts.
  */
 export type CustomerInfo = { entitlements?: { active?: Record<string, unknown> } };
-export type PurchasesPackage = { identifier: string; product?: { identifier?: string; priceString?: string } };
+export type PurchasesPackage = {
+  identifier: string;
+  packageType?: string;
+  product?: { identifier?: string; priceString?: string; price?: number };
+};
+
+/** RevenueCat package identifier of the custom package that carries the regular-price product. */
+export const REGULAR_PACKAGE_IDENTIFIER = 'lifetime_regular';
 
 export function createEntitlementPolicy(profile: AppProfile) {
   return {
@@ -17,9 +24,27 @@ export function createEntitlementPolicy(profile: AppProfile) {
         purchaseStatus: 'idle', errorCode: null,
       };
     },
+    /**
+     * The package being sold: whichever of the promotional or regular lifetime
+     * product the current offering exposes as its lifetime package. The
+     * `lifetime_regular` reference package is never the one sold.
+     */
     findLifetimePackage<T extends PurchasesPackage>(packages: readonly T[] | null | undefined, store: StorePlatform | null): T | null {
-      const productId = store ? profile.adFreeProduct[store] : '';
-      return packages?.find(item => item.product?.identifier === productId) ?? null;
+      if (!store || !packages) return null;
+      const promoId = profile.adFreeProduct[store];
+      const regularId = profile.adFreeProduct.regular[store];
+      const candidates = packages.filter(item => item.identifier !== REGULAR_PACKAGE_IDENTIFIER
+        && (item.product?.identifier === promoId || item.product?.identifier === regularId));
+      if (candidates.length === 0) return null;
+      const isSlot = (item: T) => item.packageType === 'LIFETIME' || item.identifier === '$rc_lifetime';
+      return candidates.find(isSlot) ?? candidates.find(item => item.product?.identifier === promoId) ?? candidates[0];
+    },
+    /** The regular-price package, used only as the reference price. Null when the store does not offer it. */
+    findRegularPackage<T extends PurchasesPackage>(packages: readonly T[] | null | undefined, store: StorePlatform | null): T | null {
+      if (!store || !packages) return null;
+      const regularId = profile.adFreeProduct.regular[store];
+      const matches = packages.filter(item => item.product?.identifier === regularId);
+      return matches.find(item => item.identifier === REGULAR_PACKAGE_IDENTIFIER) ?? matches[0] ?? null;
     },
   };
 }

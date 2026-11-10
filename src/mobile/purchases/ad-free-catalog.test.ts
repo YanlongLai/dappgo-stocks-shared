@@ -7,6 +7,6 @@ test.each(APP_PROFILES)('$app reproduces its isolated product catalog', (profile
   expect(productIdFor('ios')).toBe(`${profile.applicationId}.removeads.lifetime`);
   expect(productIdFor('android')).toBe('remove_ads_lifetime');
   expect(AD_FREE_PRODUCT.entitlement).toBe('ad_free');
-  expect(AD_FREE_PRODUCT.price).toBe('$4.99');
+  expect(AD_FREE_PRODUCT.regular).toEqual(profile.adFreeProduct.regular);
   expect(Object.isFrozen(AD_FREE_PRODUCT)).toBe(true);
 });
