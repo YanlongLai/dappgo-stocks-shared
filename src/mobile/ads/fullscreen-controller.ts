@@ -2,6 +2,12 @@ import { FullscreenAdmission, type AdmissionToken, type FullscreenFormat, type F
 import type { AdLifecycle } from './telemetry';
 import { startStartupAppOpenController } from './startup-app-open-controller';
 
+const INITIAL_RETRY_MS = 30_000;
+const MAX_RETRY_MS = 10 * 60 * 1000;
+const MAX_CONSECUTIVE_FAILURES = 5;
+const INTERSTITIAL_PRELOAD_MS = 4 * 60 * 1000;
+const INTERSTITIAL_ELIGIBLE_MS = 5 * 60 * 1000;
+
 export type FullscreenAdEvent = 'loaded' | 'opened' | 'closed' | 'error' | 'clicked' | 'paid';
 export type FullscreenAd = {
   load(): void;
@@ -57,6 +63,10 @@ export function startFullscreenController(deps: FullscreenDependencies): Fullscr
   let startupTimer: ReturnType<typeof setTimeout> | null = null;
   let failOpenTimer: ReturnType<typeof setTimeout> | null = null;
   let retryTimer: ReturnType<typeof setTimeout> | null = null;
+  let failures = 0;
+  let lastFailureAt = 0;
+  let nextLoadAllowedAt = 0;
+  let inventoryRequested = deps.format !== 'rewarded';
   let current: { ad: FullscreenAd; loadedAt: number | null; invalidated: boolean; remove: () => void; report: ReturnType<FullscreenDependencies['reporter']> } | null = null;
   let token: AdmissionToken | null = null;
   let activeStartedAt: number | null = deps.foreground() ? deps.now() : null;
@@ -81,15 +91,22 @@ export function startFullscreenController(deps: FullscreenDependencies): Fullscr
     if (owned) deps.admission.release(owned);
     if (token === owned) token = null;
   };
+  const cancelRetry = () => {
+    if (retryTimer) clearTimeout(retryTimer);
+    retryTimer = null;
+  };
+  const activeTime = () => activeMs + (activeStartedAt === null ? 0 : Math.max(0, deps.now() - activeStartedAt));
   const retry = () => {
-    if (stopped || retryTimer || !deps.consent().canRequestAds) return;
-    retryTimer = setTimeout(() => { retryTimer = null; load(); }, 30_000);
+    failures++;
+    lastFailureAt = deps.now();
+    nextLoadAllowedAt = lastFailureAt + Math.min(INITIAL_RETRY_MS * 2 ** (failures - 1), MAX_RETRY_MS);
+    if (failures < MAX_CONSECUTIVE_FAILURES) load();
   };
   const eligible = (trigger: FullscreenTrigger = 'automatic') => {
     if (deps.format === 'rewarded') return trigger === 'rewarded_opt_in';
     if (deps.format === 'app_open') return launchCount >= 3;
-    const active = activeMs + (activeStartedAt === null ? 0 : Math.max(0, deps.now() - activeStartedAt));
-    return Number.isFinite(active) && active >= 5 * 60 * 1000;
+    const active = activeTime();
+    return Number.isFinite(active) && active >= INTERSTITIAL_ELIGIBLE_MS;
   };
 
   const show = async (startup = false, trigger: FullscreenTrigger = 'automatic'): Promise<boolean> => {
@@ -132,9 +149,22 @@ export function startFullscreenController(deps: FullscreenDependencies): Fullscr
     }
   };
 
-  const load = () => {
-    if (stopped || !prepared || !sdkReady || !deps.consent().canRequestAds || current || retryTimer ||
+  const load = (source: 'automatic' | 'refresh' | 'resume' = 'automatic') => {
+    if (stopped || !prepared || !sdkReady || !deps.consent().canRequestAds || !deps.foreground() ||
+        !inventoryRequested || current ||
         (deps.format === 'app_open' && launchCount < 3)) return;
+    // Only explicit demand or a real resume may reopen exhausted inventory.
+    if (failures >= MAX_CONSECUTIVE_FAILURES && source !== 'resume' &&
+        !(source === 'refresh' && deps.now() - lastFailureAt >= MAX_RETRY_MS)) return;
+    const delay = Math.max(0, nextLoadAllowedAt - deps.now(),
+      deps.format === 'interstitial' ? INTERSTITIAL_PRELOAD_MS - activeTime() : 0);
+    if (!Number.isFinite(delay)) return;
+    if (delay > 0) {
+      // One timer covers backoff and the remaining foreground preload time.
+      if (!retryTimer) retryTimer = setTimeout(() => { retryTimer = null; load(source); }, delay);
+      return;
+    }
+    cancelRetry();
     const report = deps.reporter(false);
     report('request');
     try {
@@ -151,7 +181,11 @@ export function startFullscreenController(deps: FullscreenDependencies): Fullscr
           release(owned);
           clear();
           settleStartup();
-          if (event === 'error') retry(); else load();
+          if (event === 'error') retry();
+          else {
+            if (deps.format === 'rewarded') inventoryRequested = false;
+            load();
+          }
           return;
         }
         if (event === 'opened' && token) {
@@ -160,6 +194,8 @@ export function startFullscreenController(deps: FullscreenDependencies): Fullscr
         }
         if (stopped || entry.invalidated || !deps.consent().canRequestAds) return;
         if (event === 'loaded') {
+          failures = 0;
+          nextLoadAllowedAt = 0;
           entry.loadedAt = deps.now();
           entry.report('loaded');
           if (deps.format === 'app_open' && startupOpen) void show(true);
@@ -177,12 +213,16 @@ export function startFullscreenController(deps: FullscreenDependencies): Fullscr
   };
 
   const removeForeground = deps.subscribeForeground((active) => {
-    if (!active && activeStartedAt !== null) {
-      activeMs += Math.max(0, deps.now() - activeStartedAt);
-      activeStartedAt = null;
+    if (!active) {
+      cancelRetry();
+      if (activeStartedAt !== null) {
+        activeMs += Math.max(0, deps.now() - activeStartedAt);
+        activeStartedAt = null;
+      }
     } else if (active && activeStartedAt === null) {
       activeStartedAt = deps.now();
       if (deps.format === 'app_open') void show();
+      load('resume');
     }
   });
   const initialize = async () => {
@@ -212,8 +252,9 @@ export function startFullscreenController(deps: FullscreenDependencies): Fullscr
     if (nextKey === consentKey) return;
     consentKey = nextKey;
     consentGeneration++;
-    if (retryTimer) clearTimeout(retryTimer);
-    retryTimer = null;
+    cancelRetry();
+    failures = 0;
+    if (deps.format === 'rewarded') inventoryRequested = false;
     // Purpose changes invalidate requests made under the previous consent.
     if (!token) clear();
     else if (current) current.invalidated = true;
@@ -258,7 +299,8 @@ export function startFullscreenController(deps: FullscreenDependencies): Fullscr
         const age = deps.now() - current.loadedAt;
         if (!Number.isFinite(age) || age < 0 || age >= (deps.format === 'app_open' ? 4 : 1) * 60 * 60 * 1000) clear();
       }
-      load();
+      inventoryRequested = true;
+      load('refresh');
     },
     showIfEligible: (trigger) => show(false, trigger),
     stop: () => {
@@ -266,8 +308,7 @@ export function startFullscreenController(deps: FullscreenDependencies): Fullscr
       settleStartup();
       removeConsent();
       removeForeground();
-      if (retryTimer) clearTimeout(retryTimer);
-      retryTimer = null;
+      cancelRetry();
       // Native show cannot be cancelled. Keep its lock through close/error.
       if (!token) clear();
     },
