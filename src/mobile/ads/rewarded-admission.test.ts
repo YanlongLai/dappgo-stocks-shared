@@ -26,13 +26,15 @@ test('only reward inventory with explicit opt-in bypasses timing while sharing t
   const admission = new FullscreenAdmission(); admission.hydrate([now - 10]);
   const summary = harness(admission); const appOpen = harness(admission, 'app_open');
   const regular = harness(admission, 'interstitial'); await flush();
+  summary.controller.refreshInventory();
+  regular.advance(4 * 60 * 1000); regular.controller.refreshInventory();
   [summary, appOpen, regular].forEach(item => item.ads[0].emit('loaded'));
   expect(await summary.controller.showIfEligible()).toBe(false);
   expect(await appOpen.controller.showIfEligible('rewarded_opt_in')).toBe(false);
   expect(await regular.controller.showIfEligible('rewarded_opt_in')).toBe(false);
   expect(summary.controller.isReadyToShow('rewarded_opt_in')).toBe(true);
   expect(await summary.controller.showIfEligible('rewarded_opt_in')).toBe(true);
-  const other = harness(admission); await flush(); other.ads[0].emit('loaded');
+  const other = harness(admission); await flush(); other.controller.refreshInventory(); other.ads[0].emit('loaded');
   expect(other.controller.isReadyToShow('rewarded_opt_in')).toBe(false);
   expect(await other.controller.showIfEligible('rewarded_opt_in')).toBe(false);
   summary.ads[0].emit('opened'); summary.ads[0].emit('closed');
@@ -61,7 +63,7 @@ test('opt-in cannot bypass hydration, rollback, foreground, consent, boundary or
 
 test('expired inventory refreshes without auto-show or a deferred popup', async () => {
   const admission = new FullscreenAdmission(); admission.hydrate([]);
-  const summary = harness(admission); await flush(); summary.ads[0].emit('loaded');
+  const summary = harness(admission); await flush(); summary.controller.refreshInventory(); summary.ads[0].emit('loaded');
   summary.advance(60 * 60 * 1000); expect(summary.controller.isReadyToShow('rewarded_opt_in')).toBe(false);
   summary.controller.refreshInventory(); expect(summary.ads).toHaveLength(2); summary.ads[1].emit('loaded');
   expect(summary.ads.every(ad => ad.show.mock.calls.length === 0)).toBe(true);
