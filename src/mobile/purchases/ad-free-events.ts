@@ -1,4 +1,4 @@
-export const AD_FREE_SOURCES = ['settings', 'banner', 'ai_summary', 'interstitial'] as const;
+export const AD_FREE_SOURCES = ['settings', 'banner', 'ai_summary', 'interstitial', 'auto'] as const;
 export type AdFreeSource = typeof AD_FREE_SOURCES[number];
 export type AdFreeRestoreResult = 'restored' | 'none' | 'failed';
 

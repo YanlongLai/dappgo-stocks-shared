@@ -3,7 +3,7 @@ import { AD_FREE_EVENT_NAMES, AD_FREE_SOURCES, adFreeEvent, isAdFreeSource } fro
 test('event names and sources match the approved list', () => {
   expect([...AD_FREE_EVENT_NAMES]).toEqual(['adfree_sheet_view', 'adfree_purchase_start', 'adfree_purchase_success', 'adfree_purchase_cancel',
     'adfree_purchase_fail', 'adfree_restore_result', 'adfree_entry_tap', 'adfree_nudge_view', 'adfree_nudge_dismiss']);
-  expect([...AD_FREE_SOURCES]).toEqual(['settings', 'banner', 'ai_summary', 'interstitial']);
+  expect([...AD_FREE_SOURCES]).toEqual(['settings', 'banner', 'ai_summary', 'interstitial', 'auto']);
 });
 test('builds payloads with the right params', () => {
   expect(adFreeEvent('adfree_sheet_view', { source: 'banner' })).toEqual({ name: 'adfree_sheet_view', params: { source: 'banner' } });
