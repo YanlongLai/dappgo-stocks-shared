@@ -5,8 +5,24 @@ export type AdFreeNudgeState = Readonly<{
   /** Epoch ms of the last time the card was shown; null if never. */
   lastShownAt: number | null;
   dismissCount: number;
+  /** Epoch ms of the one-time full paywall after the first full-screen ad; null if never. */
+  introShownAt: number | null;
 }>;
-export const INITIAL_AD_FREE_NUDGE_STATE: AdFreeNudgeState = Object.freeze({ lastShownAt: null, dismissCount: 0 });
+export const INITIAL_AD_FREE_NUDGE_STATE: AdFreeNudgeState = Object.freeze({ lastShownAt: null, dismissCount: 0, introShownAt: null });
+
+/**
+ * One-time intro rule: the first time a full-screen ad (app-open or
+ * interstitial) closes, open the full remove-ads sheet once per install.
+ * Before this, only users who tapped a remove-ads entry ever saw the paywall
+ * (RevenueCat paywall reach was 2-6% of new users in 2026-11).
+ */
+export function shouldOpenAdFreeIntro(input: { entitled: boolean; state: AdFreeNudgeState }): boolean {
+  return !input.entitled && input.state.introShownAt === null;
+}
+
+export function recordAdFreeIntroShown(state: AdFreeNudgeState, now: number): AdFreeNudgeState {
+  return { ...state, introShownAt: now };
+}
 
 /**
  * Post-interstitial card rule: at most once per 7 days, never again after
@@ -36,6 +52,7 @@ export function parseAdFreeNudgeState(raw: string | null | undefined): AdFreeNud
     const value = JSON.parse(raw) as Partial<Record<keyof AdFreeNudgeState, unknown>>;
     const lastShownAt = typeof value.lastShownAt === 'number' && Number.isFinite(value.lastShownAt) ? value.lastShownAt : null;
     const dismissCount = typeof value.dismissCount === 'number' && Number.isInteger(value.dismissCount) && value.dismissCount >= 0 ? value.dismissCount : 0;
-    return { lastShownAt, dismissCount };
+    const introShownAt = typeof value.introShownAt === 'number' && Number.isFinite(value.introShownAt) ? value.introShownAt : null;
+    return { lastShownAt, dismissCount, introShownAt };
   } catch { return INITIAL_AD_FREE_NUDGE_STATE; }
 }

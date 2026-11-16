@@ -18,6 +18,8 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Versioning: [S
 ## [Unreleased]
 
 ### Added
+
+- Remove-ads intro: `shouldOpenAdFreeIntro()` / `recordAdFreeIntroShown()` open the full remove-ads sheet once per install after the first full-screen ad closes; persisted nudge state gains `introShownAt` (older state parses with `null`). New analytics source `auto`.
 - 
 
 ### Changed
