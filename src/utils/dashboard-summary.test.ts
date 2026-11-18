@@ -62,7 +62,7 @@ describe('all buys', () => {
 
   it('zh-TW headline contains buys count', () => {
     const s = buildDashboardSummary(tickers);
-    expect(s.oneLineHeadline).toBe('今日 5 檔買進 / 0 檔賣出');
+    expect(s.oneLineHeadline).toBe('今日 5 檔偏多訊號 / 0 檔偏空訊號');
   });
 });
 
@@ -85,7 +85,7 @@ describe('all sells', () => {
 
   it('en-US headline format', () => {
     const s = buildDashboardSummary(tickers, 'en-US');
-    expect(s.oneLineHeadline).toBe('Today 0 Buy / 3 Sell');
+    expect(s.oneLineHeadline).toBe('Today 0 bullish / 3 bearish signals');
   });
 });
 

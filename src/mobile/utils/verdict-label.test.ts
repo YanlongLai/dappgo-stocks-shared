@@ -2,11 +2,11 @@ import { verdictLabel } from './verdict-label';
 
 describe('verdictLabel', () => {
   it('maps stock-level English codes to 繁中 labels', () => {
-    expect(verdictLabel('BUY')).toBe('買進');
-    expect(verdictLabel('HOLD')).toBe('持有');
-    expect(verdictLabel('WATCH')).toBe('觀望');
-    expect(verdictLabel('AVOID')).toBe('避開');
-    expect(verdictLabel('SELL')).toBe('賣出');
+    expect(verdictLabel('BUY')).toBe('偏多訊號');
+    expect(verdictLabel('HOLD')).toBe('溫和偏多');
+    expect(verdictLabel('WATCH')).toBe('中性');
+    expect(verdictLabel('AVOID')).toBe('溫和偏空');
+    expect(verdictLabel('SELL')).toBe('偏空訊號');
   });
 
   it('maps sector-level English codes to 繁中 labels', () => {

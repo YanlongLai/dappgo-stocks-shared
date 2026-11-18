@@ -171,7 +171,7 @@ describe('aggregatePortfolio — en-US locale', () => {
   it('produces English one-line summary', () => {
     const items = [buyItem('AAPL', 1), sellItem('TSLA', -2), holdItem('MSFT')];
     const { oneLineSummary } = aggregatePortfolio(items, 'en-US');
-    expect(oneLineSummary).toBe('1 Buy / 1 Sell across 3 stocks');
+    expect(oneLineSummary).toBe('1 bullish / 1 bearish signals across 3 stocks');
   });
 });
 

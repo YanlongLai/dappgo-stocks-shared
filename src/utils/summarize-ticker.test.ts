@@ -43,11 +43,11 @@ test('zh-TW full fields produces correct pieces', () => {
   const result = summarizeTicker(input, 'zh-TW');
 
   expect(result.oneLine).toContain('Apple (AAPL)');
-  expect(result.oneLine).toContain('買進');
+  expect(result.oneLine).toContain('偏多訊號');
   expect(result.oneLine).toContain('+2.3%');
   expect(result.oneLine.length).toBeLessThanOrEqual(80);
 
-  expect(result.twoLine).toContain('Apple (AAPL) — 買進');
+  expect(result.twoLine).toContain('Apple (AAPL) — 偏多訊號');
   expect(result.twoLine).toContain('上漲 +2.3%');
   expect(result.twoLine).toContain('趨勢向上');
 
@@ -80,11 +80,11 @@ test('en-US full fields uses English labels', () => {
   const result = summarizeTicker(input, 'en-US');
 
   expect(result.oneLine).toContain('Tesla (TSLA)');
-  expect(result.oneLine).toContain('SELL');
+  expect(result.oneLine).toContain('Bearish signal');
   expect(result.oneLine).toContain('-1.5%');
   expect(result.oneLine.length).toBeLessThanOrEqual(80);
 
-  expect(result.twoLine).toContain('Tesla (TSLA) — SELL');
+  expect(result.twoLine).toContain('Tesla (TSLA) — Bearish signal');
   expect(result.twoLine).toContain('Down -1.5%');
   expect(result.twoLine).toContain('Downtrend');
 
@@ -123,7 +123,7 @@ test('price only — no verdict section', () => {
   const result = summarizeTicker(input, 'zh-TW');
 
   expect(result.oneLine).toContain('上漲 +0.5%');
-  expect(result.oneLine).not.toContain('買進');
+  expect(result.oneLine).not.toContain('偏多訊號');
   expect(result.hasFreshSignal).toBe(false);
 });
 
@@ -304,6 +304,6 @@ test('twoLine contains newline when signal parts exist', () => {
   const result = summarizeTicker(input, 'en-US');
   const lines = result.twoLine.split('\n');
   expect(lines.length).toBe(2);
-  expect(lines[0]).toContain('BUY');
+  expect(lines[0]).toContain('Bullish signal');
   expect(lines[1]).toContain('Rising momentum');
 });
