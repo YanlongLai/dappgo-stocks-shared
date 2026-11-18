@@ -139,9 +139,9 @@ export function aggregatePortfolio(
 
   let oneLineSummary: string;
   if (locale === 'en-US') {
-    oneLineSummary = `${breakdown.BUY} Buy / ${breakdown.SELL} Sell across ${total} stocks`;
+    oneLineSummary = `${breakdown.BUY} bullish / ${breakdown.SELL} bearish signals across ${total} stocks`;
   } else {
-    oneLineSummary = `${total} 檔自選股：${breakdown.BUY} 買進、${breakdown.SELL} 賣出`;
+    oneLineSummary = `${total} 檔自選股：${breakdown.BUY} 檔偏多訊號、${breakdown.SELL} 檔偏空訊號`;
   }
 
   return {

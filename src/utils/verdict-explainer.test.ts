@@ -24,29 +24,29 @@ const us: SignalsLike = {
 
 // ── 1. Each verdict label translates correctly (zh-TW) ───────────────────────
 
-test('BUY headline contains 買進', () => {
+test('BUY headline contains 偏多訊號', () => {
   const r = explainVerdict({ verdict: 'BUY', contributions: { trend: 1 } });
-  expect(r.headline).toContain('買進');
+  expect(r.headline).toContain('偏多訊號');
 });
 
-test('HOLD headline contains 持有', () => {
+test('HOLD headline contains 溫和偏多', () => {
   const r = explainVerdict({ verdict: 'HOLD', contributions: { momentum: 0.5 } });
-  expect(r.headline).toContain('持有');
+  expect(r.headline).toContain('溫和偏多');
 });
 
-test('WATCH headline contains 觀望', () => {
+test('WATCH headline contains 中性', () => {
   const r = explainVerdict({ verdict: 'WATCH', contributions: { volume: 0.2 } });
-  expect(r.headline).toContain('觀望');
+  expect(r.headline).toContain('中性');
 });
 
-test('AVOID headline contains 避開', () => {
+test('AVOID headline contains 溫和偏空', () => {
   const r = explainVerdict({ verdict: 'AVOID', contributions: { trend: -1 } });
-  expect(r.headline).toContain('避開');
+  expect(r.headline).toContain('溫和偏空');
 });
 
-test('SELL headline contains 賣出', () => {
+test('SELL headline contains 偏空訊號', () => {
   const r = explainVerdict({ verdict: 'SELL', contributions: { trend: -2 } });
-  expect(r.headline).toContain('賣出');
+  expect(r.headline).toContain('偏空訊號');
 });
 
 // ── 2. Dominant axis selection ────────────────────────────────────────────────
@@ -140,7 +140,7 @@ test('null contributions: detail falls back to verdict_reason', () => {
 
 test('en-US: verdict labels in English', () => {
   const r = explainVerdict({ verdict: 'BUY', contributions: { trend: 1 } }, 'en-US');
-  expect(r.headline).toContain('Buy');
+  expect(r.headline).toContain('Bullish signal');
   expect(r.headline).toContain('Trend');
 });
 

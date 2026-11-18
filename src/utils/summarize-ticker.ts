@@ -41,19 +41,19 @@ export interface TickerSummary {
 // ---------------------------------------------------------------------------
 
 const VERDICT_ZH: Record<string, string> = {
-  BUY:  '買進',
-  HOLD: '持有',
-  WATCH: '觀望',
-  AVOID: '避開',
-  SELL: '賣出',
+  BUY:  '偏多訊號',
+  HOLD: '溫和偏多',
+  WATCH: '中性',
+  AVOID: '溫和偏空',
+  SELL: '偏空訊號',
 };
 
 const VERDICT_EN: Record<string, string> = {
-  BUY:  'BUY',
-  HOLD: 'HOLD',
-  WATCH: 'WATCH',
-  AVOID: 'AVOID',
-  SELL: 'SELL',
+  BUY:  'Bullish signal',
+  HOLD: 'Mildly bullish',
+  WATCH: 'Neutral',
+  AVOID: 'Mildly bearish',
+  SELL: 'Bearish signal',
 };
 
 const MOMENTUM_ZH: Record<string, string> = {

@@ -11,6 +11,11 @@ All notable changes to this project will be documented in this file.
 
 Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Versioning: [SemVer](https://semver.org/).
 
+## 0.4.4
+
+- Research-toned signal labels (Owner decision 2026-11-18): verdict labels read 偏多訊號 / 溫和偏多 / 中性 / 溫和偏空 / 偏空訊號 (en: Bullish signal / Mildly bullish / Neutral / Mildly bearish / Bearish signal) instead of 買進 / 持有 / 觀望 / 避開 / 賣出. Verdict explanations describe what the model sees instead of telling the reader to buy, sell or hold. Signal logic and engine data are unchanged.
+- Add `mobile/utils/signal-wording` `neutralizeSignalText()` to reword engine one-liners such as 「今日 2 檔買進 / 5 檔賣出」 at display time.
+
 ## 0.4.3
 
 - AI summary reveal: `aiSummaryRevealOffersAd()` tells the reveal control when the next slide offers a rewarded ad, and `SummaryRewardOffer.optedIn` marks a slide that was labelled as watching an ad so the native layer skips the second prompt.

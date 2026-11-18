@@ -152,9 +152,9 @@ export function buildDashboardSummary(
 
   let oneLineHeadline: string;
   if (locale === 'en-US') {
-    oneLineHeadline = `Today ${buys} Buy / ${sells} Sell`;
+    oneLineHeadline = `Today ${buys} bullish / ${sells} bearish signals`;
   } else {
-    oneLineHeadline = `今日 ${buys} 檔買進 / ${sells} 檔賣出`;
+    oneLineHeadline = `今日 ${buys} 檔偏多訊號 / ${sells} 檔偏空訊號`;
   }
 
   return {
