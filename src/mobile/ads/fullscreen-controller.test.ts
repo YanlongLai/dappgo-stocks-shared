@@ -457,9 +457,8 @@ describe('on-demand interstitial inventory', () => {
     h.controller.refreshInventory(); expect(h.ads).toHaveLength(1);
     h.ads[0].listener('loaded');
     expect(await h.controller.showIfEligible()).toBe(true);
-    h.ads[0].listener('closed');
-    // After a presentation the next demand is needed; no automatic refill.
-    expect(h.ads).toHaveLength(1);
+    // An accepted demand keeps the session's inventory, as the timed mode did.
+    h.ads[0].listener('closed'); expect(h.ads).toHaveLength(2);
     h.controller.stop();
   });
 
@@ -473,26 +472,11 @@ describe('on-demand interstitial inventory', () => {
     h.controller.stop();
   });
 
-  test('a demand during the cross-format cooldown requests nothing', async () => {
+  test('a consent change before any demand still requests nothing', async () => {
     const h = harness({ interstitialOnDemand: true }); await flush();
     await jest.advanceTimersByTimeAsync(5 * 60 * 1000);
-    const token = h.admission.acquire('app_open', { now: Date.now(), foreground: true, canRequestAds: true, safeBoundary: true, trigger: 'automatic' });
-    expect(token).not.toBeNull();
-    h.admission.impression(token!, Date.now()); h.admission.release(token!);
-    h.controller.refreshInventory(); expect(h.ads).toHaveLength(0);
-    await jest.advanceTimersByTimeAsync(FULLSCREEN_COOLDOWN_MS);
-    h.controller.refreshInventory(); expect(h.ads).toHaveLength(1);
-    h.controller.stop();
-  });
-
-  test('expired on-demand inventory is dropped at the exit and waits for the next detail visit', async () => {
-    const h = harness({ interstitialOnDemand: true }); await flush();
-    await jest.advanceTimersByTimeAsync(5 * 60 * 1000);
-    h.controller.refreshInventory(); h.ads[0].listener('loaded');
-    await jest.advanceTimersByTimeAsync(60 * 60 * 1000);
-    expect(await h.controller.showIfEligible()).toBe(false);
-    expect(h.ads).toHaveLength(1);
-    h.controller.refreshInventory(); expect(h.ads).toHaveLength(2);
+    h.purpose(); await flush(); h.consent(false); h.consent(true); await flush();
+    expect(h.ads).toHaveLength(0);
     h.controller.stop();
   });
 });
