@@ -8,3 +8,11 @@ test('only explicit safe research exits may show', () => {
   expect(shouldShowTimedInterstitialOnTransition(null, '/dashboard')).toBe(false);
   expect(shouldShowTimedInterstitialOnTransition('/dashboard', '/stock/AAPL')).toBe(false);
 });
+test('entering a research detail is the inventory demand signal', () => {
+  const { shouldRequestTimedInterstitialInventory } = createInterstitialRoutePolicy(APP_PROFILES[0]);
+  expect(shouldRequestTimedInterstitialInventory('/(tabs)/dashboard', '/stock/AAPL')).toBe(true);
+  expect(shouldRequestTimedInterstitialInventory('/stock/AAPL', '/report/2026-11-18')).toBe(true);
+  for (const next of ['/(tabs)/dashboard', '/settings', '/search', null])
+    expect(shouldRequestTimedInterstitialInventory('/stock/AAPL', next)).toBe(false);
+  expect(shouldRequestTimedInterstitialInventory('/stock/AAPL', '/stock/AAPL')).toBe(false);
+});

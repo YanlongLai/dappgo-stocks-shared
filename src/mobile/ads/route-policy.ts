@@ -18,13 +18,17 @@ export function canShowAppOpenOnRoute(app: AdApp, pathname: string | null): bool
   const prefix = app === 'options' ? 'ticker' : 'stock';
   return overviews.includes(overview) || new RegExp('^/(' + prefix + '|report)/[^/]+$').test(path);
 }
+/** Research detail routes: the only places a later exit can present an interstitial. */
+export function isResearchRoute(app: AdApp, path: string | null): boolean {
+  if (!path) return false;
+  const prefix = app === 'options' ? '/ticker/' : '/stock/';
+  return path.startsWith(prefix) || path.startsWith('/report/');
+}
 /** A detail exit into an explicit overview is a natural break; arbitrary routes are not. */
 export function shouldShowFullscreenOnTransition(
   app: AdApp, previous: string | null, next: string | null,
 ): boolean {
   if (!previous || !next || previous === next) return false;
-  const prefix = app === 'options' ? '/ticker/' : '/stock/';
-  const research = (path: string) => path.startsWith(prefix) || path.startsWith('/report/');
-  return research(previous) && SAFE_DESTINATIONS.has(normalize(next));
+  return isResearchRoute(app, previous) && SAFE_DESTINATIONS.has(normalize(next));
 }
 

@@ -1,11 +1,15 @@
 import type { AppProfile } from '../app-profile';
-import { shouldShowFullscreenOnTransition } from './route-policy';
+import { isResearchRoute, shouldShowFullscreenOnTransition } from './route-policy';
 
 /** The app binds its profile once; router subscriptions remain in the app. */
 export function createInterstitialRoutePolicy(profile: AppProfile) {
   return {
     shouldShowTimedInterstitialOnTransition(previous: string | null, next: string | null): boolean {
       return shouldShowFullscreenOnTransition(profile.app, previous, next);
+    },
+    /** Entering a research detail is the demand signal for on-demand interstitial inventory. */
+    shouldRequestTimedInterstitialInventory(previous: string | null, next: string | null): boolean {
+      return !!next && next !== previous && isResearchRoute(profile.app, next);
     },
   };
 }
