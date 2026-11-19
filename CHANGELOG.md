@@ -11,6 +11,10 @@ All notable changes to this project will be documented in this file.
 
 Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Versioning: [SemVer](https://semver.org/).
 
+## 0.4.9
+
+- Ad unit resolvers take an optional `isPhysicalDevice` (expo-device `isDevice`). `false` (emulator/simulator) always resolves the Google test unit, even in a production store build, so release QA, store review and test-lab traffic stays out of production AdMob reports. Omitted keeps the previous build-based decision.
+
 ## 0.4.4
 
 - Research-toned signal labels (Owner decision 2026-11-18): verdict labels read 偏多訊號 / 溫和偏多 / 中性 / 溫和偏空 / 偏空訊號 (en: Bullish signal / Mildly bullish / Neutral / Mildly bearish / Bearish signal) instead of 買進 / 持有 / 觀望 / 避開 / 賣出. Verdict explanations describe what the model sees instead of telling the reader to buy, sell or hold. Signal logic and engine data are unchanged.
