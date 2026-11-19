@@ -1,4 +1,39 @@
-import { resolveBannerAdUnitId } from './admob-config';
+import {
+  resolveAppOpenAdUnitId,
+  resolveBannerAdUnitId,
+  resolveInterstitialAdUnitId,
+  resolveRewardedAdUnitId,
+} from './admob-config';
+
+const release = {
+  isDevelopment: false,
+  adsMode: 'production',
+  adsBuildProfile: 'production',
+  testUnitId: 'test-unit',
+  productionUnitId: 'production-unit',
+};
+
+describe('emulator guard', () => {
+  it('serves the test unit to an emulator in a production store build', () => {
+    expect(resolveBannerAdUnitId({ ...release, isPhysicalDevice: false })).toBe('test-unit');
+    expect(resolveAppOpenAdUnitId({ ...release, isPhysicalDevice: false })).toBe('test-unit');
+    expect(resolveInterstitialAdUnitId({ ...release, isPhysicalDevice: false })).toBe('test-unit');
+    expect(resolveRewardedAdUnitId({ ...release, isPhysicalDevice: false })).toBe('test-unit');
+  });
+
+  it('keeps production units on a physical device', () => {
+    expect(resolveBannerAdUnitId({ ...release, isPhysicalDevice: true })).toBe('production-unit');
+  });
+
+  it('keeps the build decision when device detection is unavailable', () => {
+    expect(resolveBannerAdUnitId({ ...release })).toBe('production-unit');
+    expect(resolveBannerAdUnitId({ ...release, isPhysicalDevice: undefined })).toBe('production-unit');
+  });
+
+  it('never falls back to a production unit on an emulator', () => {
+    expect(resolveBannerAdUnitId({ ...release, testUnitId: '', isPhysicalDevice: false })).toBe('');
+  });
+});
 
 describe('resolveBannerAdUnitId', () => {
   it('uses the test ID for development builds', () => {

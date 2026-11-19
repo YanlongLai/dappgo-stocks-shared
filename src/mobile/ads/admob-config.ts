@@ -10,13 +10,19 @@ export interface AdUnitConfig {
   adsBuildProfile?: string;
   testUnitId: string;
   productionUnitId: string;
+  /**
+   * expo-device `isDevice`. `false` means an emulator or simulator (our own
+   * release QA, store review, test labs): it gets Google's test unit so those
+   * requests stay out of production reports. Omitted keeps the build decision.
+   */
+  isPhysicalDevice?: boolean;
 }
 
 export type BannerAdUnitConfig = AdUnitConfig;
 
 /**
  * Selects the ad unit for the current build without ever falling back from a
- * development test ID to a production ID.
+ * development test ID to a production ID. Emulators always get the test ID.
  */
 export function resolveBannerAdUnitId({
   isDevelopment,
@@ -24,9 +30,11 @@ export function resolveBannerAdUnitId({
   adsBuildProfile,
   testUnitId,
   productionUnitId,
+  isPhysicalDevice,
 }: AdUnitConfig): string {
   const useTestAd =
     isDevelopment ||
+    isPhysicalDevice === false ||
     adsMode !== 'production' ||
     adsBuildProfile !== 'production';
   return useTestAd ? testUnitId : productionUnitId;
