@@ -38,10 +38,11 @@ export type FullscreenDependencies = {
   startupReadinessMs?: number;
   startupWindowMs: number;
   /**
-   * Interstitial only: request inventory on demand (refreshInventory() when the user opens a
-   * research detail) instead of a timed preload. A demand made before the preload age, or
-   * during the cross-format cooldown, is dropped rather than queued: preloaded interstitials
-   * that never reach a qualifying exit were ~99% of requests (AdMob show rate under 1%).
+   * Interstitial only: the first request waits for a demand (refreshInventory() when the user
+   * opens a research detail) instead of a timed preload. A demand made before the preload age
+   * is dropped rather than queued. Once a demand is accepted, the session keeps inventory as
+   * before (refill after close, consent changes, expiry). Timed preloads that never reached a
+   * qualifying exit were ~99% of interstitial requests (AdMob show rate under 1%).
    */
   interstitialOnDemand?: boolean;
 };
@@ -73,8 +74,8 @@ export function startFullscreenController(deps: FullscreenDependencies): Fullscr
   let failures = 0;
   let lastFailureAt = 0;
   let nextLoadAllowedAt = 0;
-  const onDemand = deps.format === 'rewarded' || (deps.format === 'interstitial' && deps.interstitialOnDemand === true);
-  let inventoryRequested = !onDemand;
+  const interstitialOnDemand = deps.format === 'interstitial' && deps.interstitialOnDemand === true;
+  let inventoryRequested = deps.format !== 'rewarded' && !interstitialOnDemand;
   let current: { ad: FullscreenAd; loadedAt: number | null; invalidated: boolean; remove: () => void; report: ReturnType<FullscreenDependencies['reporter']> } | null = null;
   let token: AdmissionToken | null = null;
   let activeStartedAt: number | null = deps.foreground() ? deps.now() : null;
@@ -124,11 +125,7 @@ export function startFullscreenController(deps: FullscreenDependencies): Fullscr
     if (deps.format === 'app_open' && deps.appOpenRouteAllowed?.() !== true) return false;
     const age = deps.now() - entry.loadedAt;
     if (age < 0 || age >= (deps.format === 'app_open' ? 4 : 1) * 60 * 60 * 1000) {
-      clear();
-      // On-demand interstitials wait for the next detail visit instead of refilling at the exit.
-      if (deps.format === 'interstitial' && deps.interstitialOnDemand === true) inventoryRequested = false;
-      else load();
-      return false;
+      clear(); load(); return false;
     }
     if (startup && (!startupOpen || deps.now() >= startupDeadline)) return false;
     const owned = deps.admission.acquire(deps.format, {
@@ -169,10 +166,8 @@ export function startFullscreenController(deps: FullscreenDependencies): Fullscr
     if (failures >= MAX_CONSECUTIVE_FAILURES && source !== 'resume' &&
         !(source === 'refresh' && deps.now() - lastFailureAt >= MAX_RETRY_MS)) return;
     const preloadWait = deps.format === 'interstitial' ? INTERSTITIAL_PRELOAD_MS - activeTime() : 0;
-    if (deps.format === 'interstitial' && deps.interstitialOnDemand === true) {
-      // A demand that cannot be served now is not remembered: the next detail visit asks again.
-      if (preloadWait > 0 || deps.admission.isCoolingDown(deps.now())) { inventoryRequested = false; return; }
-    }
+    // An early demand is not remembered: the next detail visit asks again.
+    if (interstitialOnDemand && preloadWait > 0) { inventoryRequested = false; return; }
     const delay = Math.max(0, nextLoadAllowedAt - deps.now(), preloadWait);
     if (!Number.isFinite(delay)) return;
     if (delay > 0) {
@@ -199,7 +194,7 @@ export function startFullscreenController(deps: FullscreenDependencies): Fullscr
           settleStartup();
           if (event === 'error') retry();
           else {
-            if (onDemand) inventoryRequested = false;
+            if (deps.format === 'rewarded') inventoryRequested = false;
             load();
           }
           return;
@@ -270,7 +265,7 @@ export function startFullscreenController(deps: FullscreenDependencies): Fullscr
     consentGeneration++;
     cancelRetry();
     failures = 0;
-    if (onDemand) inventoryRequested = false;
+    if (deps.format === 'rewarded') inventoryRequested = false;
     // Purpose changes invalidate requests made under the previous consent.
     if (!token) clear();
     else if (current) current.invalidated = true;
