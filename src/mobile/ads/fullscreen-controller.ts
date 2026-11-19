@@ -37,6 +37,13 @@ export type FullscreenDependencies = {
   // Identity/privacy/SDK preparation has its own budget, before inventory loading.
   startupReadinessMs?: number;
   startupWindowMs: number;
+  /**
+   * Interstitial only: request inventory on demand (refreshInventory() when the user opens a
+   * research detail) instead of a timed preload. A demand made before the preload age, or
+   * during the cross-format cooldown, is dropped rather than queued: preloaded interstitials
+   * that never reach a qualifying exit were ~99% of requests (AdMob show rate under 1%).
+   */
+  interstitialOnDemand?: boolean;
 };
 export type FullscreenController = {
   startupReady: Promise<void>;
@@ -66,7 +73,8 @@ export function startFullscreenController(deps: FullscreenDependencies): Fullscr
   let failures = 0;
   let lastFailureAt = 0;
   let nextLoadAllowedAt = 0;
-  let inventoryRequested = deps.format !== 'rewarded';
+  const onDemand = deps.format === 'rewarded' || (deps.format === 'interstitial' && deps.interstitialOnDemand === true);
+  let inventoryRequested = !onDemand;
   let current: { ad: FullscreenAd; loadedAt: number | null; invalidated: boolean; remove: () => void; report: ReturnType<FullscreenDependencies['reporter']> } | null = null;
   let token: AdmissionToken | null = null;
   let activeStartedAt: number | null = deps.foreground() ? deps.now() : null;
@@ -116,7 +124,11 @@ export function startFullscreenController(deps: FullscreenDependencies): Fullscr
     if (deps.format === 'app_open' && deps.appOpenRouteAllowed?.() !== true) return false;
     const age = deps.now() - entry.loadedAt;
     if (age < 0 || age >= (deps.format === 'app_open' ? 4 : 1) * 60 * 60 * 1000) {
-      clear(); load(); return false;
+      clear();
+      // On-demand interstitials wait for the next detail visit instead of refilling at the exit.
+      if (deps.format === 'interstitial' && deps.interstitialOnDemand === true) inventoryRequested = false;
+      else load();
+      return false;
     }
     if (startup && (!startupOpen || deps.now() >= startupDeadline)) return false;
     const owned = deps.admission.acquire(deps.format, {
@@ -156,8 +168,12 @@ export function startFullscreenController(deps: FullscreenDependencies): Fullscr
     // Only explicit demand or a real resume may reopen exhausted inventory.
     if (failures >= MAX_CONSECUTIVE_FAILURES && source !== 'resume' &&
         !(source === 'refresh' && deps.now() - lastFailureAt >= MAX_RETRY_MS)) return;
-    const delay = Math.max(0, nextLoadAllowedAt - deps.now(),
-      deps.format === 'interstitial' ? INTERSTITIAL_PRELOAD_MS - activeTime() : 0);
+    const preloadWait = deps.format === 'interstitial' ? INTERSTITIAL_PRELOAD_MS - activeTime() : 0;
+    if (deps.format === 'interstitial' && deps.interstitialOnDemand === true) {
+      // A demand that cannot be served now is not remembered: the next detail visit asks again.
+      if (preloadWait > 0 || deps.admission.isCoolingDown(deps.now())) { inventoryRequested = false; return; }
+    }
+    const delay = Math.max(0, nextLoadAllowedAt - deps.now(), preloadWait);
     if (!Number.isFinite(delay)) return;
     if (delay > 0) {
       // One timer covers backoff and the remaining foreground preload time.
@@ -183,7 +199,7 @@ export function startFullscreenController(deps: FullscreenDependencies): Fullscr
           settleStartup();
           if (event === 'error') retry();
           else {
-            if (deps.format === 'rewarded') inventoryRequested = false;
+            if (onDemand) inventoryRequested = false;
             load();
           }
           return;
@@ -254,7 +270,7 @@ export function startFullscreenController(deps: FullscreenDependencies): Fullscr
     consentGeneration++;
     cancelRetry();
     failures = 0;
-    if (deps.format === 'rewarded') inventoryRequested = false;
+    if (onDemand) inventoryRequested = false;
     // Purpose changes invalidate requests made under the previous consent.
     if (!token) clear();
     else if (current) current.invalidated = true;
