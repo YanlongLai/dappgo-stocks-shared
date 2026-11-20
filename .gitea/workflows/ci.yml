@@ -5,9 +5,15 @@ name: gitea-shared-ci
 # with this directory present Gitea uses these files instead.
 on:
   push:
-    branches: [main]
+    # Every branch: GitHub PR branches reach Gitea through the 15-minute mirror,
+    # so this is the pre-merge run. Gitea pull_request events never fire here.
+    branches: ['**']
   pull_request:
   workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.ref != 'refs/heads/main' }}
 
 jobs:
   verify:
