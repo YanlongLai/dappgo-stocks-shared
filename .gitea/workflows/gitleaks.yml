@@ -1,0 +1,64 @@
+name: gitea-shared-gitleaks
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  gitleaks:
+    runs-on: dappgo-ci
+    timeout-minutes: 15
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Download, verify, and run pinned gitleaks
+        env:
+          GITLEAKS_EVENT_NAME: ${{ github.event_name }}
+          GITLEAKS_EVENT_BEFORE: ${{ github.event.before }}
+          GITLEAKS_SHA: ${{ github.sha }}
+          GITLEAKS_PR_BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          GITLEAKS_PR_HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+        run: |
+          set -Eeuo pipefail
+
+          version="8.24.3"
+          job_temp="$(mktemp -d)"
+          trap 'rm -rf "$job_temp"' EXIT
+          archive="gitleaks_8.24.3_linux_x64.tar.gz"
+          checksums="gitleaks_8.24.3_checksums.txt"
+          release_url="https://github.com/gitleaks/gitleaks/releases/download/v8.24.3"
+
+          curl --fail --silent --show-error --location --retry 3 \
+            --output "$job_temp/$archive" "$release_url/$archive"
+          curl --fail --silent --show-error --location --retry 3 \
+            --output "$job_temp/$checksums" "$release_url/$checksums"
+          (
+            cd "$job_temp"
+            sha256sum -c --ignore-missing "$checksums"
+          )
+          tar -xzf "$job_temp/$archive" -C "$job_temp" gitleaks
+          test -x "$job_temp/gitleaks"
+
+          all_zero_sha="0000000000000000000000000000000000000000"
+          scan_range="--max-count=50"
+          if [[ "$GITLEAKS_EVENT_NAME" = "push" \
+            && -n "$GITLEAKS_EVENT_BEFORE" \
+            && "$GITLEAKS_EVENT_BEFORE" != "$all_zero_sha" \
+            && -n "$GITLEAKS_SHA" ]]; then
+            scan_range="${GITLEAKS_EVENT_BEFORE}..${GITLEAKS_SHA}"
+          elif [[ "$GITLEAKS_EVENT_NAME" = "pull_request" \
+            && -n "$GITLEAKS_PR_BASE_SHA" \
+            && -n "${GITLEAKS_PR_HEAD_SHA:-$GITLEAKS_SHA}" ]]; then
+            scan_range="${GITLEAKS_PR_BASE_SHA}..${GITLEAKS_PR_HEAD_SHA:-$GITLEAKS_SHA}"
+          fi
+
+          gitleaks_args=(git --redact --no-banner --exit-code 1)
+          if [[ -f .gitleaks.toml ]]; then
+            gitleaks_args+=(--config .gitleaks.toml)
+          fi
+          "$job_temp/gitleaks" "${gitleaks_args[@]}" --log-opts="$scan_range" .
