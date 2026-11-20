@@ -11,6 +11,11 @@ All notable changes to this project will be documented in this file.
 
 Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Versioning: [SemVer](https://semver.org/).
 
+## 0.4.10
+
+- `mobile/purchases/pro`: DappGo Pro subscription state from RevenueCat CustomerInfo (`pro` entitlement), a 72-hour offline trust window, stored-snapshot validation, subscription package lookup, and `canRequestAdsWithPro` (Pro also removes ads). Additive; the ad-free policy is unchanged.
+- `mobile/valuation/valuation-v2`: types and parsers for the valuation v2 subscription payload, hub ranking and filters, zone counts, zone-crossing alert detection for tracked stocks, and the advice-wording list apps test their strings against.
+
 ## 0.4.9
 
 - Ad unit resolvers take an optional `isPhysicalDevice` (expo-device `isDevice`). `false` (emulator/simulator) always resolves the Google test unit, even in a production store build, so release QA, store review and test-lab traffic stays out of production AdMob reports. Omitted keeps the previous build-based decision.
