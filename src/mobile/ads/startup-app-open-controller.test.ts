@@ -195,14 +195,17 @@ test('startup admission requires the actual reserved capability', () => {
   expect(admission.acquire('app_open', { ...input, startupTicket: ticket })).toBeNull();
 });
 
-test('ordinary interstitials need five active minutes and still respect the shared five-minute interval', async () => {
-  expect(FULLSCREEN_COOLDOWN_MS).toBe(5 * 60 * 1000);
+test('ordinary interstitials need five active minutes and then respect the shared three-minute interval', async () => {
+  expect(FULLSCREEN_COOLDOWN_MS).toBe(3 * 60 * 1000);
   const h = harness({ format: 'interstitial', appOpenMode: 'legacy', startupWindowMs: 0 });
   const c = h.start(); await flush();
   await jest.advanceTimersByTimeAsync(4 * 60 * 1000); h.ads[0].emit('loaded');
-  await jest.advanceTimersByTimeAsync(FULLSCREEN_COOLDOWN_MS - 4 * 60 * 1000 - 1); expect(await c.showIfEligible()).toBe(false);
+  await jest.advanceTimersByTimeAsync(60 * 1000 - 1); expect(await c.showIfEligible()).toBe(false);
   await jest.advanceTimersByTimeAsync(1); expect(await c.showIfEligible()).toBe(true);
   h.ads[0].emit('opened'); h.ads[0].emit('closed');
-  expect(h.admission.acquire('interstitial', { now: Date.now(), foreground: true, canRequestAds: true, safeBoundary: true })).toBeNull();
+  const opened = Date.now();
+  const input = (now: number) => ({ now, foreground: true, canRequestAds: true, safeBoundary: true });
+  expect(h.admission.acquire('interstitial', input(opened + FULLSCREEN_COOLDOWN_MS - 1))).toBeNull();
+  expect(h.admission.acquire('interstitial', input(opened + FULLSCREEN_COOLDOWN_MS))).not.toBeNull();
   c.stop();
 });

@@ -480,3 +480,18 @@ describe('on-demand interstitial inventory', () => {
     h.controller.stop();
   });
 });
+test.each([
+  [undefined, 2, false], [undefined, 3, true], [2, 1, false], [2, 2, true],
+] as const)('resume App Open with minimum %s loads on launch %s: %s', async (minimum, launchCount, loads) => {
+  const h = harness({ format: 'app_open', appOpenMinimumLaunches: minimum, prepare: async () => ({ launchCount }) });
+  await flush();
+  expect(h.ads.length > 0).toBe(loads);
+  if (loads) {
+    h.ads[0].listener('loaded'); await flush();
+    expect(h.ads[0].show).not.toHaveBeenCalled(); // startupWindowMs 0: never on cold start
+    h.foreground(false); h.foreground(true); await flush();
+    expect(h.ads[0].show).toHaveBeenCalledTimes(1);
+    h.ads[0].listener('closed');
+  }
+  h.controller.stop();
+});
