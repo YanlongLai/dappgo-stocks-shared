@@ -64,3 +64,47 @@ export function createAdUnitCatalog(profile: AppProfile) {
     resolveBannerAdUnitId, resolveAppOpenAdUnitId, resolveInterstitialAdUnitId, resolveRewardedAdUnitId,
   };
 }
+
+export type AdsConfigPlatform = 'ios' | 'android';
+export type AdsConfigMode = 'production' | 'test';
+/**
+ * Why the build serves the units it does:
+ * - `dev`: a development (`__DEV__`) bundle, always test units.
+ * - `emulator`: an emulator or simulator, always test units.
+ * - `build`: the build markers decide; with mode `test` they are not both
+ *   `production`, with mode `production` this is a normal store build.
+ * - `missing_unit`: a production build where at least one ad format has no
+ *   valid production unit id, so that format requests nothing.
+ */
+export type AdsConfigReason = 'dev' | 'emulator' | 'build' | 'missing_unit';
+export interface AdsConfigEvent {
+  platform: AdsConfigPlatform;
+  mode: AdsConfigMode;
+  reason: AdsConfigReason;
+}
+
+export type AdsConfigInput = Omit<AdUnitConfig, 'testUnitId' | 'productionUnitId'> & {
+  platform: AdsConfigPlatform;
+  /** The platform's production unit ids for every format the app uses. */
+  productionUnitIds: readonly (string | undefined)[];
+};
+
+const AD_UNIT_ID_PATTERN = /^ca-app-pub-\d+\/\d+$/;
+
+/**
+ * Describes, without user identifiers, whether this start serves real or
+ * Google test units and why. The mode comes from the unit resolver itself,
+ * so the analytics record can never disagree with the units requested.
+ */
+export function describeAdsConfig({ platform, productionUnitIds, ...config }: AdsConfigInput): AdsConfigEvent {
+  const production =
+    resolveBannerAdUnitId({ ...config, testUnitId: 'test', productionUnitId: 'production' }) === 'production';
+  const mode: AdsConfigMode = production ? 'production' : 'test';
+  let reason: AdsConfigReason;
+  if (config.isDevelopment) reason = 'dev';
+  else if (config.isPhysicalDevice === false) reason = 'emulator';
+  else if (!production) reason = 'build';
+  else if (productionUnitIds.length === 0 || productionUnitIds.some(id => !id || !AD_UNIT_ID_PATTERN.test(id))) reason = 'missing_unit';
+  else reason = 'build';
+  return { platform, mode, reason };
+}
