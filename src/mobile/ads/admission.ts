@@ -1,6 +1,7 @@
 export type FullscreenFormat = 'app_open' | 'interstitial' | 'rewarded';
 export type FullscreenTrigger = 'automatic' | 'rewarded_opt_in' | 'app_open_startup';
-export const FULLSCREEN_COOLDOWN_MS = 5 * 60 * 1000;
+/** Minimum gap between automatic full-screen ads (App Open, interstitial). Owner decision 2026-11-20. */
+export const FULLSCREEN_COOLDOWN_MS = 3 * 60 * 1000;
 export type AdmissionToken = { readonly id: symbol; readonly format: FullscreenFormat };
 export type AdmissionInput = { now: number; foreground: boolean; canRequestAds: boolean; safeBoundary: boolean; trigger?: FullscreenTrigger; startupTicket?: symbol };
 

@@ -37,6 +37,8 @@ export type FullscreenDependencies = {
   // Identity/privacy/SDK preparation has its own budget, before inventory loading.
   startupReadinessMs?: number;
   startupWindowMs: number;
+  /** Launch number (1-based) from which App Open may load and show in resume mode. Default 3. */
+  appOpenMinimumLaunches?: number;
   /**
    * Interstitial only: the first request waits for a demand (refreshInventory() when the user
    * opens a research detail) instead of a timed preload. A demand made before the preload age
@@ -81,6 +83,7 @@ export function startFullscreenController(deps: FullscreenDependencies): Fullscr
   let activeStartedAt: number | null = deps.foreground() ? deps.now() : null;
   let activeMs = 0;
   let consentKey = JSON.stringify(deps.consent());
+  const appOpenMinimumLaunches = Math.max(1, Math.floor(deps.appOpenMinimumLaunches ?? 3));
 
   const settleStartup = () => {
     startupOpen = false;
@@ -113,7 +116,7 @@ export function startFullscreenController(deps: FullscreenDependencies): Fullscr
   };
   const eligible = (trigger: FullscreenTrigger = 'automatic') => {
     if (deps.format === 'rewarded') return trigger === 'rewarded_opt_in';
-    if (deps.format === 'app_open') return launchCount >= 3;
+    if (deps.format === 'app_open') return launchCount >= appOpenMinimumLaunches;
     const active = activeTime();
     return Number.isFinite(active) && active >= INTERSTITIAL_ELIGIBLE_MS;
   };
@@ -161,7 +164,7 @@ export function startFullscreenController(deps: FullscreenDependencies): Fullscr
   const load = (source: 'automatic' | 'refresh' | 'resume' = 'automatic') => {
     if (stopped || !prepared || !sdkReady || !deps.consent().canRequestAds || !deps.foreground() ||
         !inventoryRequested || current ||
-        (deps.format === 'app_open' && launchCount < 3)) return;
+        (deps.format === 'app_open' && launchCount < appOpenMinimumLaunches)) return;
     // Only explicit demand or a real resume may reopen exhausted inventory.
     if (failures >= MAX_CONSECUTIVE_FAILURES && source !== 'resume' &&
         !(source === 'refresh' && deps.now() - lastFailureAt >= MAX_RETRY_MS)) return;
@@ -239,7 +242,7 @@ export function startFullscreenController(deps: FullscreenDependencies): Fullscr
   const initialize = async () => {
     if (stopped || !prepared || initializing || sdkReady ||
         lastInitializationGeneration === consentGeneration ||
-        (deps.format === 'app_open' && launchCount < 3)) return;
+        (deps.format === 'app_open' && launchCount < appOpenMinimumLaunches)) return;
     initializing = true;
     const generation = consentGeneration;
     lastInitializationGeneration = generation;
@@ -286,7 +289,7 @@ export function startFullscreenController(deps: FullscreenDependencies): Fullscr
     // safe route may permit a warm resume but never reopens this startup window.
     if (deps.format === 'app_open' && (deps.admission.isCoolingDown(deps.now()) ||
         deps.appOpenRouteAllowed?.() !== true)) settleStartup();
-    if (deps.format === 'app_open' && launchCount < 3) { settleStartup(); return; }
+    if (deps.format === 'app_open' && launchCount < appOpenMinimumLaunches) { settleStartup(); return; }
     await initialize();
   })().catch(settleStartup);
 
