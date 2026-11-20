@@ -1,0 +1,29 @@
+name: gitea-shared-ci
+
+# Gitea Actions CI. Gitea runners carry the dappgo-ci label; the GitHub-format
+# workflows in .github/workflows (runs-on: ubuntu-latest) never start here, so
+# with this directory present Gitea uses these files instead.
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  verify:
+    runs-on: dappgo-ci
+    timeout-minutes: 30
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Typecheck and tests
+        run: |
+          set -Eeuo pipefail
+          # Node 22 and npm come pinned from the dappgo-ci runner image; pnpm 9 via npx.
+          [[ "$(node --version)" == v22.* ]]
+          node --version
+          npx --yes pnpm@9 --version
+          npx --yes pnpm@9 install --frozen-lockfile --ignore-scripts
+          npx --yes pnpm@9 exec tsc --noEmit
+          npx --yes pnpm@9 test
