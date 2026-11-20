@@ -1,0 +1,903 @@
+{
+ "schema_version": 1,
+ "symbol": "NFLX",
+ "name": "NFLX",
+ "sector": "Communication",
+ "generated_at_utc": "2026-11-19T22:10:00Z",
+ "status": "ok",
+ "model_version": "dappgo_composite_v2",
+ "as_of_date": "2026-11-19",
+ "current_price": 58.46,
+ "range": {
+  "low": 80.95,
+  "base": 107.66,
+  "high": 133.26
+ },
+ "distance": {
+  "to_base_pct": -45.7,
+  "to_low_pct": -27.78,
+  "to_high_pct": -56.13,
+  "position_pct": -43.0
+ },
+ "zone": "deep_below",
+ "signal": "below_range",
+ "gap_pct": -45.7,
+ "confidence": "high",
+ "method": "own_multiple_history_percentiles_plus_sector_peers",
+ "anchors": [
+  {
+   "name": "pe_history",
+   "weight": 0.35,
+   "low": 100.66,
+   "base": 144.46,
+   "high": 167.17,
+   "multiple": {
+    "current": 16.61,
+    "p25": 28.6,
+    "p50": 41.04,
+    "p75": 47.49,
+    "min": 15.88,
+    "max": 62.37
+   },
+   "per_share": 3.52,
+   "samples": 260
+  },
+  {
+   "name": "ps_history",
+   "weight": 0.2,
+   "low": 63.53,
+   "base": 87.43,
+   "high": 112.14,
+   "multiple": {
+    "current": 4.93,
+    "p25": 5.36,
+    "p50": 7.37,
+    "p75": 9.46,
+    "min": 2.62,
+    "max": 14.39
+   },
+   "per_share": 11.8553,
+   "samples": 260
+  },
+  {
+   "name": "pfcf_history",
+   "weight": 0.25,
+   "low": 104.24,
+   "base": 123.68,
+   "high": 167.58,
+   "multiple": {
+    "current": 21.56,
+    "p25": 38.44,
+    "p50": 45.61,
+    "p75": 61.8,
+    "min": 22.9,
+    "max": 198.19
+   },
+   "per_share": 2.7115,
+   "samples": 207
+  },
+  {
+   "name": "peers",
+   "weight": 0.2,
+   "low": 34.76,
+   "base": 43.45,
+   "high": 52.14,
+   "multiple": {
+    "current": 16.61,
+    "p50": 11.59,
+    "growth_scale": 1.06
+   },
+   "per_share": 3.52,
+   "samples": 5
+  }
+ ],
+ "fundamentals_period_end": "2026-09-30",
+ "zone_since": "2026-10-19",
+ "score": 81,
+ "score_parts": {
+  "valuation_gap": 50.0,
+  "fundamentals": 16.0,
+  "trend": 0.0,
+  "data_confidence": 15.0
+ },
+ "conditions": [
+  {
+   "id": "below_range",
+   "met": true
+  },
+  {
+   "id": "growing",
+   "met": true
+  },
+  {
+   "id": "trend_intact",
+   "met": false
+  },
+  {
+   "id": "data_confidence",
+   "met": true
+  }
+ ],
+ "conditions_met": 3,
+ "facts": {
+  "gap_pct": -45.7,
+  "revenue_yoy_pct": 14.7,
+  "net_income_yoy_pct": 41.6,
+  "earnings_surprise_pct": null,
+  "above_ma_200": null,
+  "ma_200_rising": null,
+  "anchor_count": 4
+ },
+ "range_history": [
+  {
+   "date": "2025-09-29",
+   "price": 115.33,
+   "low": 70.99,
+   "base": 96.92,
+   "high": 125.63,
+   "zone": "within"
+  },
+  {
+   "date": "2025-10-06",
+   "price": 122.01,
+   "low": 70.77,
+   "base": 96.55,
+   "high": 124.9,
+   "zone": "within"
+  },
+  {
+   "date": "2025-10-13",
+   "price": 119.94,
+   "low": 71.08,
+   "base": 97.03,
+   "high": 125.01,
+   "zone": "within"
+  },
+  {
+   "date": "2025-10-20",
+   "price": 109.47,
+   "low": 71.39,
+   "base": 97.5,
+   "high": 125.0,
+   "zone": "within"
+  },
+  {
+   "date": "2025-10-27",
+   "price": 111.89,
+   "low": 72.12,
+   "base": 98.53,
+   "high": 126.67,
+   "zone": "within"
+  },
+  {
+   "date": "2025-11-03",
+   "price": 110.37,
+   "low": 72.06,
+   "base": 98.26,
+   "high": 126.46,
+   "zone": "within"
+  },
+  {
+   "date": "2025-11-10",
+   "price": 111.22,
+   "low": 71.96,
+   "base": 97.89,
+   "high": 125.99,
+   "zone": "within"
+  },
+  {
+   "date": "2025-11-17",
+   "price": 104.31,
+   "low": 71.81,
+   "base": 97.45,
+   "high": 125.44,
+   "zone": "within"
+  },
+  {
+   "date": "2025-11-24",
+   "price": 107.58,
+   "low": 72.59,
+   "base": 98.09,
+   "high": 126.52,
+   "zone": "within"
+  },
+  {
+   "date": "2025-12-01",
+   "price": 100.24,
+   "low": 72.97,
+   "base": 98.26,
+   "high": 126.95,
+   "zone": "within"
+  },
+  {
+   "date": "2025-12-08",
+   "price": 95.19,
+   "low": 72.58,
+   "base": 97.65,
+   "high": 126.13,
+   "zone": "within"
+  },
+  {
+   "date": "2025-12-15",
+   "price": 94.39,
+   "low": 72.81,
+   "base": 97.79,
+   "high": 126.26,
+   "zone": "within"
+  },
+  {
+   "date": "2025-12-22",
+   "price": 94.47,
+   "low": 72.91,
+   "base": 97.79,
+   "high": 126.22,
+   "zone": "within"
+  },
+  {
+   "date": "2025-12-29",
+   "price": 90.99,
+   "low": 72.76,
+   "base": 97.52,
+   "high": 125.71,
+   "zone": "within"
+  },
+  {
+   "date": "2026-01-05",
+   "price": 89.46,
+   "low": 72.84,
+   "base": 97.42,
+   "high": 125.54,
+   "zone": "within"
+  },
+  {
+   "date": "2026-01-12",
+   "price": 88.0,
+   "low": 72.26,
+   "base": 96.67,
+   "high": 124.73,
+   "zone": "within"
+  },
+  {
+   "date": "2026-01-19",
+   "price": 86.12,
+   "low": 72.74,
+   "base": 97.21,
+   "high": 125.35,
+   "zone": "within"
+  },
+  {
+   "date": "2026-01-26",
+   "price": 83.49,
+   "low": 76.79,
+   "base": 102.51,
+   "high": 132.06,
+   "zone": "within"
+  },
+  {
+   "date": "2026-02-02",
+   "price": 82.2,
+   "low": 75.25,
+   "base": 101.08,
+   "high": 129.42,
+   "zone": "within"
+  },
+  {
+   "date": "2026-02-09",
+   "price": 76.87,
+   "low": 74.45,
+   "base": 100.26,
+   "high": 128.0,
+   "zone": "within"
+  },
+  {
+   "date": "2026-02-16",
+   "price": 78.67,
+   "low": 74.6,
+   "base": 99.82,
+   "high": 127.08,
+   "zone": "within"
+  },
+  {
+   "date": "2026-02-23",
+   "price": 96.24,
+   "low": 77.25,
+   "base": 103.12,
+   "high": 129.37,
+   "zone": "within"
+  },
+  {
+   "date": "2026-03-02",
+   "price": 99.02,
+   "low": 75.66,
+   "base": 101.11,
+   "high": 125.04,
+   "zone": "within"
+  },
+  {
+   "date": "2026-03-09",
+   "price": 95.31,
+   "low": 75.05,
+   "base": 100.04,
+   "high": 122.61,
+   "zone": "within"
+  },
+  {
+   "date": "2026-03-16",
+   "price": 91.82,
+   "low": 75.05,
+   "base": 99.69,
+   "high": 121.31,
+   "zone": "within"
+  },
+  {
+   "date": "2026-03-23",
+   "price": 93.43,
+   "low": 74.65,
+   "base": 99.07,
+   "high": 119.82,
+   "zone": "within"
+  },
+  {
+   "date": "2026-03-30",
+   "price": 98.66,
+   "low": 75.33,
+   "base": 99.52,
+   "high": 120.41,
+   "zone": "within"
+  },
+  {
+   "date": "2026-04-06",
+   "price": 103.01,
+   "low": 75.73,
+   "base": 99.47,
+   "high": 120.41,
+   "zone": "within"
+  },
+  {
+   "date": "2026-04-13",
+   "price": 97.31,
+   "low": 76.97,
+   "base": 100.68,
+   "high": 121.83,
+   "zone": "within"
+  },
+  {
+   "date": "2026-04-20",
+   "price": 92.44,
+   "low": 94.94,
+   "base": 123.66,
+   "high": 149.6,
+   "zone": "below"
+  },
+  {
+   "date": "2026-04-27",
+   "price": 92.06,
+   "low": 94.0,
+   "base": 122.51,
+   "high": 147.83,
+   "zone": "below"
+  },
+  {
+   "date": "2026-05-04",
+   "price": 87.49,
+   "low": 91.13,
+   "base": 118.9,
+   "high": 143.3,
+   "zone": "below"
+  },
+  {
+   "date": "2026-05-11",
+   "price": 87.02,
+   "low": 85.37,
+   "base": 111.5,
+   "high": 134.23,
+   "zone": "within"
+  },
+  {
+   "date": "2026-05-18",
+   "price": 88.6,
+   "low": 85.03,
+   "base": 110.71,
+   "high": 133.44,
+   "zone": "within"
+  },
+  {
+   "date": "2026-05-25",
+   "price": 86.02,
+   "low": 84.54,
+   "base": 110.33,
+   "high": 132.96,
+   "zone": "within"
+  },
+  {
+   "date": "2026-06-01",
+   "price": 82.18,
+   "low": 83.47,
+   "base": 109.55,
+   "high": 132.13,
+   "zone": "below"
+  },
+  {
+   "date": "2026-06-08",
+   "price": 80.34,
+   "low": 83.52,
+   "base": 109.27,
+   "high": 132.06,
+   "zone": "below"
+  },
+  {
+   "date": "2026-06-15",
+   "price": 77.38,
+   "low": 83.11,
+   "base": 108.56,
+   "high": 131.72,
+   "zone": "below"
+  },
+  {
+   "date": "2026-06-22",
+   "price": 73.81,
+   "low": 82.58,
+   "base": 108.35,
+   "high": 131.71,
+   "zone": "deep_below"
+  },
+  {
+   "date": "2026-06-29",
+   "price": 77.65,
+   "low": 82.96,
+   "base": 108.7,
+   "high": 132.04,
+   "zone": "below"
+  },
+  {
+   "date": "2026-07-06",
+   "price": 73.37,
+   "low": 83.26,
+   "base": 108.48,
+   "high": 132.14,
+   "zone": "deep_below"
+  },
+  {
+   "date": "2026-07-13",
+   "price": 68.95,
+   "low": 82.84,
+   "base": 107.51,
+   "high": 131.06,
+   "zone": "deep_below"
+  },
+  {
+   "date": "2026-07-20",
+   "price": 70.09,
+   "low": 81.83,
+   "base": 106.48,
+   "high": 129.36,
+   "zone": "deep_below"
+  },
+  {
+   "date": "2026-07-27",
+   "price": 71.71,
+   "low": 80.75,
+   "base": 105.36,
+   "high": 127.93,
+   "zone": "deep_below"
+  },
+  {
+   "date": "2026-08-03",
+   "price": 74.14,
+   "low": 80.01,
+   "base": 103.76,
+   "high": 126.78,
+   "zone": "below"
+  },
+  {
+   "date": "2026-08-10",
+   "price": 78.16,
+   "low": 79.97,
+   "base": 103.55,
+   "high": 126.7,
+   "zone": "below"
+  },
+  {
+   "date": "2026-08-17",
+   "price": 79.59,
+   "low": 79.71,
+   "base": 103.33,
+   "high": 126.62,
+   "zone": "below"
+  },
+  {
+   "date": "2026-08-24",
+   "price": 81.72,
+   "low": 79.56,
+   "base": 103.27,
+   "high": 126.46,
+   "zone": "within"
+  },
+  {
+   "date": "2026-08-31",
+   "price": 78.25,
+   "low": 79.17,
+   "base": 103.11,
+   "high": 126.12,
+   "zone": "below"
+  },
+  {
+   "date": "2026-09-07",
+   "price": 77.4,
+   "low": 78.48,
+   "base": 102.84,
+   "high": 125.79,
+   "zone": "below"
+  },
+  {
+   "date": "2026-09-14",
+   "price": 71.79,
+   "low": 77.69,
+   "base": 102.15,
+   "high": 125.07,
+   "zone": "below"
+  },
+  {
+   "date": "2026-09-21",
+   "price": 71.15,
+   "low": 77.4,
+   "base": 101.68,
+   "high": 124.74,
+   "zone": "below"
+  },
+  {
+   "date": "2026-09-28",
+   "price": 67.06,
+   "low": 77.18,
+   "base": 101.24,
+   "high": 124.2,
+   "zone": "deep_below"
+  },
+  {
+   "date": "2026-10-05",
+   "price": 70.3,
+   "low": 76.62,
+   "base": 100.37,
+   "high": 123.37,
+   "zone": "below"
+  },
+  {
+   "date": "2026-10-12",
+   "price": 70.53,
+   "low": 76.61,
+   "base": 100.58,
+   "high": 123.71,
+   "zone": "below"
+  },
+  {
+   "date": "2026-10-19",
+   "price": 65.85,
+   "low": 76.03,
+   "base": 100.19,
+   "high": 123.59,
+   "zone": "deep_below"
+  },
+  {
+   "date": "2026-10-26",
+   "price": 62.08,
+   "low": 82.73,
+   "base": 108.89,
+   "high": 134.15,
+   "zone": "deep_below"
+  },
+  {
+   "date": "2026-11-02",
+   "price": 63.41,
+   "low": 82.37,
+   "base": 108.67,
+   "high": 133.73,
+   "zone": "deep_below"
+  },
+  {
+   "date": "2026-11-09",
+   "price": 62.15,
+   "low": 81.87,
+   "base": 108.4,
+   "high": 133.63,
+   "zone": "deep_below"
+  },
+  {
+   "date": "2026-11-16",
+   "price": 58.46,
+   "low": 80.95,
+   "base": 107.66,
+   "high": 133.26,
+   "zone": "deep_below"
+  }
+ ],
+ "assumptions": {
+  "sector": "Communication",
+  "lookback_weeks": 260,
+  "min_band_pct": 12.0,
+  "weights": {
+   "pe": 0.35,
+   "ps": 0.2,
+   "pfcf": 0.25,
+   "pb": 0.25,
+   "peers": 0.2
+  }
+ },
+ "warnings": [],
+ "multiples": {
+  "current": {
+   "pe": 16.61,
+   "ps": 4.93,
+   "pfcf": 21.56,
+   "pb": 8.37
+  },
+  "metrics": {
+   "pe": "net_income",
+   "ps": "revenue",
+   "pfcf": "free_cash_flow",
+   "pb": "equity"
+  },
+  "history": [
+   {
+    "date": "2022-02-21",
+    "pe": 34.75,
+    "ps": 5.99,
+    "pb": 11.22
+   },
+   {
+    "date": "2022-05-23",
+    "pe": 17.66,
+    "ps": 2.91,
+    "pb": 5.04
+   },
+   {
+    "date": "2022-08-22",
+    "pe": 19.73,
+    "ps": 3.24,
+    "pb": 5.27
+   },
+   {
+    "date": "2022-11-21",
+    "pe": 25.49,
+    "ps": 4.09,
+    "pfcf": 179.34,
+    "pb": 6.26
+   },
+   {
+    "date": "2023-02-20",
+    "pe": 31.8,
+    "ps": 4.52,
+    "pfcf": 88.24,
+    "pb": 6.87
+   },
+   {
+    "date": "2023-05-22",
+    "pe": 40.82,
+    "ps": 5.37,
+    "pfcf": 58.43,
+    "pb": 7.85
+   },
+   {
+    "date": "2023-08-21",
+    "pe": 44.24,
+    "ps": 5.85,
+    "pfcf": 44.1,
+    "pb": 8.23
+   },
+   {
+    "date": "2023-11-20",
+    "pe": 47.69,
+    "ps": 6.59,
+    "pfcf": 38.02,
+    "pb": 9.76
+   },
+   {
+    "date": "2024-02-19",
+    "pe": 48.56,
+    "ps": 7.79,
+    "pfcf": 37.92,
+    "pb": 12.76
+   },
+   {
+    "date": "2024-05-20",
+    "pe": 44.39,
+    "ps": 8.18,
+    "pfcf": 41.12,
+    "pb": 13.37
+   },
+   {
+    "date": "2024-08-19",
+    "pe": 42.56,
+    "ps": 8.32,
+    "pfcf": 44.28,
+    "pb": 13.66
+   },
+   {
+    "date": "2024-11-18",
+    "pe": 50.53,
+    "ps": 10.46,
+    "pfcf": 55.18,
+    "pb": 17.3
+   },
+   {
+    "date": "2025-02-17",
+    "pe": 50.42,
+    "ps": 11.26,
+    "pfcf": 63.46,
+    "pb": 17.75
+   },
+   {
+    "date": "2025-05-19",
+    "pe": 55.88,
+    "ps": 12.89,
+    "pfcf": 69.56,
+    "pb": 21.56
+   },
+   {
+    "date": "2025-08-18",
+    "pe": 51.12,
+    "ps": 12.57,
+    "pfcf": 61.63,
+    "pb": 21.0
+   },
+   {
+    "date": "2025-11-17",
+    "pe": 43.4,
+    "ps": 10.44,
+    "pfcf": 50.49,
+    "pb": 17.44
+   },
+   {
+    "date": "2026-02-16",
+    "pe": 31.09,
+    "ps": 7.56,
+    "pfcf": 36.09,
+    "pb": 12.83
+   },
+   {
+    "date": "2026-05-18",
+    "pe": 28.48,
+    "ps": 8.12,
+    "pfcf": 32.02,
+    "pb": 12.24
+   },
+   {
+    "date": "2026-08-17",
+    "pe": 24.85,
+    "ps": 7.01,
+    "pfcf": 30.41,
+    "pb": 11.25
+   },
+   {
+    "date": "2026-11-16",
+    "pe": 16.61,
+    "ps": 4.93,
+    "pfcf": 21.56,
+    "pb": 8.37
+   }
+  ],
+  "peers": [
+   {
+    "symbol": "GOOGL",
+    "pe": 14.31,
+    "ps": 7.16,
+    "pfcf": 170.77,
+    "pb": 4.98
+   },
+   {
+    "symbol": "META",
+    "pe": 20.39,
+    "ps": 6.35,
+    "pfcf": 53.55,
+    "pb": 5.63
+   },
+   {
+    "symbol": "T",
+    "pe": 11.38,
+    "ps": 1.16,
+    "pfcf": 8.39,
+    "pb": 1.22
+   },
+   {
+    "symbol": "TBLA",
+    "pe": 4.01,
+    "ps": 0.27,
+    "pfcf": 3.02,
+    "pb": 0.57
+   },
+   {
+    "symbol": "VZ",
+    "pe": 11.59,
+    "ps": 1.37,
+    "pb": 1.77
+   }
+  ]
+ },
+ "earnings_timeline": [
+  {
+   "period_end": "2024-12-31",
+   "filed": "2025-01-27",
+   "revenue": 10246513000.0,
+   "net_income": 1868607000.0,
+   "eps_diluted": 0.43,
+   "revenue_yoy_pct": 16.0,
+   "net_income_yoy_pct": 99.2
+  },
+  {
+   "period_end": "2025-03-31",
+   "filed": "2025-04-18",
+   "revenue": 10542801000.0,
+   "net_income": 2890351000.0,
+   "eps_diluted": 0.66,
+   "revenue_yoy_pct": 12.5,
+   "net_income_yoy_pct": 23.9
+  },
+  {
+   "period_end": "2025-06-30",
+   "filed": "2025-07-18",
+   "revenue": 11079166000.0,
+   "net_income": 3125413000.0,
+   "eps_diluted": 0.72,
+   "revenue_yoy_pct": 15.9,
+   "net_income_yoy_pct": 45.6
+  },
+  {
+   "period_end": "2025-09-30",
+   "filed": "2025-10-22",
+   "revenue": 11510307000.0,
+   "net_income": 2546916000.0,
+   "eps_diluted": 0.59,
+   "revenue_yoy_pct": 17.2,
+   "net_income_yoy_pct": 7.8
+  },
+  {
+   "period_end": "2025-12-31",
+   "filed": "2026-01-23",
+   "revenue": 12050762000.0,
+   "net_income": 2418521000.0,
+   "eps_diluted": 0.56,
+   "revenue_yoy_pct": 17.6,
+   "net_income_yoy_pct": 29.4
+  },
+  {
+   "period_end": "2026-03-31",
+   "filed": "2026-04-17",
+   "revenue": 12249757000.0,
+   "net_income": 5282791000.0,
+   "eps_diluted": 1.23,
+   "revenue_yoy_pct": 16.2,
+   "net_income_yoy_pct": 82.8
+  },
+  {
+   "period_end": "2026-06-30",
+   "filed": "2026-07-17",
+   "revenue": 12559938000.0,
+   "net_income": 3401414000.0,
+   "eps_diluted": 0.8,
+   "revenue_yoy_pct": 13.4,
+   "net_income_yoy_pct": 8.8
+  },
+  {
+   "period_end": "2026-09-30",
+   "filed": "2026-10-21",
+   "revenue": 12874176000.0,
+   "net_income": 3663927000.0,
+   "eps_diluted": 0.87,
+   "revenue_yoy_pct": 11.8,
+   "net_income_yoy_pct": 43.9
+  }
+ ],
+ "earnings_date_next": null,
+ "inputs": {
+  "long_price_history": true,
+  "splits_applied": [
+   {
+    "detected_in_period_end": "2015-06-30",
+    "ratio": 7.0
+   },
+   {
+    "detected_in_period_end": "2026-03-31",
+    "ratio": 10.0
+   }
+  ]
+ }
+}

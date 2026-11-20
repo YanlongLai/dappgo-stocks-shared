@@ -1,0 +1,462 @@
+{
+ "schema_version": 1,
+ "generated_at_utc": "2026-11-19T22:10:00Z",
+ "model_version": "dappgo_composite_v2",
+ "as_of_date": "2026-11-19",
+ "covered": 42,
+ "zone_counts": {
+  "deep_below": 9,
+  "below": 2,
+  "within": 23,
+  "above": 3,
+  "far_above": 5
+ },
+ "symbols": {
+  "AAPL": {
+   "name": "AAPL",
+   "sector": "Technology",
+   "status": "ok",
+   "current_price": 349.21,
+   "range": {
+    "low": 223.33,
+    "base": 255.71,
+    "high": 289.19
+   },
+   "zone": "far_above",
+   "gap_pct": 36.56,
+   "confidence": "high",
+   "zone_since": "2026-08-31",
+   "score": 31,
+   "score_parts": {
+    "valuation_gap": 0.0,
+    "fundamentals": 16.0,
+    "trend": 0.0,
+    "data_confidence": 15.0
+   },
+   "conditions": [
+    {
+     "id": "below_range",
+     "met": false
+    },
+    {
+     "id": "growing",
+     "met": true
+    },
+    {
+     "id": "trend_intact",
+     "met": false
+    },
+    {
+     "id": "data_confidence",
+     "met": true
+    }
+   ],
+   "conditions_met": 2,
+   "facts": {
+    "gap_pct": 36.6,
+    "revenue_yoy_pct": 15.1,
+    "net_income_yoy_pct": 18.0,
+    "earnings_surprise_pct": null,
+    "above_ma_200": null,
+    "ma_200_rising": null,
+    "anchor_count": 4
+   },
+   "warnings": []
+  },
+  "MSFT": {
+   "name": "MSFT",
+   "sector": "Technology",
+   "status": "ok",
+   "current_price": 498.3,
+   "range": {
+    "low": 448.51,
+    "base": 533.67,
+    "high": 597.71
+   },
+   "zone": "within",
+   "gap_pct": -6.63,
+   "confidence": "high",
+   "zone_since": "2026-07-27",
+   "score": 39,
+   "score_parts": {
+    "valuation_gap": 8.3,
+    "fundamentals": 16.0,
+    "trend": 0.0,
+    "data_confidence": 15.0
+   },
+   "conditions": [
+    {
+     "id": "below_range",
+     "met": false
+    },
+    {
+     "id": "growing",
+     "met": true
+    },
+    {
+     "id": "trend_intact",
+     "met": false
+    },
+    {
+     "id": "data_confidence",
+     "met": true
+    }
+   ],
+   "conditions_met": 2,
+   "facts": {
+    "gap_pct": -6.6,
+    "revenue_yoy_pct": 17.9,
+    "net_income_yoy_pct": 36.0,
+    "earnings_surprise_pct": null,
+    "above_ma_200": null,
+    "ma_200_rising": null,
+    "anchor_count": 4
+   },
+   "warnings": []
+  },
+  "NFLX": {
+   "name": "NFLX",
+   "sector": "Communication",
+   "status": "ok",
+   "current_price": 58.46,
+   "range": {
+    "low": 80.95,
+    "base": 107.66,
+    "high": 133.26
+   },
+   "zone": "deep_below",
+   "gap_pct": -45.7,
+   "confidence": "high",
+   "zone_since": "2026-10-19",
+   "score": 81,
+   "score_parts": {
+    "valuation_gap": 50.0,
+    "fundamentals": 16.0,
+    "trend": 0.0,
+    "data_confidence": 15.0
+   },
+   "conditions": [
+    {
+     "id": "below_range",
+     "met": true
+    },
+    {
+     "id": "growing",
+     "met": true
+    },
+    {
+     "id": "trend_intact",
+     "met": false
+    },
+    {
+     "id": "data_confidence",
+     "met": true
+    }
+   ],
+   "conditions_met": 3,
+   "facts": {
+    "gap_pct": -45.7,
+    "revenue_yoy_pct": 14.7,
+    "net_income_yoy_pct": 41.6,
+    "earnings_surprise_pct": null,
+    "above_ma_200": null,
+    "ma_200_rising": null,
+    "anchor_count": 4
+   },
+   "warnings": []
+  },
+  "ORCL": {
+   "name": "ORCL",
+   "sector": "Technology",
+   "status": "ok",
+   "current_price": 110.57,
+   "range": {
+    "low": 156.05,
+    "base": 185.93,
+    "high": 225.23
+   },
+   "zone": "deep_below",
+   "gap_pct": -40.53,
+   "confidence": "high",
+   "zone_since": "2026-09-21",
+   "score": 81,
+   "score_parts": {
+    "valuation_gap": 50.0,
+    "fundamentals": 16.0,
+    "trend": 0.0,
+    "data_confidence": 15.0
+   },
+   "conditions": [
+    {
+     "id": "below_range",
+     "met": true
+    },
+    {
+     "id": "growing",
+     "met": true
+    },
+    {
+     "id": "trend_intact",
+     "met": false
+    },
+    {
+     "id": "data_confidence",
+     "met": true
+    }
+   ],
+   "conditions_met": 3,
+   "facts": {
+    "gap_pct": -40.5,
+    "revenue_yoy_pct": 21.6,
+    "net_income_yoy_pct": 52.1,
+    "earnings_surprise_pct": null,
+    "above_ma_200": null,
+    "ma_200_rising": null,
+    "anchor_count": 3
+   },
+   "warnings": []
+  },
+  "JPM": {
+   "name": "JPM",
+   "sector": "Financials",
+   "status": "ok",
+   "current_price": 320.22,
+   "range": {
+    "low": 218.58,
+    "base": 266.16,
+    "high": 330.37
+   },
+   "zone": "within",
+   "gap_pct": 20.31,
+   "confidence": "high",
+   "zone_since": "2026-11-16",
+   "score": 31,
+   "score_parts": {
+    "valuation_gap": 0.0,
+    "fundamentals": 16.0,
+    "trend": 0.0,
+    "data_confidence": 15.0
+   },
+   "conditions": [
+    {
+     "id": "below_range",
+     "met": false
+    },
+    {
+     "id": "growing",
+     "met": true
+    },
+    {
+     "id": "trend_intact",
+     "met": false
+    },
+    {
+     "id": "data_confidence",
+     "met": true
+    }
+   ],
+   "conditions_met": 2,
+   "facts": {
+    "gap_pct": 20.3,
+    "revenue_yoy_pct": 13.2,
+    "net_income_yoy_pct": 13.7,
+    "earnings_surprise_pct": null,
+    "above_ma_200": null,
+    "ma_200_rising": null,
+    "anchor_count": 3
+   },
+   "warnings": []
+  },
+  "WMT": {
+   "name": "WMT",
+   "sector": "Consumer Staples",
+   "status": "ok",
+   "current_price": 126.04,
+   "range": {
+    "low": 68.93,
+    "base": 90.39,
+    "high": 107.04
+   },
+   "zone": "far_above",
+   "gap_pct": 39.44,
+   "confidence": "high",
+   "zone_since": "2026-10-12",
+   "score": 31,
+   "score_parts": {
+    "valuation_gap": 0.0,
+    "fundamentals": 16.0,
+    "trend": 0.0,
+    "data_confidence": 15.0
+   },
+   "conditions": [
+    {
+     "id": "below_range",
+     "met": false
+    },
+    {
+     "id": "growing",
+     "met": true
+    },
+    {
+     "id": "trend_intact",
+     "met": false
+    },
+    {
+     "id": "data_confidence",
+     "met": true
+    }
+   ],
+   "conditions_met": 2,
+   "facts": {
+    "gap_pct": 39.4,
+    "revenue_yoy_pct": 6.1,
+    "net_income_yoy_pct": 3.4,
+    "earnings_surprise_pct": null,
+    "above_ma_200": null,
+    "ma_200_rising": null,
+    "anchor_count": 4
+   },
+   "warnings": []
+  },
+  "V": {
+   "name": "V",
+   "sector": "Financials",
+   "status": "insufficient_data",
+   "current_price": null,
+   "range": null,
+   "zone": null,
+   "gap_pct": null,
+   "confidence": "low",
+   "zone_since": null,
+   "score": null,
+   "score_parts": null,
+   "conditions": null,
+   "conditions_met": null,
+   "facts": null,
+   "warnings": [
+    "Fewer than two valuation anchors could be built from public filings"
+   ]
+  },
+  "SPY": {
+   "name": "SPY",
+   "sector": "ETF",
+   "status": "not_applicable",
+   "current_price": null,
+   "range": null,
+   "zone": null,
+   "gap_pct": null,
+   "confidence": "low",
+   "zone_since": null,
+   "score": null,
+   "score_parts": null,
+   "conditions": null,
+   "conditions_met": null,
+   "facts": null,
+   "warnings": [
+    "Equity valuation does not apply to this asset type"
+   ]
+  },
+  "KO": {
+   "name": "KO",
+   "sector": "Consumer Staples",
+   "status": "ok",
+   "current_price": 96.09,
+   "range": {
+    "low": 89.07,
+    "base": 101.22,
+    "high": 113.37
+   },
+   "zone": "within",
+   "gap_pct": -5.07,
+   "confidence": "high",
+   "zone_since": "2026-07-27",
+   "score": 37,
+   "score_parts": {
+    "valuation_gap": 6.3,
+    "fundamentals": 16.0,
+    "trend": 0.0,
+    "data_confidence": 15.0
+   },
+   "conditions": [
+    {
+     "id": "below_range",
+     "met": false
+    },
+    {
+     "id": "growing",
+     "met": true
+    },
+    {
+     "id": "trend_intact",
+     "met": false
+    },
+    {
+     "id": "data_confidence",
+     "met": true
+    }
+   ],
+   "conditions_met": 2,
+   "facts": {
+    "gap_pct": -5.1,
+    "revenue_yoy_pct": 7.1,
+    "net_income_yoy_pct": 12.3,
+    "earnings_surprise_pct": null,
+    "above_ma_200": null,
+    "ma_200_rising": null,
+    "anchor_count": 4
+   },
+   "warnings": []
+  },
+  "NKE": {
+   "name": "NKE",
+   "sector": "Consumer Discretionary",
+   "status": "ok",
+   "current_price": 34.33,
+   "range": {
+    "low": 45.15,
+    "base": 59.16,
+    "high": 71.84
+   },
+   "zone": "deep_below",
+   "gap_pct": -41.97,
+   "confidence": "high",
+   "zone_since": "2026-07-20",
+   "score": 73,
+   "score_parts": {
+    "valuation_gap": 50.0,
+    "fundamentals": 8.0,
+    "trend": 0.0,
+    "data_confidence": 15.0
+   },
+   "conditions": [
+    {
+     "id": "below_range",
+     "met": true
+    },
+    {
+     "id": "growing",
+     "met": false
+    },
+    {
+     "id": "trend_intact",
+     "met": false
+    },
+    {
+     "id": "data_confidence",
+     "met": true
+    }
+   ],
+   "conditions_met": 2,
+   "facts": {
+    "gap_pct": -42.0,
+    "revenue_yoy_pct": -1.2,
+    "net_income_yoy_pct": 6.8,
+    "earnings_surprise_pct": null,
+    "above_ma_200": null,
+    "ma_200_rising": null,
+    "anchor_count": 4
+   },
+   "warnings": []
+  }
+ }
+}
