@@ -55,7 +55,10 @@ jobs:
           if [[ "$GITLEAKS_EVENT_NAME" = "push" \
             && -n "$GITLEAKS_EVENT_BEFORE" \
             && "$GITLEAKS_EVENT_BEFORE" != "$all_zero_sha" \
-            && -n "$GITLEAKS_SHA" ]]; then
+            && -n "$GITLEAKS_SHA" ]] \
+            && git cat-file -e "${GITLEAKS_EVENT_BEFORE}^{commit}" 2>/dev/null; then
+            # A force-pushed (rebased) branch's old head is not in the clone;
+            # then fall back to the last 50 commits below.
             scan_range="${GITLEAKS_EVENT_BEFORE}..${GITLEAKS_SHA}"
           elif [[ "$GITLEAKS_EVENT_NAME" = "pull_request" \
             && -n "$GITLEAKS_PR_BASE_SHA" \
