@@ -11,6 +11,12 @@ All notable changes to this project will be documented in this file.
 
 Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Versioning: [SemVer](https://semver.org/).
 
+## 0.5.0
+
+- `utils/tile-grid`: column count by usable width (2 / 3 / 4 at 400 and 600 pt) and tile widths for `small` and `wide` tiles, for the Control-Center style dashboards and foldable/iPad reflow.
+- `utils/price-direction`: `priceDirection()`, `directionTone()` and `MARKET_COLOR_CONVENTION` (Taiwan red-up, US green-up).
+- `utils/watchlist-strip`: `pickWatchlistStrip()` picks the first watchlist stocks with a quote, or popular stocks to add when the watchlist is empty.
+
 ## 0.4.10
 
 - `mobile/purchases/pro`: DappGo Pro subscription state from RevenueCat CustomerInfo (`pro` entitlement), a 72-hour offline trust window, stored-snapshot validation, subscription package lookup, and `canRequestAdsWithPro` (Pro also removes ads). Additive; the ad-free policy is unchanged.
