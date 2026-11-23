@@ -23,3 +23,5 @@ export {
   type DividerStyleOpts,
   type DividerStyleResult,
 } from './divider';
+
+export { TILE_TYPE, TILE_ROW_MIN_HEIGHT, type TileTypeToken } from './tile-type';
