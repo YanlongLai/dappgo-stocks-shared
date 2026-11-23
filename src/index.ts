@@ -195,3 +195,20 @@ export {
   type WatchlistStripItem,
   type WatchlistStrip,
 } from './utils/watchlist-strip';
+export { formatChangeText, changeToneColor } from './utils/change-text';
+export {
+  buildValuationTile,
+  parseMarketValuationSummary,
+  parseZoneCounts,
+  parseRiskNotices,
+  percentileBand,
+  VALUATION_TILE_ZONES,
+  type ValuationTileModel,
+  type MarketValuationSummary,
+  type RatioReading,
+  type PercentileBand,
+  type ZoneCounts,
+  type ValuationTileZone,
+  type RiskNotices,
+  type RiskNoticeItem,
+} from './utils/valuation-tile';

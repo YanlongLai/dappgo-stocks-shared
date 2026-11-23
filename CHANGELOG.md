@@ -11,6 +11,12 @@ All notable changes to this project will be documented in this file.
 
 Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Versioning: [SemVer](https://semver.org/).
 
+## 0.5.1
+
+- Add `TILE_TYPE` tokens: one type scale for tiles, list rows, news rows and the stock-detail summary.
+- Add `formatChangeText` / `changeToneColor` (moved from the apps' tile helpers).
+- Add `buildValuationTile`, `parseMarketValuationSummary` and `parseRiskNotices` for the dashboard valuation tile and the TW risk tile (TW `dappgo_tw_market_v1` contract).
+
 ## 0.5.0
 
 - `utils/tile-grid`: column count by usable width (2 / 3 / 4 at 400 and 600 pt) and tile widths for `small` and `wide` tiles, for the Control-Center style dashboards and foldable/iPad reflow.
