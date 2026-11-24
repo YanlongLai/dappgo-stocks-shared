@@ -11,6 +11,10 @@ All notable changes to this project will be documented in this file.
 
 Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Versioning: [SemVer](https://semver.org/).
 
+## 0.7.2
+
+- 估值區間 list: rows and group headers grow with Dynamic Type (up to 2×) so large text never clips; the search box grows instead of clipping its text.
+
 ## 0.7.1
 
 - 估值區間 list: rows keep the page margin in the list; wider number column so P/E and yield fit.
