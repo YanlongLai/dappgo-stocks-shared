@@ -104,7 +104,8 @@ export interface ValuationListProps {
   rows: readonly ValuationListRow[];
   /** Symbols in the app's 我的最愛 store, in its order. */
   favorites: readonly string[];
-  onToggleFavorite: (symbol: string) => void;
+  /** One-tap ☆ on every row; without it rows show no star (Options keeps contracts, not stocks). */
+  onToggleFavorite?: (symbol: string) => void;
   onOpen: (row: ValuationListRow) => void;
   theme: ValuationListTheme;
   labels: ValuationListLabels;
@@ -137,7 +138,7 @@ interface RowProps {
   theme: ValuationListTheme;
   labels: ValuationListLabels;
   onOpen: (row: ValuationListRow) => void;
-  onToggleFavorite: (symbol: string) => void;
+  onToggleFavorite?: (symbol: string) => void;
 }
 
 /** One compact row: ☆ · code/name · zone · gap% over P/E/yield. Fixed height, no charts. */
@@ -152,6 +153,7 @@ export const ValuationRow = memo(function ValuationRow({ row, favorite, theme, l
       accessibilityLabel={[row.symbol, row.name, zoneText, row.gapPct !== null ? labels.formatPct(row.gapPct) : null, row.risk ? labels.risk(row.risk) : null].filter(Boolean).join(' ')}
       testID={`valuation-list-row-${row.symbol}`}
     >
+      {onToggleFavorite ? (
       <Pressable
         onPress={() => onToggleFavorite(row.symbol)}
         hitSlop={10}
@@ -163,6 +165,7 @@ export const ValuationRow = memo(function ValuationRow({ row, favorite, theme, l
       >
         <Text style={[styles.starGlyph, { color: favorite ? theme.star : theme.textMuted }]}>{favorite ? '★' : '☆'}</Text>
       </Pressable>
+      ) : null}
       <View style={styles.names}>
         <View style={styles.codeLine}>
           <Text style={[theme.text.body, styles.code, { color: theme.textHeading }]} numberOfLines={1}>{row.symbol}</Text>
