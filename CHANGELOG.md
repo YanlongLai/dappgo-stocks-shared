@@ -11,6 +11,11 @@ All notable changes to this project will be documented in this file.
 
 Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Versioning: [SemVer](https://semver.org/).
 
+## 0.6.0
+
+- New `ui/` subpath for shared React Native components (react / react-native are optional peer dependencies; pure-TS consumers are unaffected). Components take colours and text styles from the app, never import app code.
+- 個股訊號 module: `mobile/signals/model` (SignalItem, summarizeSignals, selectSignals with search, filter and sort, filterCounts) and `ui/signals/SignalsOverview`, `ui/signals/FilterBar`.
+
 ## 0.5.2
 
 - Add `packTiles` / `spanWidth`: tile grids fill every row (the last tile of a short row widens), so 3- and 4-column layouts never leave an empty slot.
