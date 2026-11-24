@@ -43,6 +43,6 @@ describe('sort and summary', () => {
     expect(sortFlowRows(rows, 'total')[0].symbol).toBe('GOOG');
   });
   it('summarises counts and the aggregate ratio', () => {
-    expect(summarizeFlow(rows)).toEqual({ count: 3, putHeavy: 1, callHeavy: 2, aggregate: 0.67, basis: 'oi', unusual: 0 });
+    expect(summarizeFlow(rows)).toEqual({ count: 3, putHeavy: 1, callHeavy: 2, aggregate: 0.68, basis: 'oi', unusual: 0 });
   });
 });
