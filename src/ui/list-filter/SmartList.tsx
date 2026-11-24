@@ -11,7 +11,7 @@ import { ResultLine } from './ResultLine';
 import { IndustryChipRow, IndustrySheet, type IndustryGroup, type IndustryJumpLabels } from './IndustryJump';
 import { SmartSearchBar, type SearchLabels, type SearchTheme } from './SmartSearchBar';
 import { useListFilter } from './useListFilter';
-import type { ScrollChrome } from '../scroll/ScrollChrome';
+import { FLOATING_SLOT_CLEARANCE, type ScrollChrome } from '../scroll/ScrollChrome';
 
 export type SmartListTheme = Omit<SearchTheme, 'text'> & Omit<DistributionTheme, 'text'> & { text: SearchTheme['text'] & DistributionTheme['text'] };
 
@@ -265,11 +265,10 @@ export function SmartList({
           })}
           selected={f.filter.segment}
           onSelect={f.selectSegment}
-          favorites={{ label: labels.favorites, count: f.favorites, on: f.filter.favoritesOnly, onToggle: f.toggleFavorites }}
           theme={theme}
           testID={`${testID}-bar`}
         />
-        <ResultLine count={f.results.length} sorts={sortOptions} sort={f.filter.sort} onSort={(k) => f.setSort(k as SortKey)} theme={theme} labels={labels} testID={`${testID}-result-line`} />
+        <ResultLine count={f.results.length} sorts={sortOptions} sort={f.filter.sort} onSort={(k) => f.setSort(k as SortKey)} favorites={{ label: labels.favorites, count: f.favorites, on: f.filter.favoritesOnly, onToggle: f.toggleFavorites }} theme={theme} labels={labels} testID={`${testID}-result-line`} />
       </View>
       {chipRow ? (
         <View onLayout={(e: LayoutChangeEvent) => { setChipsY(e.nativeEvent.layout.y); setChipsH(e.nativeEvent.layout.height); }}>{chipRow}</View>
@@ -300,7 +299,7 @@ export function SmartList({
         getItemLayout={fixedRows ? getItemLayout : undefined}
         onScrollToIndexFailed={({ index }) => listRef.current?.scrollToOffset({ offset: headerY + headerHeight + (offsets[index] ?? 0) - chipsH, animated: false })}
         ListHeaderComponent={listHeader}
-        ListFooterComponent={footer}
+        ListFooterComponent={<>{footer}{chrome ? <View style={{ height: FLOATING_SLOT_CLEARANCE }} /> : null}</>}
         ListEmptyComponent={empty}
         refreshControl={refreshControl}
         onScroll={onScroll}

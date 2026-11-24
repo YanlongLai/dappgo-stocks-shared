@@ -35,6 +35,7 @@ export function DistributionBar({ segments, selected, onSelect, favorites, theme
   segments: readonly DistributionSegment[];
   selected: string | null;
   onSelect: (key: string) => void;
+  /** @deprecated 2.0.0: 「自選 N」 lives on the result line now; ignored here. */
   favorites?: { label: string; count: number; on: boolean; onToggle: () => void } | null;
   theme: DistributionTheme;
   /** e.g. (s) => `${s.label} ${s.count} 檔` */
@@ -83,27 +84,13 @@ export function DistributionBar({ segments, selected, onSelect, favorites, theme
               testID={`${testID}-${s.key}`}
             >
               <View style={[styles.dot, { backgroundColor: s.color }]} />
-              <Text style={[theme.text.label, styles.labelText, { color: theme.textHeading }]} numberOfLines={2}>
+              <Text style={[theme.text.label, styles.labelText, { color: theme.textHeading }]} numberOfLines={big ? 2 : 1}>
                 {s.label}
                 <Text style={styles.count}>{` ${s.count.toLocaleString('en-US')}`}</Text>
               </Text>
             </Pressable>
           );
         })}
-        {favorites && favorites.count > 0 ? (
-          <Pressable
-            onPress={() => { tapHaptic(); favorites.onToggle(); }}
-            accessibilityRole="button"
-            accessibilityState={{ selected: favorites.on }}
-            accessibilityLabel={`${favorites.label} ${favorites.count}`}
-            style={[styles.fav, big && styles.labelBig, favorites.on ? { backgroundColor: theme.accent, borderColor: theme.accent } : { backgroundColor: theme.card, borderColor: theme.border }]}
-            testID={`${testID}-favorites`}
-          >
-            <Text style={[theme.text.label, styles.labelText, { color: favorites.on ? theme.onSegment : theme.textHeading }]} numberOfLines={1}>
-              {`★ ${favorites.label} ${favorites.count}`}
-            </Text>
-          </Pressable>
-        ) : null}
       </View>
     </View>
   );
@@ -114,12 +101,12 @@ const styles = StyleSheet.create({
   bar: { flexDirection: 'row', height: BAR_HEIGHT, borderRadius: BAR_HEIGHT / 2, overflow: 'hidden', gap: 2 },
   block: { minWidth: 4 },
   empty: { flex: 1 },
-  labels: { flexDirection: 'row', alignItems: 'center', gap: 4 },
-  label: { flex: 1, minWidth: 0, minHeight: 36, paddingVertical: 4, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 5, borderRadius: 8, borderWidth: 1, paddingHorizontal: 4 },
+  // One line per label (「● Below 1,097」) at natural width; the row wraps only if all do not fit.
+  labels: { flexDirection: 'row', alignItems: 'center', flexWrap: 'wrap', columnGap: 6, rowGap: 2 },
+  label: { minHeight: 32, paddingVertical: 4, flexDirection: 'row', alignItems: 'center', gap: 5, borderRadius: 8, borderWidth: 1, paddingHorizontal: 6 },
   labelsColumn: { flexDirection: 'column', alignItems: 'stretch' },
-  labelBig: { flex: 0, justifyContent: 'flex-start', paddingHorizontal: 8 },
+  labelBig: { alignSelf: 'stretch', paddingHorizontal: 8 },
   dot: { width: 8, height: 8, borderRadius: 4 },
-  labelText: { fontWeight: '600', flexShrink: 1, textAlign: 'center' },
+  labelText: { fontWeight: '600', flexShrink: 1 },
   count: { fontWeight: '700', fontVariant: ['tabular-nums'] },
-  fav: { minHeight: 36, borderRadius: 8, borderWidth: StyleSheet.hairlineWidth, paddingHorizontal: 10, justifyContent: 'center' },
 });

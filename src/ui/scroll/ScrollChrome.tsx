@@ -226,6 +226,35 @@ export function BackToTopButton({ onPress, theme, labels }: { onPress: () => voi
   );
 }
 
+/** Within one screen of the top: where a screen's own floating CTA may show. */
+export function nearTop(y: number, viewport: number): boolean {
+  return viewport <= 0 ? y < 400 : y < viewport * 0.8;
+}
+
+/** Height a page keeps free under its last row so the floating slot never covers it. */
+export const FLOATING_SLOT_CLEARANCE = 44 + 16;
+
+/** The floating CTA in the slot: a compact pill at the right, the same height as 「↑」. */
+export function FloatingPill({ label, onPress, theme, accessibilityHint, testID = 'floating-pill' }: {
+  label: string;
+  onPress: () => void;
+  theme: ScrollChromeTheme;
+  accessibilityHint?: string;
+  testID?: string;
+}) {
+  return (
+    <Pressable
+      onPress={() => { tapHaptic(); onPress(); }}
+      accessibilityRole="button"
+      accessibilityHint={accessibilityHint}
+      style={({ pressed }) => [styles.pillCta, { backgroundColor: theme.card, borderColor: theme.border, opacity: pressed ? 0.85 : 1 }]}
+      testID={testID}
+    >
+      <Text style={[theme.text.label, styles.pillCtaText, { color: theme.accent }]} numberOfLines={1} maxFontSizeMultiplier={1.4}>{`${label} ›`}</Text>
+    </Pressable>
+  );
+}
+
 /** Thin bar pinned at the top of a sub-page once its large title has scrolled away. */
 export function CompactTitleBar({ title, onBack, onTitlePress, top, theme, labels, testID = 'scroll-chrome-title' }: {
   title: string;
@@ -299,7 +328,8 @@ export function ScrollChromeOverlay({ chrome, theme, labels, bottom, cta, compac
         testID={`${testID}-slot`}
         items={[
           { key: 'top', visible: state.showTop && !chrome.keyboardOpen, render: () => <BackToTopButton onPress={chrome.scrollToTop} theme={theme} labels={labels} /> },
-          ...(cta ? [{ key: 'cta', visible: cta.visible && !state.showTop, render: cta.render }] : []),
+          // The screen's CTA only near the top; further down the slot belongs to 「↑」.
+          ...(cta ? [{ key: 'cta', visible: cta.visible && !state.showTop && nearTop(state.y, chrome.viewport), render: cta.render }] : []),
         ]}
       />
     </>
@@ -343,7 +373,11 @@ export const ScreenScroll = React.forwardRef<ScrollView, ScrollViewProps & {
   }), [chrome, onScroll, onLayout, onScrollBeginDrag, onScrollEndDrag, onMomentumScrollBegin, onMomentumScrollEnd, onScrollToTop, onContentSizeChange]);
   return (
     <View style={[styles.flex, style as object]}>
-      <Comp ref={setRef} scrollEventThrottle={16} scrollsToTop {...rest} {...handlers} style={styles.flex} />
+      <Comp ref={setRef} scrollEventThrottle={16} scrollsToTop {...rest} {...handlers} style={styles.flex}>
+        {rest.children}
+        {/* Room under the last row so the floating slot never covers it. */}
+        <View style={{ height: FLOATING_SLOT_CLEARANCE }} testID="scroll-chrome-clearance" />
+      </Comp>
       <ScrollChromeOverlay chrome={chrome} theme={theme} labels={labels} bottom={bottom} cta={cta} compactTitle={compactTitle} returnTop={returnTop} />
     </View>
   );
@@ -357,6 +391,11 @@ const styles = StyleSheet.create({
     width: 44, height: 44, borderRadius: 22, alignItems: 'center', justifyContent: 'center',
     shadowColor: '#000', shadowOpacity: 0.25, shadowRadius: 8, shadowOffset: { width: 0, height: 3 }, elevation: 6,
   },
+  pillCta: {
+    minHeight: 44, borderRadius: 22, borderWidth: StyleSheet.hairlineWidth, paddingHorizontal: 16, justifyContent: 'center',
+    shadowColor: '#000', shadowOpacity: 0.18, shadowRadius: 8, shadowOffset: { width: 0, height: 3 }, elevation: 5,
+  },
+  pillCtaText: { fontWeight: '700' },
   topGlyph: { fontSize: 22, fontWeight: '700', lineHeight: 26 },
   pillWrap: { position: 'absolute', alignSelf: 'center', left: 0, right: 0, alignItems: 'center' },
   pill: {

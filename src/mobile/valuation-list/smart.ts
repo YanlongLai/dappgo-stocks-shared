@@ -4,6 +4,8 @@ import type { ValuationZone } from '../valuation/valuation-v2';
 
 /** Distribution bar groups for valuation: deep_below/below → below, far_above/above → above. */
 export type ValuationSegment = 'below' | 'within' | 'above';
+/** Bar segment for stocks without a model range (2.0.0). */
+export const VALUATION_NO_RANGE = 'none';
 export function valuationSegment(zone: ValuationZone | null): ValuationSegment | null {
   if (zone === 'deep_below' || zone === 'below') return 'below';
   if (zone === 'within') return 'within';
@@ -41,8 +43,9 @@ export interface ValuationSmartLabels {
 /** Facets, threshold chips and sorts; default sort: nearest a range edge (plan §3.3). */
 export function valuationSmartConfig(l: ValuationSmartLabels, opts: { zhuyin?: boolean; yieldChips?: boolean } = {}): ListConfig {
   return {
-    segmentOf: (it) => (it.facets.zone as string | null) ?? null,
-    segments: ['below', 'within', 'above'],
+    // Stocks without a range get their own grey segment so the bar adds up to the result count.
+    segmentOf: (it) => (it.facets.zone as string | null) ?? VALUATION_NO_RANGE,
+    segments: ['below', 'within', 'above', VALUATION_NO_RANGE],
     facets: [
       { dim: 'zone', label: (v) => l.zone(v as ValuationSegment), keywords: l.keywords.zone },
       { dim: 'industry', label: (v) => l.industry?.(v) ?? v },
