@@ -1,12 +1,13 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState, type ReactElement } from 'react';
 import {
-  Animated, FlatList, Modal, Pressable, StyleSheet, Text, View,
+  Animated, FlatList, Pressable, StyleSheet, Text, View,
   type LayoutChangeEvent, type ListRenderItemInfo, type NativeScrollEvent, type NativeSyntheticEvent, type RefreshControlProps,
   type StyleProp, type ViewStyle, type ViewToken,
 } from 'react-native';
 import { chipKey, groupItems, type FilterChip, type ListConfig, type ListFilter, type ListItem, type SortKey } from '../../mobile/list-filter/model';
 import { tapHaptic } from '../tiles/PressableCard';
 import { DistributionBar, type DistributionTheme } from './DistributionBar';
+import { ResultLine } from './ResultLine';
 import { IndustryChipRow, IndustrySheet, type IndustryGroup, type IndustryJumpLabels } from './IndustryJump';
 import { SmartSearchBar, type SearchLabels, type SearchTheme } from './SmartSearchBar';
 import { useListFilter } from './useListFilter';
@@ -46,7 +47,7 @@ type Item =
  */
 export function SmartList({
   items, cfg, segments, defaultSort, sortOptions, renderRow, rowHeight, fixedRows = true, groupBy, theme, labels, header, footer, refreshControl,
-  initialFilter, initialOffset, onStateChange, recentSearches = [], commonChips = [], rankChip, onSearchSubmit, onUse, contentContainerStyle, onScrollExtra, pinTop = 0, testID = 'smart-list',
+  initialFilter, initialOffset, onStateChange, recentSearches = [], commonChips = [], rankChip, onSearchSubmit, onUse, contentContainerStyle, onScrollExtra, pinTop = 0, pinTranslateY, testID = 'smart-list',
 }: {
   items: readonly ListItem[];
   cfg: ListConfig;
@@ -75,8 +76,10 @@ export function SmartList({
   /** e.g. a collapsible screen header's padding and scroll handler. */
   contentContainerStyle?: StyleProp<ViewStyle>;
   onScrollExtra?: (e: NativeSyntheticEvent<NativeScrollEvent>) => void;
-  /** Where the pinned industry row sits (below a collapsible screen header). */
-  pinTop?: number | Animated.AnimatedInterpolation<number> | Animated.Value;
+  /** Where the pinned industry row sits: below a collapsible screen header… */
+  pinTop?: number;
+  /** …and that header's (native-driven) translateY, so the row follows it. */
+  pinTranslateY?: Animated.Value | Animated.AnimatedInterpolation<number>;
   testID?: string;
 }) {
   const f = useListFilter(items, cfg, { initial: initialFilter, defaultSort, rankChip, onUse });
@@ -89,7 +92,6 @@ export function SmartList({
   const [activeGroup, setActiveGroup] = useState<string | null>(null);
   const [currentGroup, setCurrentGroup] = useState<number | null>(null);
   const [sheetOpen, setSheetOpen] = useState(false);
-  const [sortOpen, setSortOpen] = useState(false);
   const [chipsH, setChipsH] = useState(46);
   const listRef = useRef<FlatList<Item>>(null);
   const offset = useRef(initialOffset ?? 0);
@@ -226,7 +228,6 @@ export function SmartList({
       testID={`${testID}-search`}
     />
   );
-  const currentSort = sortOptions.find((o) => o.key === f.filter.sort) ?? null;
   const chipRow = showIndustries ? (
     <IndustryChipRow groups={industries} active={activeGroup} onJump={jumpTo} onOpenAll={() => setSheetOpen(true)} theme={theme} labels={labels} testID={`${testID}-industries`} />
   ) : null;
@@ -246,19 +247,7 @@ export function SmartList({
           theme={theme}
           testID={`${testID}-bar`}
         />
-        <Pressable
-          onPress={sortOptions.length > 1 ? () => { tapHaptic(); setSortOpen(true); } : undefined}
-          disabled={sortOptions.length <= 1}
-          accessibilityRole="button"
-          accessibilityHint={labels.sortMenuTitle}
-          style={styles.resultLine}
-          testID={`${testID}-result-line`}
-        >
-          <Text style={[theme.text.label, styles.resultText, { color: theme.textMuted }]} numberOfLines={2} accessibilityLiveRegion="polite" testID={`${testID}-count`}>
-            {labels.resultCount(f.results.length)}
-            {currentSort ? ` · ${labels.sortedBy(currentSort.label)}${sortOptions.length > 1 ? ' ▾' : ''}` : ''}
-          </Text>
-        </Pressable>
+        <ResultLine count={f.results.length} sorts={sortOptions} sort={f.filter.sort} onSort={(k) => f.setSort(k as SortKey)} theme={theme} labels={labels} testID={`${testID}-result-line`} />
       </View>
       {chipRow ? (
         <View onLayout={(e: LayoutChangeEvent) => { setChipsY(e.nativeEvent.layout.y); setChipsH(e.nativeEvent.layout.height); }}>{chipRow}</View>
@@ -309,7 +298,7 @@ export function SmartList({
         </View>
       ) : null}
       {pinned && chipRow ? (
-        <Animated.View style={[styles.pinned, { top: pinTop as number }]} pointerEvents="box-none" testID={`${testID}-pinned`}>
+        <Animated.View style={[styles.pinned, { top: pinTop, transform: pinTranslateY ? [{ translateY: pinTranslateY }] : [] }]} pointerEvents="box-none" testID={`${testID}-pinned`}>
           {chipRow}
           {currentGroup != null && rowsAndGroups[currentGroup]?.type === 'group'
             ? sectionHeader(rowsAndGroups[currentGroup] as Extract<Item, { type: 'group' }>, true)
@@ -327,22 +316,6 @@ export function SmartList({
           testID={`${testID}-industry-sheet`}
         />
       ) : null}
-      <Modal visible={sortOpen} transparent animationType="fade" onRequestClose={() => setSortOpen(false)} testID={`${testID}-sort-menu`}>
-        <Pressable style={styles.scrim} onPress={() => setSortOpen(false)} accessibilityRole="button" accessibilityLabel={labels.close} />
-        <View style={[styles.menu, { backgroundColor: theme.card, borderColor: theme.border }]}>
-          <Text style={[theme.text.label, styles.menuTitle, { color: theme.textMuted }]}>{labels.sortMenuTitle}</Text>
-          {sortOptions.map((o) => {
-            const on = f.filter.sort === o.key;
-            return (
-              <Pressable key={o.key} onPress={() => { tapHaptic(); f.setSort(o.key); setSortOpen(false); }} accessibilityRole="button" accessibilityState={{ selected: on }}
-                style={styles.menuRow} testID={`${testID}-sort-${o.key}`}>
-                <Text style={[theme.text.body, styles.flex, { color: on ? theme.accent : theme.textHeading, fontWeight: on ? '700' : '400' }]} numberOfLines={2}>{o.label}</Text>
-                {on ? <Text style={[theme.text.body, { color: theme.accent }]}>✓</Text> : null}
-              </Pressable>
-            );
-          })}
-        </View>
-      </Modal>
     </View>
   );
 }
@@ -350,8 +323,6 @@ export function SmartList({
 const styles = StyleSheet.create({
   flex: { flex: 1 },
   controls: { gap: 8, paddingHorizontal: 16, paddingBottom: 2 },
-  resultLine: { minHeight: 32, justifyContent: 'center' },
-  resultText: { fontVariant: ['tabular-nums'] },
   group: { flexDirection: 'row', alignItems: 'center', paddingHorizontal: 16, borderBottomWidth: StyleSheet.hairlineWidth, gap: 8 },
   groupTitle: { flex: 1, fontWeight: '700' },
   groupMark: { position: 'absolute', left: 0, top: 8, bottom: 8, width: 3, borderRadius: 2 },
@@ -361,8 +332,4 @@ const styles = StyleSheet.create({
   clear: { minHeight: 40, justifyContent: 'center' },
   compactWrap: { position: 'absolute', top: 0, left: 0, right: 0 },
   pinned: { position: 'absolute', left: 0, right: 0 },
-  scrim: { ...StyleSheet.absoluteFillObject, backgroundColor: 'rgba(0,0,0,0.3)' },
-  menu: { position: 'absolute', left: 16, right: 16, bottom: 40, borderRadius: 14, borderWidth: StyleSheet.hairlineWidth, paddingVertical: 6 },
-  menuTitle: { paddingHorizontal: 16, paddingVertical: 8 },
-  menuRow: { flexDirection: 'row', alignItems: 'center', minHeight: 48, paddingHorizontal: 16, gap: 8 },
 });
