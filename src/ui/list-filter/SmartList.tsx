@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState, type ReactElement } from 'react';
 import {
-  Animated, FlatList, Pressable, StyleSheet, Text, View,
+  Animated, FlatList, Pressable, useWindowDimensions, StyleSheet, Text, View,
   type LayoutChangeEvent, type ListRenderItemInfo, type NativeScrollEvent, type NativeSyntheticEvent, type RefreshControlProps,
   type StyleProp, type ViewStyle, type ViewToken,
 } from 'react-native';
@@ -97,8 +97,10 @@ export function SmartList({
   const offset = useRef(initialOffset ?? 0);
   const lastY = useRef(0);
 
-  const GROUP_H = 40;
-  const MORE_H = 44;
+  // Section and 「再看」 rows grow with the text size so titles are never clipped.
+  const textScale = Math.min(Math.max(useWindowDimensions().fontScale || 1, 1), 3.2);
+  const GROUP_H = Math.round(40 * textScale);
+  const MORE_H = Math.round(44 * textScale);
   const rowsAndGroups = useMemo<Item[]>(() => {
     if (!groupBy) return f.results.map((it) => ({ type: 'row' as const, key: it.symbol, item: it }));
     const out: Item[] = [];

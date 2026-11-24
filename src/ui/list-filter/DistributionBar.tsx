@@ -1,5 +1,5 @@
 import React, { useEffect, useRef } from 'react';
-import { Animated, Pressable, StyleSheet, Text, View, type TextStyle } from 'react-native';
+import { Animated, Pressable, StyleSheet, Text, View, useWindowDimensions, type TextStyle } from 'react-native';
 import { tapHaptic } from '../tiles/PressableCard';
 
 export interface DistributionSegment {
@@ -49,6 +49,8 @@ export function DistributionBar({ segments, selected, onSelect, favorites, theme
     Animated.timing(fade, { toValue: 1, duration: 220, useNativeDriver: true }).start();
   }, [signature, fade]);
   const visible = segments.filter((s) => s.count > 0);
+  // Large text: one label per line, so names and counts are never broken up.
+  const big = useWindowDimensions().fontScale >= 1.5;
 
   return (
     <View style={styles.wrap} testID={testID}>
@@ -67,7 +69,7 @@ export function DistributionBar({ segments, selected, onSelect, favorites, theme
           );
         })}
       </Animated.View>
-      <View style={styles.labels}>
+      <View style={[styles.labels, big && styles.labelsColumn]}>
         {visible.map((s) => {
           const on = selected === s.key;
           return (
@@ -77,7 +79,7 @@ export function DistributionBar({ segments, selected, onSelect, favorites, theme
               accessibilityRole="button"
               accessibilityState={{ selected: on }}
               accessibilityLabel={a11yLabel ? a11yLabel(s) : `${s.label} ${s.count}`}
-              style={[styles.label, on ? { borderColor: s.color, backgroundColor: theme.card } : { borderColor: 'transparent' }]}
+              style={[styles.label, big && styles.labelBig, on ? { borderColor: s.color, backgroundColor: theme.card } : { borderColor: 'transparent' }]}
               testID={`${testID}-${s.key}`}
             >
               <View style={[styles.dot, { backgroundColor: s.color }]} />
@@ -94,7 +96,7 @@ export function DistributionBar({ segments, selected, onSelect, favorites, theme
             accessibilityRole="button"
             accessibilityState={{ selected: favorites.on }}
             accessibilityLabel={`${favorites.label} ${favorites.count}`}
-            style={[styles.fav, favorites.on ? { backgroundColor: theme.accent, borderColor: theme.accent } : { backgroundColor: theme.card, borderColor: theme.border }]}
+            style={[styles.fav, big && styles.labelBig, favorites.on ? { backgroundColor: theme.accent, borderColor: theme.accent } : { backgroundColor: theme.card, borderColor: theme.border }]}
             testID={`${testID}-favorites`}
           >
             <Text style={[theme.text.label, styles.labelText, { color: favorites.on ? theme.onSegment : theme.textHeading }]} numberOfLines={1}>
@@ -114,6 +116,8 @@ const styles = StyleSheet.create({
   empty: { flex: 1 },
   labels: { flexDirection: 'row', alignItems: 'center', gap: 4 },
   label: { flex: 1, minWidth: 0, minHeight: 36, paddingVertical: 4, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 5, borderRadius: 8, borderWidth: 1, paddingHorizontal: 4 },
+  labelsColumn: { flexDirection: 'column', alignItems: 'stretch' },
+  labelBig: { flex: 0, justifyContent: 'flex-start', paddingHorizontal: 8 },
   dot: { width: 8, height: 8, borderRadius: 4 },
   labelText: { fontWeight: '600', flexShrink: 1, textAlign: 'center' },
   count: { fontWeight: '700', fontVariant: ['tabular-nums'] },
