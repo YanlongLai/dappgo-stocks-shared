@@ -14,6 +14,8 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Versioning: [S
 ## 0.6.0
 
 - New `ui/` subpath for shared React Native components (react / react-native are optional peer dependencies; pure-TS consumers are unaffected). Components take colours and text styles from the app, never import app code.
+- 我的最愛 record (on-device only): `mobile/favorites/history` (price at add + 60-day backfill, last-visit snapshot, recently viewed, `sinceLastVisit` events).
+- 選擇權量能: `mobile/options-flow/model` (P/C rows from open interest; switches to `flow_summary` volume when published; heat, sort, summary).
 - 個股訊號 module: `mobile/signals/model` (SignalItem, summarizeSignals, selectSignals with search, filter and sort, filterCounts) and `ui/signals/SignalsOverview`, `ui/signals/FilterBar`.
 
 ## 0.5.2

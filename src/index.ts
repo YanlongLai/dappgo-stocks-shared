@@ -229,3 +229,28 @@ export {
   type SignalFilter,
   type SignalSort,
 } from './mobile/signals/model';
+export {
+  backfillPriceAtAdd,
+  changeSinceAdded,
+  recordView,
+  recordVisit,
+  migrateHistory,
+  sinceLastVisit,
+  EMPTY_HISTORY,
+  RECENT_LIMIT,
+  BIG_MOVE_PCT,
+  type FavoriteRecord,
+  type FavoritesHistory,
+  type FavoriteEvent,
+  type FavoriteEventKind,
+  type VisitSnapshotEntry,
+} from './mobile/favorites/history';
+export {
+  buildFlowRows,
+  sortFlowRows,
+  summarizeFlow,
+  ratioHeat,
+  type FlowRow,
+  type FlowSort,
+  type FlowSummary,
+} from './mobile/options-flow/model';
