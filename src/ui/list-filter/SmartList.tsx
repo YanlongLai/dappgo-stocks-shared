@@ -94,6 +94,7 @@ export function SmartList({
   }, [rowsAndGroups, rowHeight]);
 
   const groupIndex = useMemo(() => rowsAndGroups.flatMap((it, index) => (it.type === 'group' ? [{ title: it.title, index }] : [])), [rowsAndGroups]);
+  const showIndex = !!groupBy && groupIndex.length > 5;
 
   // Hand the filter and scroll offset back (debounced by the caller's store being cheap).
   useEffect(() => { onStateChange?.(f.filter, offset.current); }, [f.filter]); // eslint-disable-line react-hooks/exhaustive-deps
@@ -221,14 +222,15 @@ export function SmartList({
         keyboardShouldPersistTaps="handled"
         keyboardDismissMode="on-drag"
         style={{ backgroundColor: theme.background }}
-        contentContainerStyle={contentContainerStyle}
+        // Keep rows clear of the side index when it is shown.
+        contentContainerStyle={[contentContainerStyle, showIndex ? styles.indexGutter : null]}
       />
       {compact ? (
         <View style={styles.compactWrap} pointerEvents="box-none">
           <SmartSearchBar {...search.props} compact onExpand={() => listRef.current?.scrollToOffset({ offset: 0, animated: true })} />
         </View>
       ) : null}
-      {groupBy && groupIndex.length > 5 ? (
+      {showIndex ? (
         <View style={styles.index} pointerEvents="box-none" testID={`${testID}-index`}>
           <ScrollView contentContainerStyle={styles.indexInner} showsVerticalScrollIndicator={false}>
             {groupIndex.map((g) => (
@@ -260,4 +262,5 @@ const styles = StyleSheet.create({
   index: { position: 'absolute', right: 0, top: 120, bottom: 80, width: 30, justifyContent: 'center' },
   indexInner: { alignItems: 'center', gap: 2, paddingVertical: 4 },
   indexText: { fontSize: 10, fontWeight: '700' },
+  indexGutter: { paddingRight: 30 },
 });
