@@ -277,3 +277,16 @@ export {
   valuationAccent,
   type OverallZone,
 } from './mobile/tiles/valuation-accent';
+export {
+  MONETIZATION_EVENT_NAMES,
+  monetizationEvent,
+  resolveBuildChannel,
+  shouldLogTrialView,
+  priceTier,
+  type BuildChannel,
+  type MonetizationEventMap,
+  type MonetizationEventName,
+  type PurchaseResult,
+  type PaywallKind,
+  type TrialMarket,
+} from './analytics/monetization';
