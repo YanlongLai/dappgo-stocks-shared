@@ -228,6 +228,31 @@ export function priceTicks(min: number, max: number, areaHeight: number, top: nu
   return out;
 }
 
+/** A "nice" step (1 / 2 / 2.5 / 5 × 10^n) for about `count` intervals across `range`. */
+export function niceStep(range: number, count = 4): number {
+  if (!(range > 0) || !Number.isFinite(range)) return 1;
+  const raw = range / Math.max(1, count);
+  const mag = 10 ** Math.floor(Math.log10(raw));
+  for (const m of [1, 2, 2.5, 5, 10]) if (m * mag >= raw) return m * mag;
+  return 10 * mag;
+}
+
+/**
+ * Round-number price ticks inside [min, max] (e.g. 85, 95, 105, 115) with
+ * their y positions; never the domain's own ragged edges.
+ */
+export function nicePriceTicks(min: number, max: number, areaHeight: number, top: number, count = 4): { price: number; y: number }[] {
+  const range = max - min || 1;
+  const step = niceStep(range, count);
+  const first = Math.ceil(min / step - 1e-9) * step;
+  const out: { price: number; y: number }[] = [];
+  for (let v = first; v <= max + 1e-9 && out.length < 12; v += step) {
+    const price = Number(v.toFixed(10));
+    out.push({ price, y: top + areaHeight - ((price - min) / range) * areaHeight });
+  }
+  return out;
+}
+
 /** Up to `count` evenly spaced indexes for date labels. */
 export function dateTickIndexes(length: number, count = 4): number[] {
   if (length <= 0) return [];

@@ -16,7 +16,8 @@
  * chip component, so the chart looks native in each app without app imports.
  */
 
-import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import React, { useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
+import { FloatingSlotContext } from '../scroll/FloatingSlotContext';
 import { Animated, PanResponder, StyleSheet, Text, View, type GestureResponderEvent, type LayoutChangeEvent } from 'react-native';
 import Svg, { Circle, Defs, G, Line, LinearGradient, Path, Polyline, Rect, Stop, Text as SvgText } from 'react-native-svg';
 import {
@@ -36,7 +37,7 @@ import {
   normalizeBars,
   periodChangePct,
   priceDomain,
-  priceTicks,
+  nicePriceTicks,
   smoothPath,
   type ChartBarInput,
   type ChartFrame,
@@ -241,7 +242,7 @@ export const PriceChart = React.memo(function PriceChart({
   const points = useMemo(() => bars.map((b, i) => ({ x: xAt(i, bars.length), y: yAt(b.close) })), [bars, xAt, yAt]);
   const linePath = useMemo(() => smoothPath(points), [points]);
   const fillPath = useMemo(() => (layers.fill ? areaPath(linePath, points, PAD.top + areaH) : ''), [layers.fill, linePath, points, areaH]);
-  const ticks = useMemo(() => priceTicks(dom.min, dom.max, areaH, PAD.top, 4), [dom, areaH]);
+  const ticks = useMemo(() => nicePriceTicks(dom.min, dom.max, areaH, PAD.top, 4), [dom, areaH]);
   const dateIdx = useMemo(() => dateTickIndexes(bars.length, 4), [bars.length]);
   const maxVol = useMemo(() => Math.max(1, ...bars.map((b) => b.volume)), [bars]);
 
@@ -249,7 +250,8 @@ export const PriceChart = React.memo(function PriceChart({
   const lineColor = changePct >= 0 ? theme.positive : theme.negative;
   const gradId = `${testID}-grad`;
 
-  // ── Crosshair ──
+  // ── Crosshair ── (the floating 「↑」 steps aside while a finger is on the chart)
+  const floating = useContext(FloatingSlotContext);
   const raf = useRef<number | null>(null);
   const setTouchThrottled = useCallback((x: number) => {
     if (raf.current != null) return;
@@ -259,11 +261,11 @@ export const PriceChart = React.memo(function PriceChart({
   const pan = useMemo(() => PanResponder.create({
     onStartShouldSetPanResponder: () => true,
     onMoveShouldSetPanResponder: (_e, g) => Math.abs(g.dx) > Math.abs(g.dy),
-    onPanResponderGrant: (e: GestureResponderEvent) => setTouchX(e.nativeEvent.locationX),
+    onPanResponderGrant: (e: GestureResponderEvent) => { floating?.suppress(true); setTouchX(e.nativeEvent.locationX); },
     onPanResponderMove: (e: GestureResponderEvent) => setTouchThrottled(e.nativeEvent.locationX),
-    onPanResponderRelease: () => setTouchX(null),
-    onPanResponderTerminate: () => setTouchX(null),
-  }), [setTouchThrottled]);
+    onPanResponderRelease: () => { floating?.suppress(false); setTouchX(null); },
+    onPanResponderTerminate: () => { floating?.suppress(false); setTouchX(null); },
+  }), [setTouchThrottled, floating]);
   const cross = useMemo(() => {
     if (touchX == null || bars.length < 2) return null;
     const idx = Math.max(0, Math.min(bars.length - 1, Math.round(((touchX - PAD.left) / plotW) * (bars.length - 1))));
@@ -357,21 +359,6 @@ export const PriceChart = React.memo(function PriceChart({
             </SvgText>
           ))}
 
-          {MA_SPECS.map((spec) => {
-            if (!activeMA[spec.key] || !maOk[spec.key]) return null;
-            return (
-              <Polyline
-                key={spec.key}
-                testID={`${testID}-ma-line-${spec.key}`}
-                points={seriesPoints(ma[spec.key], xAt, yAt)}
-                fill="none"
-                stroke={spec.color}
-                strokeWidth={spec.strokeWidth}
-                strokeLinejoin="round"
-                strokeLinecap="round"
-              />
-            );
-          })}
 
           {layers.volume && bars.map((b, i) => {
             const w = Math.max(2, (plotW / bars.length) * 0.65);
@@ -421,6 +408,22 @@ export const PriceChart = React.memo(function PriceChart({
             />
           ) : null}
 
+          {/* MA lines on top of the Bollinger band and the price line, so an active MA is always visible. */}
+          {MA_SPECS.map((spec) => {
+            if (!activeMA[spec.key] || !maOk[spec.key]) return null;
+            return (
+              <Polyline
+                key={spec.key}
+                testID={`${testID}-ma-line-${spec.key}`}
+                points={seriesPoints(ma[spec.key], xAt, yAt)}
+                fill="none"
+                stroke={spec.color}
+                strokeWidth={Math.max(1.5, spec.strokeWidth)}
+                strokeLinejoin="round"
+                strokeLinecap="round"
+              />
+            );
+          })}
           {cross && (
             <G>
               <Line x1={cross.x} y1={PAD.top} x2={cross.x} y2={PAD.top + areaH} stroke={theme.textMuted} strokeWidth={0.8} strokeDasharray="3,3" />
@@ -486,8 +489,9 @@ export const PriceChart = React.memo(function PriceChart({
             <Chip
               key={spec.key}
               label={spec.label}
-              icon="ellipse"
-              iconColor={maOk[spec.key] ? spec.color : theme.textMuted}
+              // Off: hollow grey dot. On: filled in the line's colour (the chip itself is highlighted too).
+              icon={activeMA[spec.key] && maOk[spec.key] ? 'ellipse' : 'ellipse-outline'}
+              iconColor={activeMA[spec.key] && maOk[spec.key] ? spec.color : theme.textMuted}
               selected={!!activeMA[spec.key] && maOk[spec.key]}
               dimmed={!maOk[spec.key]}
               onPress={() => toggleMA(spec.key, spec.label)}

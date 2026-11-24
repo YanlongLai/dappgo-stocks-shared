@@ -90,3 +90,15 @@ describe('price chart model', () => {
     expect(areaPath('M0,0 L1,1', [{ x: 0 }, { x: 1 }], 5)).toBe('M0,0 L1,1 L1,5 L0,5 Z');
   });
 });
+
+describe('nice price ticks', () => {
+  it('uses 1/2/2.5/5 × 10^n steps inside the domain', () => {
+    const { nicePriceTicks, niceStep } = require('./price-chart');
+    expect(niceStep(32, 4)).toBe(10);
+    expect(niceStep(9.1, 4)).toBe(2.5);
+    expect(niceStep(0.37, 4)).toBe(0.1);
+    const t = nicePriceTicks(83.1, 117.4, 200, 0, 4).map((x: { price: number }) => x.price);
+    expect(t).toEqual([90, 100, 110]);
+    for (const v of nicePriceTicks(2010.3, 2441.9, 200, 0, 4).map((x: { price: number }) => x.price)) expect(v % 100).toBe(0);
+  });
+});

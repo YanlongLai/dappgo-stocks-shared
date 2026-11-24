@@ -22,6 +22,9 @@ import {
   CHROME_ANIM_MS, INITIAL_CHROME, RETURN_PILL_MS, TOP_SLOP, isExternalReturnToTop, nextChrome, scrollToTopPlan, type ChromeState,
 } from '../../mobile/scroll/scroll-chrome';
 import { tapHaptic } from '../tiles/PressableCard';
+import { FloatingSlotContext } from './FloatingSlotContext';
+
+export { FloatingSlotContext } from './FloatingSlotContext';
 
 /** Anything with scrollTo / scrollToOffset (ScrollView, FlatList, SectionList). */
 export interface Scrollable {
@@ -290,7 +293,7 @@ export interface CompactTitle {
 }
 
 /** Everything drawn over a scrolling screen: compact title, 「回到剛才」 and the floating slot. */
-export function ScrollChromeOverlay({ chrome, theme, labels, bottom, cta, compactTitle, returnTop, testID = 'scroll-chrome' }: {
+export function ScrollChromeOverlay({ chrome, theme, labels, bottom, cta, compactTitle, returnTop, suppressed = false, testID = 'scroll-chrome' }: {
   chrome: ScrollChrome;
   theme: ScrollChromeTheme;
   labels: ScrollChromeLabels;
@@ -301,6 +304,8 @@ export function ScrollChromeOverlay({ chrome, theme, labels, bottom, cta, compac
   compactTitle?: CompactTitle | null;
   /** Where 「回到剛才」 sits: below the screen's header, which shows at the top. */
   returnTop?: number;
+  /** Content asked the slot to step aside (e.g. a chart crosshair drag). */
+  suppressed?: boolean;
   testID?: string;
 }) {
   const { state, returnTo } = chrome;
@@ -327,9 +332,9 @@ export function ScrollChromeOverlay({ chrome, theme, labels, bottom, cta, compac
         bottom={bottom}
         testID={`${testID}-slot`}
         items={[
-          { key: 'top', visible: state.showTop && !chrome.keyboardOpen, render: () => <BackToTopButton onPress={chrome.scrollToTop} theme={theme} labels={labels} /> },
+          { key: 'top', visible: state.showTop && !chrome.keyboardOpen && !suppressed, render: () => <BackToTopButton onPress={chrome.scrollToTop} theme={theme} labels={labels} /> },
           // The screen's CTA only near the top; further down the slot belongs to 「↑」.
-          ...(cta ? [{ key: 'cta', visible: cta.visible && !state.showTop && nearTop(state.y, chrome.viewport), render: cta.render }] : []),
+          ...(cta ? [{ key: 'cta', visible: cta.visible && !state.showTop && !suppressed && nearTop(state.y, chrome.viewport), render: cta.render }] : []),
         ]}
       />
     </>
@@ -353,6 +358,8 @@ export const ScreenScroll = React.forwardRef<ScrollView, ScrollViewProps & {
 }>(function ScreenScroll({ theme, labels, bottom, cta, compactTitle, returnTop, chromeRef, onShowTopChange, ScrollComponent, onScroll, onLayout, onScrollBeginDrag, onScrollEndDrag, onMomentumScrollBegin, onMomentumScrollEnd, onScrollToTop, onContentSizeChange, style, ...rest }, forwarded) {
   const chrome = useScrollChrome();
   if (chromeRef) chromeRef.current = chrome;
+  const [suppressed, setSuppressed] = useState(false);
+  const slotCtx = useMemo(() => ({ suppress: setSuppressed }), []);
   const showTop = chrome.state.showTop && !chrome.keyboardOpen;
   useEffect(() => { onShowTopChange?.(showTop); }, [showTop, onShowTopChange]);
   const setRef = useCallback((node: ScrollView | null) => {
@@ -372,14 +379,16 @@ export const ScreenScroll = React.forwardRef<ScrollView, ScrollViewProps & {
     onContentSizeChange: (w: number, h: number) => { chrome.onContentSizeChange(w, h); onContentSizeChange?.(w, h); },
   }), [chrome, onScroll, onLayout, onScrollBeginDrag, onScrollEndDrag, onMomentumScrollBegin, onMomentumScrollEnd, onScrollToTop, onContentSizeChange]);
   return (
+    <FloatingSlotContext.Provider value={slotCtx}>
     <View style={[styles.flex, style as object]}>
       <Comp ref={setRef} scrollEventThrottle={16} scrollsToTop {...rest} {...handlers} style={styles.flex}>
         {rest.children}
         {/* Room under the last row so the floating slot never covers it. */}
         <View style={{ height: FLOATING_SLOT_CLEARANCE }} testID="scroll-chrome-clearance" />
       </Comp>
-      <ScrollChromeOverlay chrome={chrome} theme={theme} labels={labels} bottom={bottom} cta={cta} compactTitle={compactTitle} returnTop={returnTop} />
+      <ScrollChromeOverlay chrome={chrome} theme={theme} labels={labels} bottom={bottom} cta={cta} compactTitle={compactTitle} returnTop={returnTop} suppressed={suppressed} />
     </View>
+    </FloatingSlotContext.Provider>
   );
 });
 
