@@ -139,16 +139,18 @@ interface RowProps {
   labels: ValuationListLabels;
   onOpen: (row: ValuationListRow) => void;
   onToggleFavorite?: (symbol: string) => void;
+  /** Rows straight in the list (not inside a card) keep the page's side margin. */
+  inset?: boolean;
 }
 
 /** One compact row: ☆ · code/name · zone · gap% over P/E/yield. Fixed height, no charts. */
-export const ValuationRow = memo(function ValuationRow({ row, favorite, theme, labels, onOpen, onToggleFavorite }: RowProps) {
+export const ValuationRow = memo(function ValuationRow({ row, favorite, theme, labels, onOpen, onToggleFavorite, inset }: RowProps) {
   const color = row.zone ? theme.zone[row.zone] : theme.textMuted;
   const zoneText = row.zone ? labels.zone(row.zone) : labels.noZone;
   return (
     <Pressable
       onPress={() => onOpen(row)}
-      style={({ pressed }) => [styles.row, { borderBottomColor: theme.border }, pressed && styles.pressed]}
+      style={({ pressed }) => [styles.row, inset && styles.inset, { borderBottomColor: theme.border }, pressed && styles.pressed]}
       accessibilityRole="button"
       accessibilityLabel={[row.symbol, row.name, zoneText, row.gapPct !== null ? labels.formatPct(row.gapPct) : null, row.risk ? labels.risk(row.risk) : null].filter(Boolean).join(' ')}
       testID={`valuation-list-row-${row.symbol}`}
@@ -180,7 +182,7 @@ export const ValuationRow = memo(function ValuationRow({ row, favorite, theme, l
       </View>
       <View style={styles.numbers}>
         <Text style={[theme.text.mono, styles.gap, { color }]} numberOfLines={1}>{row.gapPct !== null ? labels.formatPct(row.gapPct) : '—'}</Text>
-        <Text style={[theme.text.label, styles.right, { color: theme.textMuted }]} numberOfLines={1}>{labels.rowFacts(row)}</Text>
+        <Text style={[theme.text.label, styles.right, { color: theme.textMuted }]} numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.8}>{labels.rowFacts(row)}</Text>
       </View>
     </Pressable>
   );
@@ -192,7 +194,7 @@ const GroupHeader = memo(function GroupHeader({ industry, count, collapsed, them
   return (
     <Pressable
       onPress={() => onToggle(industry)}
-      style={[styles.group, { backgroundColor: theme.background, borderBottomColor: theme.border }]}
+      style={[styles.group, styles.inset, { backgroundColor: theme.background, borderBottomColor: theme.border }]}
       accessibilityRole="button"
       accessibilityState={{ expanded: !collapsed }}
       testID={`valuation-list-group-${industry}`}
@@ -323,7 +325,7 @@ export function ValuationList({
     item.type === 'group' ? (
       <GroupHeader industry={item.industry} count={item.count} collapsed={item.collapsed} theme={theme} onToggle={toggleGroup} />
     ) : (
-      <ValuationRow row={item.row} favorite={favoriteSet.has(item.row.symbol)} theme={theme} labels={labels} onOpen={onOpen} onToggleFavorite={onToggleFavorite} />
+      <ValuationRow row={item.row} favorite={favoriteSet.has(item.row.symbol)} theme={theme} labels={labels} onOpen={onOpen} onToggleFavorite={onToggleFavorite} inset />
     )
   ), [theme, labels, onOpen, onToggleFavorite, favoriteSet, toggleGroup]);
   const getItemLayout = useCallback((_: unknown, index: number) => ({
@@ -456,7 +458,7 @@ export function ValuationList({
     return (
       <ScrollView style={{ backgroundColor: theme.background }} refreshControl={refreshControl} onContentSizeChange={onContentSizeChange} testID={testID ?? 'valuation-list'}>
         {listHeader}
-        <View style={styles.pad}>{items.length ? items.map((item) => <React.Fragment key={item.key}>{renderItem({ item } as ListRenderItemInfo<ValuationListItem>)}</React.Fragment>) : empty}</View>
+        <View>{items.length ? items.map((item) => <React.Fragment key={item.key}>{renderItem({ item } as ListRenderItemInfo<ValuationListItem>)}</React.Fragment>) : empty}</View>
         {footer}
       </ScrollView>
     );
@@ -502,7 +504,8 @@ const styles = StyleSheet.create({
   code: { fontWeight: '700' },
   riskTag: { borderWidth: StyleSheet.hairlineWidth, borderRadius: 4, paddingHorizontal: 4, overflow: 'hidden' },
   badge: { borderWidth: 1, borderRadius: 999, paddingHorizontal: 8, paddingVertical: 2, maxWidth: 88 },
-  numbers: { width: 96, alignItems: 'flex-end', gap: 2 },
+  numbers: { width: 132, alignItems: 'flex-end', gap: 2 },
+  inset: { marginHorizontal: 16 },
   gap: { fontWeight: '700' },
   right: { textAlign: 'right' },
   group: { height: VALUATION_GROUP_HEIGHT, flexDirection: 'row', alignItems: 'center', gap: 8, borderBottomWidth: StyleSheet.hairlineWidth, paddingHorizontal: 4 },

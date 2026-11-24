@@ -11,6 +11,10 @@ All notable changes to this project will be documented in this file.
 
 Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Versioning: [SemVer](https://semver.org/).
 
+## 0.7.1
+
+- 估值區間 list: rows keep the page margin in the list; wider number column so P/E and yield fit.
+
 ## 0.7.0
 
 - 估值區間 list: `mobile/valuation-list/model` (TW `MARKET.json` columnar table and `index.json` rows; search, zone tabs with counts, market / industry / yield / 處置·注意 filters, 偏離幅度 / 殖利率 / 本益比 / 代號 / 近期 sorts, 自選 rows, industry groups, fixed-height offsets, memoised selector) and `ui/valuation-list/ValuationList` (virtualized FlatList with fixed row height, memoised rows, debounced search, one-tap ☆ into the app's 我的最愛 store).
