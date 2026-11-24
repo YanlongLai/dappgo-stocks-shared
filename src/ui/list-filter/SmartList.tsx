@@ -33,7 +33,7 @@ type Item =
  * the filter + scroll position handed back to be remembered.
  */
 export function SmartList({
-  items, cfg, segments, defaultSort, sortOptions, renderRow, rowHeight, groupBy, theme, labels, header, footer, refreshControl,
+  items, cfg, segments, defaultSort, sortOptions, renderRow, rowHeight, fixedRows = true, groupBy, theme, labels, header, footer, refreshControl,
   initialFilter, initialOffset, onStateChange, recentSearches = [], commonChips = [], rankChip, onSearchSubmit, onUse, testID = 'smart-list',
 }: {
   items: readonly ListItem[];
@@ -42,8 +42,10 @@ export function SmartList({
   defaultSort: SortKey;
   sortOptions: readonly { key: SortKey; label: string }[];
   renderRow: (item: ListItem) => ReactElement;
-  /** Fixed row height for getItemLayout (scaled by the app for Dynamic Type). */
+  /** Row height: exact when `fixedRows` (getItemLayout), else an estimate for index jumps. */
   rowHeight: number;
+  /** Rows all have rowHeight (fast scrolling); false for rows that size themselves. */
+  fixedRows?: boolean;
   groupBy?: { dim: string; perGroup?: number; title?: (v: string) => string } | null;
   theme: SmartListTheme;
   labels: SmartListLabels;
@@ -196,7 +198,8 @@ export function SmartList({
         data={rowsAndGroups}
         keyExtractor={(it) => it.key}
         renderItem={renderItem}
-        getItemLayout={getItemLayout}
+        getItemLayout={fixedRows ? getItemLayout : undefined}
+        onScrollToIndexFailed={({ index }) => listRef.current?.scrollToOffset({ offset: headerHeight + (offsets[index] ?? 0), animated: false })}
         ListHeaderComponent={listHeader}
         ListFooterComponent={footer}
         ListEmptyComponent={empty}
