@@ -210,7 +210,7 @@ export function SmartList({
         testID={pinnedCopy ? `${testID}-pinned-group` : `${testID}-group-${item.title}`}
       >
         {on ? <View style={[styles.groupMark, { backgroundColor: theme.accent }]} /> : null}
-        <Text style={[theme.text.body, styles.groupTitle, { color: on ? theme.accent : theme.textHeading }]} numberOfLines={1}>{item.title}</Text>
+        <Text style={[theme.text.body, styles.groupTitle, { color: on ? theme.accent : theme.textHeading }]} numberOfLines={textScale >= 1.5 ? 2 : 1}>{item.title}</Text>
         <Text style={[theme.text.label, { color: theme.textMuted }]}>{item.total}</Text>
         {showIndustries ? <Text style={[theme.text.label, { color: theme.textMuted }]} accessible={false}>▾</Text> : null}
       </Pressable>
