@@ -23,7 +23,7 @@ export function valuationSmartItems(rows: readonly ValuationListRow[], favorites
     symbol: r.symbol,
     name: r.name,
     facets: { zone: valuationSegment(r.zone), industry: r.industry, market: r.market, risk: r.risk },
-    numbers: { edge: edgeDistancePct(r), gap: r.gapPct, yield: r.dividendYield, pe: r.pe },
+    numbers: { edge: edgeDistancePct(r), gap: r.gapPct, yield: r.dividendYield, pe: r.pe, recent: r.zoneSince ? Date.parse(r.zoneSince) || null : null },
     favorite: favorites.has(r.symbol),
   }));
 }
@@ -53,6 +53,7 @@ export function valuationSmartConfig(l: ValuationSmartLabels, opts: { zhuyin?: b
       gap: { key: 'gap', dir: 'asc' },
       yield: { key: 'yield', dir: 'desc' },
       pe: { key: 'pe', dir: 'asc' },
+      recent: { key: 'recent', dir: 'desc' },
       symbol: { key: 'symbol', dir: 'asc' },
     },
     zhuyin: opts.zhuyin,
