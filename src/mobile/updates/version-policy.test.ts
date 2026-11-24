@@ -68,3 +68,20 @@ describe('online policy verification', () => {
     await expect(fetchVersionPolicy(identity, 'ios', identity.applicationId, { fetcher: async () => { throw new Error('offline'); } })).rejects.toThrow('offline');
   });
 });
+
+describe('compareVersions across the 2.0.0 major (2026-11 rename)', () => {
+  it.each([
+    ['2.0.0', '1.12.1', 1], ['2.0.0', '1.12.0', 1], ['2.0.0', '1.9.9', 1], ['2.0.0', '1.99.99', 1],
+    ['1.12.1', '2.0.0', -1], ['1.8.6', '2.0.0', -1], ['2.0.0', '2.0.0', 0], ['2.0.1', '2.0.0', 1],
+    ['2.1.0', '2.0.9', 1], ['10.0.0', '2.0.0', 1], ['1.10.0', '1.9.0', 1],
+  ] as const)('%s vs %s → %d', (a, b, want) => {
+    expect(compareVersions(a, b)).toBe(want);
+  });
+
+  it('a 1.x install is told to update once the minimum is 2.0.0, and 2.0.0 passes a 1.x minimum', () => {
+    const policy = { schemaVersion: 1, revision: 'r', apps: { 'com.x': { ios: { minimumVersion: '2.0.0' }, android: { minimumVersion: '1.12.0' } } } };
+    expect(evaluateVersionPolicy(policy, { applicationId: 'com.x', version: '1.12.0' }, 'ios', 'com.x').status).toBe('update-required');
+    expect(evaluateVersionPolicy(policy, { applicationId: 'com.x', version: '2.0.0' }, 'ios', 'com.x').status).toBe('allowed');
+    expect(evaluateVersionPolicy(policy, { applicationId: 'com.x', version: '2.0.0' }, 'android', 'com.x').status).toBe('allowed');
+  });
+});
