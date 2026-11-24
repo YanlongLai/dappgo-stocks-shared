@@ -10,17 +10,17 @@ describe('monetization events (plan §3.6)', () => {
   });
 
   it('every event carries build_channel', () => {
-    expect(monetizationEvent('paywall_view', { source: 'valuation_tile' }, 'testflight'))
-      .toEqual({ name: 'paywall_view', params: { source: 'valuation_tile', build_channel: 'testflight' } });
+    expect(monetizationEvent('paywall_view', { source: 'valuation_tile', paywall_kind: 'rc_ui' }, 'testflight'))
+      .toEqual({ name: 'paywall_view', params: { source: 'valuation_tile', paywall_kind: 'rc_ui', build_channel: 'testflight' } });
     expect(monetizationEvent('trial_to_purchase', { market: 'tw', product: 'dappgo_pro_yearly' }, 'production').params)
       .toEqual({ market: 'tw', product: 'dappgo_pro_yearly', build_channel: 'production' });
   });
 
   it('drops values that are not identifiers (no free text, no personal data)', () => {
-    expect(monetizationEvent('paywall_view', { source: 'Me <a@b.c>' }, 'dev').params.source).toBe('unknown');
-    expect(monetizationEvent('offer_tap', { product: 'pro yearly!', price_tier: 'mid', source: 'settings' }, 'dev').params)
+    expect(monetizationEvent('paywall_view', { source: 'Me <a@b.c>', paywall_kind: 'custom' }, 'dev').params.source).toBe('unknown');
+    expect(monetizationEvent('offer_tap', { product: 'pro yearly!', price_tier: 'mid', source: 'settings', paywall_kind: 'odd' as never }, 'dev').params)
       .toEqual({ price_tier: 'mid', source: 'settings', build_channel: 'dev' });
-    expect(monetizationEvent('purchase_result', { product: 'p', result: 'weird' as never }, 'dev').params).toEqual({ product: 'p', build_channel: 'dev' });
+    expect(monetizationEvent('purchase_result', { product: 'p', result: 'weird' as never, paywall_kind: 'rc_ui' }, 'dev').params).toEqual({ product: 'p', paywall_kind: 'rc_ui', build_channel: 'dev' });
     expect(monetizationEvent('trial_start', { market: 'jp' as never }, 'dev').params).toEqual({ build_channel: 'dev' });
     expect(monetizationEvent('restore_tap', { source: 'settings' }, 'bogus' as never).params.build_channel).toBe('dev');
   });

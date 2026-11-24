@@ -14,18 +14,22 @@ export type BuildChannel = typeof BUILD_CHANNELS[number];
 export const PURCHASE_RESULTS = ['success', 'cancel', 'fail', 'pending'] as const;
 export type PurchaseResult = typeof PURCHASE_RESULTS[number];
 
+/** rc_ui: RevenueCat's own paywall (offer_tap and purchase_start arrive together); custom: our own button. */
+export const PAYWALL_KINDS = ['rc_ui', 'custom'] as const;
+export type PaywallKind = typeof PAYWALL_KINDS[number];
+
 export const TRIAL_MARKETS = ['us', 'tw', 'options'] as const;
 export type TrialMarket = typeof TRIAL_MARKETS[number];
 
 export type MonetizationEventMap = {
   /** A paywall or shop screen was shown. source: e.g. valuation_tile, ai_summary, settings, out_of_lives, shop_tab. */
-  paywall_view: { source: string };
+  paywall_view: { source: string; paywall_kind: PaywallKind };
   /** A plan or product was tapped. */
-  offer_tap: { product: string; price_tier: string; source: string };
+  offer_tap: { product: string; price_tier: string; source: string; paywall_kind: PaywallKind };
   /** The system payment sheet opened. */
-  purchase_start: { product: string };
+  purchase_start: { product: string; paywall_kind: PaywallKind };
   /** The payment ended. */
-  purchase_result: { product: string; result: PurchaseResult };
+  purchase_result: { product: string; result: PurchaseResult; paywall_kind: PaywallKind };
   restore_tap: { source: string };
   /** Stock apps: the valuation trial started. */
   trial_start: { market: TrialMarket };
@@ -68,6 +72,7 @@ export function monetizationEvent<N extends MonetizationEventName>(
   const out: Record<string, string> = {};
   for (const [key, value] of Object.entries(params)) {
     if (key === 'result' && !(PURCHASE_RESULTS as readonly string[]).includes(String(value))) continue;
+    if (key === 'paywall_kind' && !(PAYWALL_KINDS as readonly string[]).includes(String(value))) continue;
     if (key === 'market' && !(TRIAL_MARKETS as readonly string[]).includes(String(value))) continue;
     const v = clean(key, value);
     if (v !== null) out[key] = v;

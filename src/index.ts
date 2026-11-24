@@ -287,5 +287,6 @@ export {
   type MonetizationEventMap,
   type MonetizationEventName,
   type PurchaseResult,
+  type PaywallKind,
   type TrialMarket,
 } from './analytics/monetization';
