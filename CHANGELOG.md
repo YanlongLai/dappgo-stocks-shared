@@ -15,6 +15,7 @@ Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Versioning: [S
 
 - Add `packTiles` / `spanWidth`: tile grids fill every row (the last tile of a short row widens), so 3- and 4-column layouts never leave an empty slot.
 - Add `advanceDecline` for the 漲跌家數 tile.
+- Add `trendInsights` for the stock-detail 30-day chart: change, high/low, range position, biggest one-day move, moving average, volume vs median.
 
 ## 0.5.1
 
