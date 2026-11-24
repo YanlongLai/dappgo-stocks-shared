@@ -116,3 +116,16 @@ describe('switch, clear and migration', () => {
       .toMatchObject({ enabled: false, searches: [], views: [{ symbol: 'A', times: [1] }] });
   });
 });
+
+describe('daily marks for 今天有變化', () => {
+  it('rolls on a new report date and finds zone/signal changes and unusual flow', () => {
+    const { rollMarks, changesSince } = require('./model');
+    let h = rollMarks(null, '2026-11-23', { A: { zone: 'within', signal: 'WATCH' }, B: { zone: 'below', signal: 'BUY' } });
+    h = rollMarks(h, '2026-11-23', { C: { zone: 'above', signal: 'HOLD' } });
+    expect(Object.keys(h.cur.marks)).toEqual(['A', 'B', 'C']);
+    h = rollMarks(h, '2026-11-24', { A: { zone: 'below', signal: 'WATCH' }, B: { zone: 'below', signal: 'HOLD' }, C: { zone: 'above', signal: 'HOLD', flowFlag: 'unusual_put' }, D: { zone: 'within', signal: 'BUY' } });
+    expect(changesSince(h)).toEqual([
+      { symbol: 'A', change: 'zone' }, { symbol: 'B', change: 'signal' }, { symbol: 'C', change: 'flow' }, { symbol: 'D', change: null },
+    ]);
+  });
+});

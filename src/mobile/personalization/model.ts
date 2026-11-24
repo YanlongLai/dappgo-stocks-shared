@@ -193,3 +193,31 @@ export function clearPersonalization<F>(s: PersonalizationState<F>): Personaliza
 export function setPersonalizationEnabled<F>(s: PersonalizationState<F>, enabled: boolean): PersonalizationState<F> {
   return enabled ? { ...s, enabled: true } : emptyPersonalization<F>(false);
 }
+
+/**
+ * Baseline for 「今天有變化」: zone and signal of the user's stocks per report
+ * date, kept on the phone. When a new report date arrives the current
+ * snapshot becomes the previous one.
+ */
+export interface StockMark { zone: string | null; signal: string | null; flowFlag?: string | null }
+export interface DailyMarks { date: string; marks: Record<string, StockMark> }
+export interface MarksHistory { prev: DailyMarks | null; cur: DailyMarks | null }
+
+export function rollMarks(history: MarksHistory | null | undefined, date: string, marks: Record<string, StockMark>): MarksHistory {
+  const h = history ?? { prev: null, cur: null };
+  if (h.cur && h.cur.date === date) return { prev: h.prev, cur: { date, marks: { ...h.cur.marks, ...marks } } };
+  return { prev: h.cur, cur: { date, marks } };
+}
+
+/** Candidates for forYou: zone crossed or signal changed since the previous report day; unusual flow today. */
+export function changesSince(history: MarksHistory): ForYouCandidate[] {
+  const cur = history.cur?.marks ?? {};
+  const prev = history.prev?.marks ?? {};
+  return Object.entries(cur).map(([symbol, m]) => {
+    const p = prev[symbol];
+    const change: ForYouChange | null = p && p.zone && m.zone && p.zone !== m.zone ? 'zone'
+      : p && p.signal && m.signal && p.signal !== m.signal ? 'signal'
+        : m.flowFlag ? 'flow' : null;
+    return { symbol, change };
+  });
+}
