@@ -109,3 +109,31 @@ export function summarizeFlow(rows: readonly FlowRow[], putAt = 1.1, callAt = 0.
     unusual: rows.filter((r) => r.flag).length,
   };
 }
+
+const HEX = /^#([0-9a-f]{6})$/i;
+
+/** Mix two #rrggbb colours; t = 0 → a, 1 → b. Non-hex input returns b. */
+export function mixHex(a: string, b: string, t: number): string {
+  const ma = HEX.exec(a);
+  const mb = HEX.exec(b);
+  if (!ma || !mb) return b;
+  const k = Math.max(0, Math.min(1, t));
+  const pa = parseInt(ma[1], 16);
+  const pb = parseInt(mb[1], 16);
+  const channel = (shift: number) => Math.round(((pa >> shift) & 255) * (1 - k) + ((pb >> shift) & 255) * k);
+  return `#${[16, 8, 0].map((s) => channel(s).toString(16).padStart(2, '0')).join('')}`;
+}
+
+/** Tile background for a heat of −1 (calls) … +1 (puts); the card colour at 0. Strength is capped so text stays readable. */
+export function heatColor(heat: number, theme: { card: string; callHeavy: string; putHeavy: string }): string {
+  const strength = Math.min(1, Math.abs(heat)) * 0.55;
+  return mixHex(theme.card, heat < 0 ? theme.callHeavy : theme.putHeavy, strength);
+}
+
+/** Columns for a content width: three on a phone, more on wide screens. */
+export function heatColumns(width: number): number {
+  if (width >= 900) return 8;
+  if (width >= 600) return 6;
+  if (width >= 400) return 4;
+  return 3;
+}
