@@ -214,3 +214,43 @@ export {
 } from './utils/valuation-tile';
 export { packTiles, spanWidth, advanceDecline, type PackedTile } from './utils/tile-pack';
 export { trendInsights, type TrendBar, type TrendInsights, type TrendExtreme } from './utils/trend-insights';
+export {
+  summarizeSignals,
+  selectSignals,
+  sortSignals,
+  applySignalFilter,
+  matchesQuery,
+  filterCounts,
+  SIGNAL_TONES,
+  VERDICT_TONE,
+  type SignalItem,
+  type SignalTone,
+  type SignalsOverview as SignalsOverviewModel,
+  type SignalFilter,
+  type SignalSort,
+} from './mobile/signals/model';
+export {
+  backfillPriceAtAdd,
+  changeSinceAdded,
+  recordView,
+  recordVisit,
+  migrateHistory,
+  sinceLastVisit,
+  EMPTY_HISTORY,
+  RECENT_LIMIT,
+  BIG_MOVE_PCT,
+  type FavoriteRecord,
+  type FavoritesHistory,
+  type FavoriteEvent,
+  type FavoriteEventKind,
+  type VisitSnapshotEntry,
+} from './mobile/favorites/history';
+export {
+  buildFlowRows,
+  sortFlowRows,
+  summarizeFlow,
+  ratioHeat,
+  type FlowRow,
+  type FlowSort,
+  type FlowSummary,
+} from './mobile/options-flow/model';
