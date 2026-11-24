@@ -124,8 +124,8 @@ describe('daily marks for 今天有變化', () => {
     h = rollMarks(h, '2026-11-23', { C: { zone: 'above', signal: 'HOLD' } });
     expect(Object.keys(h.cur.marks)).toEqual(['A', 'B', 'C']);
     h = rollMarks(h, '2026-11-24', { A: { zone: 'below', signal: 'WATCH' }, B: { zone: 'below', signal: 'HOLD' }, C: { zone: 'above', signal: 'HOLD', flowFlag: 'unusual_put' }, D: { zone: 'within', signal: 'BUY' } });
-    expect(changesSince(h)).toEqual([
-      { symbol: 'A', change: 'zone' }, { symbol: 'B', change: 'signal' }, { symbol: 'C', change: 'flow' }, { symbol: 'D', change: null },
+    expect(changesSince(h).map((c: { symbol: string; change: string | null; from?: string; to?: string }) => [c.symbol, c.change, c.from ?? null, c.to ?? null])).toEqual([
+      ['A', 'zone', 'within', 'below'], ['B', 'signal', 'BUY', 'HOLD'], ['C', 'flow', null, null], ['D', null, null, null],
     ]);
   });
 });
