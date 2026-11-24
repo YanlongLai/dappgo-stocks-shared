@@ -67,7 +67,7 @@ export function SmartSearchBar({
     </Text>
   );
   const chipRow = chips.length ? (
-    <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.chips} keyboardShouldPersistTaps="handled">
+    <ScrollView scrollsToTop={false} horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.chips} keyboardShouldPersistTaps="handled">
       {chips.map((c) => (
         <Pressable
           key={c.key}

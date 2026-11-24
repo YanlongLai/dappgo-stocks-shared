@@ -45,7 +45,7 @@ export function IndustryChipRow({ groups, active, onJump, onOpenAll, theme, labe
   testID?: string;
 }) {
   return (
-    <ScrollView
+    <ScrollView scrollsToTop={false}
       horizontal
       showsHorizontalScrollIndicator={false}
       contentContainerStyle={styles.row}
@@ -126,7 +126,7 @@ export function IndustrySheet({ visible, groups, onPick, onClose, theme, labels,
           accessibilityLabel={labels.findIndustry}
           testID={`${testID}-find`}
         />
-        <ScrollView contentContainerStyle={styles.grid} keyboardShouldPersistTaps="handled">
+        <ScrollView scrollsToTop={false} contentContainerStyle={styles.grid} keyboardShouldPersistTaps="handled">
           {shown.map((g) => (
             <Pressable
               key={g.key}

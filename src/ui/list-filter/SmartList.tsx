@@ -11,6 +11,7 @@ import { ResultLine } from './ResultLine';
 import { IndustryChipRow, IndustrySheet, type IndustryGroup, type IndustryJumpLabels } from './IndustryJump';
 import { SmartSearchBar, type SearchLabels, type SearchTheme } from './SmartSearchBar';
 import { useListFilter } from './useListFilter';
+import type { ScrollChrome } from '../scroll/ScrollChrome';
 
 export type SmartListTheme = Omit<SearchTheme, 'text'> & Omit<DistributionTheme, 'text'> & { text: SearchTheme['text'] & DistributionTheme['text'] };
 
@@ -47,7 +48,7 @@ type Item =
  */
 export function SmartList({
   items, cfg, segments, defaultSort, sortOptions, renderRow, rowHeight, fixedRows = true, groupBy, theme, labels, header, footer, refreshControl,
-  initialFilter, initialOffset, onStateChange, recentSearches = [], commonChips = [], rankChip, onSearchSubmit, onUse, contentContainerStyle, onScrollExtra, pinTop = 0, pinTranslateY, testID = 'smart-list',
+  initialFilter, initialOffset, onStateChange, recentSearches = [], commonChips = [], rankChip, onSearchSubmit, onUse, contentContainerStyle, onScrollExtra, pinTop = 0, pinTranslateY, chrome, testID = 'smart-list',
 }: {
   items: readonly ListItem[];
   cfg: ListConfig;
@@ -80,6 +81,8 @@ export function SmartList({
   pinTop?: number;
   /** …and that header's (native-driven) translateY, so the row follows it. */
   pinTranslateY?: Animated.Value | Animated.AnimatedInterpolation<number>;
+  /** Shared scroll chrome (offset, direction, back to top). */
+  chrome?: ScrollChrome | null;
   testID?: string;
 }) {
   const f = useListFilter(items, cfg, { initial: initialFilter, defaultSort, rankChip, onUse });
@@ -173,6 +176,7 @@ export function SmartList({
     const down = y > lastY.current;
     lastY.current = y;
     offset.current = y;
+    chrome?.onScroll(e);
     // Industry lists pin the chip row + section title once the row scrolls away;
     // other lists show a thin search bar while reading down.
     if (showIndustries) {
@@ -188,9 +192,9 @@ export function SmartList({
         setCurrentGroup(sec != null && sec >= 0 ? sec : null);
       }
     }
-    else setCompact(y > headerHeight && down);
+    else setCompact(y > headerHeight && (chrome ? chrome.state.direction !== 'up' : down));
     onScrollExtra?.(e);
-  }, [headerHeight, onScrollExtra, showIndustries, chipsY, headerY, fixedRows, pinTop, chipsH, offsets, sectionOf]);
+  }, [headerHeight, onScrollExtra, showIndustries, chipsY, headerY, fixedRows, pinTop, chipsH, offsets, sectionOf, chrome]);
   const onScrollEnd = useCallback(() => { onStateChange?.(f.filter, offset.current); }, [onStateChange, f.filter]);
 
   const toggleGroup = useCallback((group: string) => {
@@ -284,7 +288,10 @@ export function SmartList({
   return (
     <View style={styles.flex} testID={testID}>
       <FlatList
-        ref={listRef}
+        ref={(node) => { (listRef as React.MutableRefObject<FlatList<Item> | null>).current = node; if (chrome) chrome.ref.current = node as never; }}
+        onLayout={chrome?.onLayout}
+        onScrollBeginDrag={chrome?.onScrollBeginDrag}
+        scrollsToTop
         data={rowsAndGroups}
         keyExtractor={(it) => it.key}
         renderItem={renderItem}
@@ -295,8 +302,8 @@ export function SmartList({
         ListEmptyComponent={empty}
         refreshControl={refreshControl}
         onScroll={onScroll}
-        onMomentumScrollEnd={onScrollEnd}
-        onScrollEndDrag={onScrollEnd}
+        onMomentumScrollEnd={() => { chrome?.onMomentumScrollEnd(); onScrollEnd(); }}
+        onScrollEndDrag={() => { chrome?.onScrollEndDrag(); onScrollEnd(); }}
         onContentSizeChange={onContentSizeChange}
         onViewableItemsChanged={onViewableItemsChanged}
         viewabilityConfig={viewabilityConfig}

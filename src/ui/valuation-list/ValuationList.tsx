@@ -448,7 +448,7 @@ export function ValuationList({
         </View>
 
         {features.markets || features.industries || features.yieldChips || features.risk ? (
-          <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.chips} testID="valuation-list-filters" keyboardShouldPersistTaps="handled">
+          <ScrollView scrollsToTop={false} horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.chips} testID="valuation-list-filters" keyboardShouldPersistTaps="handled">
             {features.markets ? (['twse', 'tpex'] as const).map((key) => (
               <Chip key={key} label={labels.market(key)} on={market === key} onPress={() => setMarket(market === key ? null : key)} theme={theme} testID={`valuation-list-market-${key}`} />
             )) : null}
@@ -468,7 +468,7 @@ export function ValuationList({
           </ScrollView>
         ) : null}
         {industryOpen && industries.length > 1 ? (
-          <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.chips} testID="valuation-list-industries">
+          <ScrollView scrollsToTop={false} horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.chips} testID="valuation-list-industries">
             <Chip label={labels.allIndustries} on={industry === null} onPress={() => { setIndustry(null); setIndustryOpen(false); }} theme={theme} />
             {industries.map(({ industry: name, count }) => (
               <Chip key={name} label={`${name} ${count}`} on={industry === name} onPress={() => { setIndustry(name); setIndustryOpen(false); }} theme={theme} />
@@ -476,7 +476,7 @@ export function ValuationList({
           </ScrollView>
         ) : null}
 
-        <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.chips} testID="valuation-list-sorts">
+        <ScrollView scrollsToTop={false} horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.chips} testID="valuation-list-sorts">
           {sorts.map((key) => (
             <Chip key={key} label={labels.sort(key)} on={sort === key} onPress={() => setSort(key)} theme={theme} testID={`valuation-list-sort-${key}`} />
           ))}

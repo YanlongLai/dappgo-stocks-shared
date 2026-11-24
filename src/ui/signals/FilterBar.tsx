@@ -19,7 +19,7 @@ export interface FilterBarProps {
 /** One horizontally scrolling row of filter chips; labels never truncate. */
 export function FilterBar({ chips, selected, onSelect, theme, testID }: FilterBarProps) {
   return (
-    <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.row} testID={testID ?? 'signals-filter-bar'}>
+    <ScrollView scrollsToTop={false} horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.row} testID={testID ?? 'signals-filter-bar'}>
       {chips.map((chip) => {
         const on = chip.key === selected;
         const label = chip.count != null ? `${chip.label} ${chip.count}` : chip.label;
