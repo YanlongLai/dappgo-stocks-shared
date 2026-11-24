@@ -276,5 +276,4 @@ export {
   overallValuationZone,
   valuationAccent,
   type OverallZone,
-  type ZoneCounts,
 } from './mobile/tiles/valuation-accent';
