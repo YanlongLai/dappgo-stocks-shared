@@ -157,6 +157,7 @@ const styles = StyleSheet.create({
   closeBtn: { minHeight: 44, justifyContent: 'center', paddingLeft: 12 },
   find: { minHeight: 44, borderRadius: 10, borderWidth: StyleSheet.hairlineWidth, paddingHorizontal: 12, paddingVertical: 8, marginBottom: 10 },
   grid: { flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'space-between', rowGap: 8, paddingBottom: 8 },
-  cell: { width: '48.5%', minHeight: 44, borderRadius: 10, borderWidth: StyleSheet.hairlineWidth, paddingHorizontal: 12, paddingVertical: 8, flexDirection: 'row', alignItems: 'center', gap: 8 },
-  cellTitle: { flex: 1, minWidth: 0 },
+  // Name on top with the full cell width (long English names never break mid-word), count below.
+  cell: { width: '48.5%', minHeight: 44, borderRadius: 10, borderWidth: StyleSheet.hairlineWidth, paddingHorizontal: 12, paddingVertical: 8, justifyContent: 'center', gap: 2 },
+  cellTitle: { minWidth: 0 },
 });

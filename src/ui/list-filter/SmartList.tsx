@@ -313,6 +313,10 @@ export function SmartList({
           <SmartSearchBar {...search.props} compact onExpand={() => listRef.current?.scrollToOffset({ offset: 0, animated: true })} />
         </View>
       ) : null}
+      {pinned && chipRow && pinTop > 0 && !pinTranslateY ? (
+        // Nothing sits above the list (its header scrolled away): cover the status bar strip.
+        <View style={[styles.pinBackdrop, { height: pinTop, backgroundColor: theme.background }]} pointerEvents="none" />
+      ) : null}
       {pinned && chipRow ? (
         <Animated.View style={[styles.pinned, { top: pinTop, transform: pinTranslateY ? [{ translateY: pinTranslateY }] : [] }]} pointerEvents="box-none" testID={`${testID}-pinned`}>
           {chipRow}
@@ -348,4 +352,5 @@ const styles = StyleSheet.create({
   clear: { minHeight: 40, justifyContent: 'center' },
   compactWrap: { position: 'absolute', top: 0, left: 0, right: 0 },
   pinned: { position: 'absolute', left: 0, right: 0 },
+  pinBackdrop: { position: 'absolute', top: 0, left: 0, right: 0 },
 });
