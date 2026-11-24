@@ -110,6 +110,9 @@ export function SmartSearchBar({
           style={[theme.text.body, styles.input, { color: theme.textHeading }]}
           returnKeyType="search"
           autoCorrect={false}
+          // A search field, not a form: no AutoFill bubble over the examples.
+          autoComplete="off"
+          textContentType="none"
           autoCapitalize="characters"
           clearButtonMode="while-editing"
           accessibilityLabel={labels.placeholder}

@@ -139,13 +139,17 @@ export function SmartList({
     if (!group) return;
     const index = groupIndex.get(group);
     if (index == null) return;
-    listRef.current?.scrollToIndex({ index, animated: false, viewOffset: chipsH });
-  }, [groupIndex, chipsH]);
+    setCurrentGroup(index);
+    listRef.current?.scrollToIndex({ index, animated: false, viewOffset: pinTop + chipsH });
+  }, [groupIndex, chipsH, pinTop]);
 
   const viewabilityConfig = useRef({ itemVisiblePercentThreshold: 1 }).current;
   const sectionOfRef = useRef(sectionOf);
   sectionOfRef.current = sectionOf;
+  const fixedRef = useRef(fixedRows);
+  fixedRef.current = fixedRows;
   const onViewableItemsChanged = useRef(({ viewableItems }: { viewableItems: ViewToken[] }) => {
+    if (fixedRef.current) return; // exact offsets are used instead (onScroll)
     const first = viewableItems.find((v) => v.index != null);
     if (!first || first.index == null) return;
     const sec = sectionOfRef.current[first.index];
@@ -169,10 +173,22 @@ export function SmartList({
     offset.current = y;
     // Industry lists pin the chip row + section title once the row scrolls away;
     // other lists show a thin search bar while reading down.
-    if (showIndustries) setPinned(chipsY != null && y > headerY + chipsY);
+    if (showIndustries) {
+      const pin = chipsY != null && y > headerY + chipsY;
+      setPinned(pin);
+      // The section under the pinned row's bottom edge is the current one. With
+      // fixed rows the offsets are exact; otherwise viewability is the fallback.
+      if (pin && fixedRows) {
+        const target = y + pinTop + chipsH + GROUP_H - (headerY + headerHeight);
+        let lo = 0, hi = offsets.length - 2;
+        while (lo < hi) { const mid = (lo + hi + 1) >> 1; if (offsets[mid] <= target) lo = mid; else hi = mid - 1; }
+        const sec = sectionOf[lo];
+        setCurrentGroup(sec != null && sec >= 0 ? sec : null);
+      }
+    }
     else setCompact(y > headerHeight && down);
     onScrollExtra?.(e);
-  }, [headerHeight, onScrollExtra, showIndustries, chipsY, headerY]);
+  }, [headerHeight, onScrollExtra, showIndustries, chipsY, headerY, fixedRows, pinTop, chipsH, offsets, sectionOf]);
   const onScrollEnd = useCallback(() => { onStateChange?.(f.filter, offset.current); }, [onStateChange, f.filter]);
 
   const toggleGroup = useCallback((group: string) => {

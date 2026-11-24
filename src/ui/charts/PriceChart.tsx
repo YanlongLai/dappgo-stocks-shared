@@ -234,7 +234,9 @@ export const PriceChart = React.memo(function PriceChart({
   const dom = useMemo(() => priceDomain(bars, mode, overlays), [bars, mode, overlays]);
   const range = dom.max - dom.min || 1;
   const yAt = useCallback((p: number) => PAD.top + areaH - ((p - dom.min) / range) * areaH, [areaH, dom.min, range]);
-  const xAt = useCallback((i: number, n: number) => PAD.left + (i / Math.max(1, n - 1)) * plotW, [plotW]);
+  // Candles get half a slot of room at each end so the first and last bodies are not clipped.
+  const edge = layers.candles ? Math.min(16, plotW / (Math.max(1, bars.length) * 2)) : 0;
+  const xAt = useCallback((i: number, n: number) => PAD.left + edge + (i / Math.max(1, n - 1)) * (plotW - edge * 2), [plotW, edge]);
 
   const points = useMemo(() => bars.map((b, i) => ({ x: xAt(i, bars.length), y: yAt(b.close) })), [bars, xAt, yAt]);
   const linePath = useMemo(() => smoothPath(points), [points]);
@@ -467,7 +469,7 @@ export const PriceChart = React.memo(function PriceChart({
             key={f.key}
             label={f.label}
             selected={f.key === frame.key}
-            dimmed={states[f.key] !== 'full'}
+            dimmed={states[f.key] !== 'full' && f.key !== frame.key}
             fill
             onPress={() => pickFrame(f)}
             accessibilityRole="tab"
