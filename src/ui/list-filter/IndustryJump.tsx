@@ -1,5 +1,5 @@
 import React, { useMemo, useState } from 'react';
-import { Modal, Pressable, ScrollView, StyleSheet, Text, TextInput, View, type TextStyle } from 'react-native';
+import { Modal, Pressable, ScrollView, StyleSheet, Text, TextInput, View, useWindowDimensions, type TextStyle } from 'react-native';
 import { tapHaptic } from '../tiles/PressableCard';
 
 export interface IndustryGroup {
@@ -98,6 +98,8 @@ export function IndustrySheet({ visible, groups, onPick, onClose, theme, labels,
   testID?: string;
 }) {
   const [q, setQ] = useState('');
+  // Large text: one column so full names fit.
+  const big = useWindowDimensions().fontScale >= 1.5;
   const shown = useMemo(() => {
     const needle = q.trim().toLowerCase();
     return needle ? groups.filter((g) => g.title.toLowerCase().includes(needle)) : groups;
@@ -131,10 +133,10 @@ export function IndustrySheet({ visible, groups, onPick, onClose, theme, labels,
               onPress={() => { tapHaptic(); setQ(''); onPick(g.key); }}
               accessibilityRole="button"
               accessibilityLabel={labels.jumpA11y(g.title, g.count)}
-              style={[styles.cell, { borderColor: theme.border, backgroundColor: theme.background }]}
+              style={[styles.cell, big && styles.cellFull, { borderColor: theme.border, backgroundColor: theme.background }]}
               testID={`${testID}-${g.key}`}
             >
-              <Text style={[theme.text.body, styles.cellTitle, { color: theme.textHeading }]} numberOfLines={2}>{g.title}</Text>
+              <Text style={[theme.text.body, styles.cellTitle, { color: theme.textHeading }]} numberOfLines={big ? 3 : 2}>{g.title}</Text>
               <Text style={[theme.text.label, { color: theme.textMuted, fontVariant: ['tabular-nums'] }]}>{g.count}</Text>
             </Pressable>
           ))}
@@ -160,4 +162,5 @@ const styles = StyleSheet.create({
   // Name on top with the full cell width (long English names never break mid-word), count below.
   cell: { width: '48.5%', minHeight: 44, borderRadius: 10, borderWidth: StyleSheet.hairlineWidth, paddingHorizontal: 12, paddingVertical: 8, justifyContent: 'center', gap: 2 },
   cellTitle: { minWidth: 0 },
+  cellFull: { width: '100%' },
 });
