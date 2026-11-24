@@ -295,11 +295,15 @@ export const ScreenScroll = React.forwardRef<ScrollView, ScrollViewProps & {
   compactTitle?: CompactTitle | null;
   /** Lets the screen reach the chrome (e.g. JS tab re-tap → scrollToTop). */
   chromeRef?: React.MutableRefObject<ScrollChrome | null>;
+  /** Told when 「↑」 takes the floating slot, so a screen-level CTA elsewhere can step aside. */
+  onShowTopChange?: (showTop: boolean) => void;
   /** Wrap the scroll view (e.g. Animated.ScrollView for a collapsible header). */
   ScrollComponent?: React.ComponentType<ScrollViewProps & { ref?: unknown }>;
-}>(function ScreenScroll({ theme, labels, bottom, cta, compactTitle, chromeRef, ScrollComponent, onScroll, onLayout, onScrollBeginDrag, onScrollEndDrag, onMomentumScrollEnd, onContentSizeChange, style, ...rest }, forwarded) {
+}>(function ScreenScroll({ theme, labels, bottom, cta, compactTitle, chromeRef, onShowTopChange, ScrollComponent, onScroll, onLayout, onScrollBeginDrag, onScrollEndDrag, onMomentumScrollEnd, onContentSizeChange, style, ...rest }, forwarded) {
   const chrome = useScrollChrome();
   if (chromeRef) chromeRef.current = chrome;
+  const showTop = chrome.state.showTop && !chrome.keyboardOpen;
+  useEffect(() => { onShowTopChange?.(showTop); }, [showTop, onShowTopChange]);
   const setRef = useCallback((node: ScrollView | null) => {
     chrome.ref.current = node as unknown as Scrollable;
     if (typeof forwarded === 'function') forwarded(node);
