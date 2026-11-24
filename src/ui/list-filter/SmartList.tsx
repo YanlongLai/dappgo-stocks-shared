@@ -291,6 +291,8 @@ export function SmartList({
         ref={(node) => { (listRef as React.MutableRefObject<FlatList<Item> | null>).current = node; if (chrome) chrome.ref.current = node as never; }}
         onLayout={chrome?.onLayout}
         onScrollBeginDrag={chrome?.onScrollBeginDrag}
+        onMomentumScrollBegin={chrome?.onMomentumScrollBegin}
+        onScrollToTop={chrome?.onScrollToTop}
         scrollsToTop
         data={rowsAndGroups}
         keyExtractor={(it) => it.key}

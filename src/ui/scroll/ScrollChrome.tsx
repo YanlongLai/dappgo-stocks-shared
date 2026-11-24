@@ -45,7 +45,10 @@ export interface ScrollChrome {
   onScroll: (e: NativeSyntheticEvent<NativeScrollEvent>) => void;
   onScrollBeginDrag: () => void;
   onScrollEndDrag: () => void;
+  onMomentumScrollBegin: () => void;
   onMomentumScrollEnd: () => void;
+  /** iOS status-bar tap (ScrollView only). */
+  onScrollToTop: () => void;
   onLayout: (e: LayoutChangeEvent) => void;
   onContentSizeChange: (w: number, h: number) => void;
   scrollToTop: () => void;
@@ -62,6 +65,9 @@ export function useScrollChrome(): ScrollChrome {
   const stateRef = useRef(state);
   stateRef.current = state;
   const dragging = useRef(false);
+  const momentum = useRef(false);
+  /** Where the page last came to rest under the user's finger. */
+  const restY = useRef(0);
   const programmatic = useRef(false);
   const lastY = useRef(0);
   const deepest = useRef(0);
@@ -88,7 +94,13 @@ export function useScrollChrome(): ScrollChrome {
     const y = Math.max(0, contentOffset.y);
     const v = layoutMeasurement.height || viewport;
     content.current = contentSize.height;
-    if (!programmatic.current && isExternalReturnToTop(lastY.current, y, v, dragging.current)) offerReturn(lastY.current);
+    // A return to the top the app did not start (status bar, native tab re-tap):
+    // the page reaches the top while nobody is dragging, from a resting point
+    // more than a screen down.
+    if (!programmatic.current && !momentum.current && isExternalReturnToTop(restY.current, y, v, dragging.current)) {
+      offerReturn(restY.current);
+      restY.current = 0;
+    }
     if (dragging.current && returnTo !== null && y > TOP_SLOP) dismissReturn();
     if (y > TOP_SLOP) deepest.current = y;
     lastY.current = y;
@@ -106,6 +118,7 @@ export function useScrollChrome(): ScrollChrome {
     if (jumpTo !== null) scrollTo(ref.current, jumpTo, false);
     scrollTo(ref.current, 0, true);
     offerReturn(from);
+    restY.current = 0;
     setState((s) => ({ ...s, showTop: false, direction: 'up' }));
     setTimeout(() => { programmatic.current = false; }, 700);
   }, [viewport, offerReturn]);
@@ -116,6 +129,7 @@ export function useScrollChrome(): ScrollChrome {
     if (y === null) return;
     programmatic.current = true;
     scrollTo(ref.current, y, true);
+    restY.current = y;
     setTimeout(() => { programmatic.current = false; }, 700);
   }, [returnTo, dismissReturn]);
 
@@ -127,8 +141,12 @@ export function useScrollChrome(): ScrollChrome {
     keyboardOpen,
     onScroll,
     onScrollBeginDrag: () => { dragging.current = true; },
-    onScrollEndDrag: () => { dragging.current = false; },
-    onMomentumScrollEnd: () => { dragging.current = false; },
+    onScrollEndDrag: () => { dragging.current = false; restY.current = lastY.current; },
+    onMomentumScrollBegin: () => { momentum.current = true; },
+    onMomentumScrollEnd: () => { dragging.current = false; momentum.current = false; restY.current = lastY.current; },
+    onScrollToTop: () => {
+      if (restY.current > TOP_SLOP) { offerReturn(restY.current); restY.current = 0; }
+    },
     onLayout: (e) => setViewport(e.nativeEvent.layout.height),
     onContentSizeChange: (_w, h) => { content.current = h; },
     scrollToTop,
@@ -302,7 +320,7 @@ export const ScreenScroll = React.forwardRef<ScrollView, ScrollViewProps & {
   onShowTopChange?: (showTop: boolean) => void;
   /** Wrap the scroll view (e.g. Animated.ScrollView for a collapsible header). */
   ScrollComponent?: React.ComponentType<ScrollViewProps & { ref?: unknown }>;
-}>(function ScreenScroll({ theme, labels, bottom, cta, compactTitle, returnTop, chromeRef, onShowTopChange, ScrollComponent, onScroll, onLayout, onScrollBeginDrag, onScrollEndDrag, onMomentumScrollEnd, onContentSizeChange, style, ...rest }, forwarded) {
+}>(function ScreenScroll({ theme, labels, bottom, cta, compactTitle, returnTop, chromeRef, onShowTopChange, ScrollComponent, onScroll, onLayout, onScrollBeginDrag, onScrollEndDrag, onMomentumScrollBegin, onMomentumScrollEnd, onScrollToTop, onContentSizeChange, style, ...rest }, forwarded) {
   const chrome = useScrollChrome();
   if (chromeRef) chromeRef.current = chrome;
   const showTop = chrome.state.showTop && !chrome.keyboardOpen;
@@ -318,9 +336,11 @@ export const ScreenScroll = React.forwardRef<ScrollView, ScrollViewProps & {
     onLayout: (e: LayoutChangeEvent) => { chrome.onLayout(e); onLayout?.(e); },
     onScrollBeginDrag: (e: NativeSyntheticEvent<NativeScrollEvent>) => { chrome.onScrollBeginDrag(); onScrollBeginDrag?.(e); },
     onScrollEndDrag: (e: NativeSyntheticEvent<NativeScrollEvent>) => { chrome.onScrollEndDrag(); onScrollEndDrag?.(e); },
+    onMomentumScrollBegin: (e: NativeSyntheticEvent<NativeScrollEvent>) => { chrome.onMomentumScrollBegin(); onMomentumScrollBegin?.(e); },
     onMomentumScrollEnd: (e: NativeSyntheticEvent<NativeScrollEvent>) => { chrome.onMomentumScrollEnd(); onMomentumScrollEnd?.(e); },
+    onScrollToTop: (e: NativeSyntheticEvent<NativeScrollEvent>) => { chrome.onScrollToTop(); onScrollToTop?.(e); },
     onContentSizeChange: (w: number, h: number) => { chrome.onContentSizeChange(w, h); onContentSizeChange?.(w, h); },
-  }), [chrome, onScroll, onLayout, onScrollBeginDrag, onScrollEndDrag, onMomentumScrollEnd, onContentSizeChange]);
+  }), [chrome, onScroll, onLayout, onScrollBeginDrag, onScrollEndDrag, onMomentumScrollBegin, onMomentumScrollEnd, onScrollToTop, onContentSizeChange]);
   return (
     <View style={[styles.flex, style as object]}>
       <Comp ref={setRef} scrollEventThrottle={16} scrollsToTop {...rest} {...handlers} style={styles.flex} />
