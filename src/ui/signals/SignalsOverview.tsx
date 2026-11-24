@@ -1,5 +1,6 @@
 import React from 'react';
-import { Pressable, StyleSheet, Text, View, type TextStyle } from 'react-native';
+import { StyleSheet, Text, View, type TextStyle } from 'react-native';
+import { PressableCard, TapHint } from '../tiles/PressableCard';
 import { SIGNAL_TONES, type SignalsOverview as Overview, type SignalTone } from '../../mobile/signals/model';
 
 /** Colours and text styles the app passes in (from its own theme and the shared TILE_TYPE scale). */
@@ -23,6 +24,8 @@ export interface OverviewTile {
   valueColor?: string;
   subColor?: string;
   onPress?: () => void;
+  /** Where a tap goes (screen readers), e.g. 「打開個股訊號清單」. */
+  accessibilityHint?: string;
 }
 
 export interface SignalsOverviewProps {
@@ -63,7 +66,10 @@ export function SignalsOverview({ overview, theme, toneLabel, distributionTitle,
         {tiles.map((tile) => {
           const body = (
             <>
-              <Text style={[theme.text.label, { color: theme.textMuted }]} numberOfLines={1}>{tile.label}</Text>
+              <View style={styles.labelRow}>
+                <Text style={[theme.text.label, styles.flex, { color: theme.textMuted }]} numberOfLines={1}>{tile.label}</Text>
+                {tile.onPress ? <TapHint color={theme.textMuted} /> : null}
+              </View>
               <Text style={[theme.text.value, styles.value, { color: tile.valueColor ?? theme.textHeading }]} numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.7}>
                 {tile.value}
               </Text>
@@ -72,10 +78,11 @@ export function SignalsOverview({ overview, theme, toneLabel, distributionTitle,
           );
           const style = [styles.tile, styles.small, { backgroundColor: theme.card }];
           return tile.onPress ? (
-            <Pressable key={tile.key} style={({ pressed }) => [...style, pressed && styles.pressed]} onPress={tile.onPress}
-              accessibilityRole="button" accessibilityLabel={[tile.label, tile.value, tile.sub].filter(Boolean).join(', ')} testID={`signals-overview-${tile.key}`}>
+            <PressableCard key={tile.key} style={style} onPress={tile.onPress}
+              accessibilityHint={tile.accessibilityHint ?? tile.label}
+              accessibilityLabel={[tile.label, tile.value, tile.sub].filter(Boolean).join(', ')} testID={`signals-overview-${tile.key}`}>
               {body}
-            </Pressable>
+            </PressableCard>
           ) : (
             <View key={tile.key} style={style} accessible accessibilityLabel={[tile.label, tile.value, tile.sub].filter(Boolean).join(', ')} testID={`signals-overview-${tile.key}`}>
               {body}
@@ -95,5 +102,6 @@ const styles = StyleSheet.create({
   small: { flexGrow: 1, flexBasis: '30%' },
   value: { marginTop: 2 },
   bar: { flexDirection: 'row', height: 8, borderRadius: 4, overflow: 'hidden', marginTop: 2 },
-  pressed: { opacity: 0.7 },
+  labelRow: { flexDirection: 'row', alignItems: 'center' },
+  flex: { flex: 1, minWidth: 0 },
 });

@@ -270,3 +270,10 @@ export {
   type MarketKeyPointInput,
   type MarketMover,
 } from './mobile/ai-key-points/model';
+export {
+  VALUATION_ACCENT,
+  ACCENT_BAR_WIDTH,
+  overallValuationZone,
+  valuationAccent,
+  type OverallZone,
+} from './mobile/tiles/valuation-accent';
