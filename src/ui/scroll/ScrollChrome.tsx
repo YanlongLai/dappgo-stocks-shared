@@ -243,7 +243,7 @@ export interface CompactTitle {
 }
 
 /** Everything drawn over a scrolling screen: compact title, 「回到剛才」 and the floating slot. */
-export function ScrollChromeOverlay({ chrome, theme, labels, bottom, cta, compactTitle, testID = 'scroll-chrome' }: {
+export function ScrollChromeOverlay({ chrome, theme, labels, bottom, cta, compactTitle, returnTop, testID = 'scroll-chrome' }: {
   chrome: ScrollChrome;
   theme: ScrollChromeTheme;
   labels: ScrollChromeLabels;
@@ -252,6 +252,8 @@ export function ScrollChromeOverlay({ chrome, theme, labels, bottom, cta, compac
   /** The screen's own floating CTA (e.g. 「查看今日報告」), shown near the top instead of 「↑」. */
   cta?: { visible: boolean; render: () => ReactElement } | null;
   compactTitle?: CompactTitle | null;
+  /** Where 「回到剛才」 sits: below the screen's header, which shows at the top. */
+  returnTop?: number;
   testID?: string;
 }) {
   const { state, returnTo } = chrome;
@@ -263,7 +265,7 @@ export function ScrollChromeOverlay({ chrome, theme, labels, bottom, cta, compac
           <CompactTitleBar title={compactTitle.title} onBack={compactTitle.onBack} onTitlePress={chrome.scrollToTop} top={compactTitle.top} theme={theme} labels={labels} testID={`${testID}-title`} />
         </Fade>
       ) : null}
-      <Fade visible={returnTo !== null} style={[styles.pillWrap, { top: (compactTitle?.top ?? 0) + 12 }]}>
+      <Fade visible={returnTo !== null} style={[styles.pillWrap, { top: returnTop ?? (compactTitle?.top ?? 0) + 12 }]}>
         <Pressable
           onPress={() => { tapHaptic(); chrome.goBack(); }}
           accessibilityRole="button"
@@ -295,11 +297,12 @@ export const ScreenScroll = React.forwardRef<ScrollView, ScrollViewProps & {
   compactTitle?: CompactTitle | null;
   /** Lets the screen reach the chrome (e.g. JS tab re-tap → scrollToTop). */
   chromeRef?: React.MutableRefObject<ScrollChrome | null>;
+  returnTop?: number;
   /** Told when 「↑」 takes the floating slot, so a screen-level CTA elsewhere can step aside. */
   onShowTopChange?: (showTop: boolean) => void;
   /** Wrap the scroll view (e.g. Animated.ScrollView for a collapsible header). */
   ScrollComponent?: React.ComponentType<ScrollViewProps & { ref?: unknown }>;
-}>(function ScreenScroll({ theme, labels, bottom, cta, compactTitle, chromeRef, onShowTopChange, ScrollComponent, onScroll, onLayout, onScrollBeginDrag, onScrollEndDrag, onMomentumScrollEnd, onContentSizeChange, style, ...rest }, forwarded) {
+}>(function ScreenScroll({ theme, labels, bottom, cta, compactTitle, returnTop, chromeRef, onShowTopChange, ScrollComponent, onScroll, onLayout, onScrollBeginDrag, onScrollEndDrag, onMomentumScrollEnd, onContentSizeChange, style, ...rest }, forwarded) {
   const chrome = useScrollChrome();
   if (chromeRef) chromeRef.current = chrome;
   const showTop = chrome.state.showTop && !chrome.keyboardOpen;
@@ -321,7 +324,7 @@ export const ScreenScroll = React.forwardRef<ScrollView, ScrollViewProps & {
   return (
     <View style={[styles.flex, style as object]}>
       <Comp ref={setRef} scrollEventThrottle={16} scrollsToTop {...rest} {...handlers} style={styles.flex} />
-      <ScrollChromeOverlay chrome={chrome} theme={theme} labels={labels} bottom={bottom} cta={cta} compactTitle={compactTitle} />
+      <ScrollChromeOverlay chrome={chrome} theme={theme} labels={labels} bottom={bottom} cta={cta} compactTitle={compactTitle} returnTop={returnTop} />
     </View>
   );
 });
