@@ -31,6 +31,8 @@ export function valuationSmartItems(rows: readonly ValuationListRow[], favorites
 export interface ValuationSmartLabels {
   zone: (s: ValuationSegment) => string;
   market: (m: string) => string;
+  /** Display name of an industry (e.g. English for TW's Chinese names). */
+  industry?: (v: string) => string;
   risk: (r: string) => string;
   yieldAtLeast: (pct: number) => string;
   keywords: { zone: readonly string[]; yield: readonly string[]; risk: readonly string[] };
@@ -43,7 +45,7 @@ export function valuationSmartConfig(l: ValuationSmartLabels, opts: { zhuyin?: b
     segments: ['below', 'within', 'above'],
     facets: [
       { dim: 'zone', label: (v) => l.zone(v as ValuationSegment), keywords: l.keywords.zone },
-      { dim: 'industry', label: (v) => v },
+      { dim: 'industry', label: (v) => l.industry?.(v) ?? v },
       { dim: 'market', label: (v) => l.market(v) },
       { dim: 'risk', label: (v) => l.risk(v), keywords: l.keywords.risk },
     ],
