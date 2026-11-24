@@ -11,6 +11,10 @@ All notable changes to this project will be documented in this file.
 
 Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Versioning: [SemVer](https://semver.org/).
 
+## 0.8.0
+
+- 我的最愛 module: `mobile/favorites/model` (FavoriteInput/FavoriteView, days held, change since added, P/C heaviness, 最近有變化 / 加入後漲跌 / 今日漲跌 / 代號 sorts, visit snapshot) and `ui/favorites/Favorites` (上次之後 tile, FavoriteTile with the user's record and tags, FavoriteFacts for Options contract groups, sort chips, 最近看過).
+
 ## 0.7.2
 
 - 估值區間 list: rows and group headers grow with Dynamic Type (up to 2×) so large text never clips; the search box grows instead of clipping its text.
