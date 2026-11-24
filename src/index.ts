@@ -250,7 +250,23 @@ export {
   sortFlowRows,
   summarizeFlow,
   ratioHeat,
+  mixHex,
+  heatColor,
+  heatColumns,
   type FlowRow,
   type FlowSort,
   type FlowSummary,
 } from './mobile/options-flow/model';
+export {
+  KEY_POINT_COUNT,
+  KEY_POINT_LIMIT,
+  SHORT_TEXT_LIMIT,
+  keyPointsFromText,
+  noteKeyPoints,
+  marketKeyPoints,
+  formatPoint,
+  hasFigure,
+  isChineseText,
+  type MarketKeyPointInput,
+  type MarketMover,
+} from './mobile/ai-key-points/model';
