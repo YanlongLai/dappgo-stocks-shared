@@ -1,5 +1,6 @@
 import React, { memo, useState } from 'react';
-import { Pressable, StyleSheet, Text, View, type LayoutChangeEvent, type TextStyle } from 'react-native';
+import { PressableCard, TapHint } from '../tiles/PressableCard';
+import { StyleSheet, Text, View, type LayoutChangeEvent, type TextStyle } from 'react-native';
 import { heatColor, heatColumns, type FlowRow } from '../../mobile/options-flow/model';
 
 /**
@@ -20,10 +21,12 @@ export interface OptionsFlowTheme {
 
 const GAP = 6;
 
-export const FlowHeatGrid = memo(function FlowHeatGrid({ rows, theme, onPress, formatRatio, subLabel, limit, testID = 'flow-heat-grid' }: {
+export const FlowHeatGrid = memo(function FlowHeatGrid({ rows, theme, onPress, openHint, formatRatio, subLabel, limit, testID = 'flow-heat-grid' }: {
   rows: readonly FlowRow[];
   theme: OptionsFlowTheme;
   onPress?: (symbol: string) => void;
+  /** Where a tap goes (screen readers), e.g. 「打開 NVDA 個股頁」. */
+  openHint?: (symbol: string) => string;
   formatRatio: (ratio: number) => string;
   /** Optional second line, e.g. the call : put volume. */
   subLabel?: (row: FlowRow) => string | null;
@@ -42,19 +45,25 @@ export const FlowHeatGrid = memo(function FlowHeatGrid({ rows, theme, onPress, f
     <View style={styles.grid} onLayout={onLayout} testID={testID}>
       {tileWidth > 0 ? shown.map((row) => {
         const sub = subLabel?.(row) ?? null;
-        return (
-          <Pressable
-            key={row.symbol}
-            onPress={onPress ? () => onPress(row.symbol) : undefined}
-            accessibilityRole={onPress ? 'button' : undefined}
-            accessibilityLabel={`${row.symbol} ${formatRatio(row.ratio)}${sub ? ` ${sub}` : ''}`}
-            style={({ pressed }) => [styles.tile, { width: tileWidth, backgroundColor: heatColor(row.heat, theme), borderColor: theme.border }, pressed && styles.pressed]}
-            testID={`flow-tile-${row.symbol}`}
-          >
-            <Text style={[theme.text.label, styles.symbol, { color: theme.textHeading }]} numberOfLines={1}>{row.symbol}</Text>
+        const label = `${row.symbol} ${formatRatio(row.ratio)}${sub ? ` ${sub}` : ''}`;
+        const tileStyle = [styles.tile, { width: tileWidth, backgroundColor: heatColor(row.heat, theme), borderColor: theme.border }];
+        const content = (
+          <>
+            <View style={styles.symbolRow}>
+              <Text style={[theme.text.label, styles.symbol, { color: theme.textHeading }]} numberOfLines={1}>{row.symbol}</Text>
+              {onPress ? <TapHint color={theme.textMuted} /> : null}
+            </View>
             <Text style={[theme.text.value, styles.ratio, { color: theme.textHeading }]} numberOfLines={1}>{formatRatio(row.ratio)}</Text>
             {sub ? <Text style={[theme.text.label, { color: theme.textMuted }]} numberOfLines={1}>{sub}</Text> : null}
-          </Pressable>
+          </>
+        );
+        return onPress ? (
+          <PressableCard key={row.symbol} onPress={() => onPress(row.symbol)} accessibilityLabel={label}
+            accessibilityHint={openHint ? openHint(row.symbol) : row.symbol} style={tileStyle} testID={`flow-tile-${row.symbol}`}>
+            {content}
+          </PressableCard>
+        ) : (
+          <View key={row.symbol} style={tileStyle} accessible accessibilityLabel={label} testID={`flow-tile-${row.symbol}`}>{content}</View>
         );
       }) : null}
     </View>
@@ -86,9 +95,9 @@ export function FlowLegend({ theme, callLabel, putLabel, testID = 'flow-legend' 
 const styles = StyleSheet.create({
   grid: { flexDirection: 'row', flexWrap: 'wrap', gap: GAP },
   tile: { borderRadius: 12, borderWidth: StyleSheet.hairlineWidth, paddingHorizontal: 8, paddingVertical: 7, gap: 1, minHeight: 56 },
-  symbol: { fontWeight: '700' },
+  symbolRow: { flexDirection: 'row', alignItems: 'center' },
+  symbol: { fontWeight: '700', flex: 1, minWidth: 0 },
   ratio: { fontVariant: ['tabular-nums'] },
-  pressed: { opacity: 0.6 },
   legend: { gap: 4, marginTop: 8 },
   bar: { flexDirection: 'row', height: 6, borderRadius: 3, overflow: 'hidden', borderWidth: StyleSheet.hairlineWidth },
   step: { flex: 1 },

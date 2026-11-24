@@ -1,4 +1,5 @@
 import React, { memo, type ReactElement } from 'react';
+import { PressableCard, TapHint } from '../tiles/PressableCard';
 import { Pressable, ScrollView, StyleSheet, Text, View, type TextStyle } from 'react-native';
 import type { FavoriteEvent } from '../../mobile/favorites/history';
 import {
@@ -129,20 +130,22 @@ export function FavoriteFacts({ item, theme, labels }: { item: FavoriteView; the
 }
 
 /** A favorite as one tile: symbol, name and price, the record line, tags, and the latest headline. */
-export const FavoriteTile = memo(function FavoriteTile({ item, theme, labels, onPress, trailing }: {
+export const FavoriteTile = memo(function FavoriteTile({ item, theme, labels, onPress, trailing, accessibilityHint }: {
   item: FavoriteView;
   theme: FavoritesTheme;
   labels: FavoritesLabels;
   onPress: (symbol: string) => void;
   /** e.g. the app's star toggle. */
   trailing?: ReactElement | null;
+  /** Where a tap goes (screen readers), e.g. 「打開台積電個股頁」. */
+  accessibilityHint?: string;
 }) {
   return (
-    <Pressable
+    <PressableCard
       onPress={() => onPress(item.symbol)}
-      accessibilityRole="button"
       accessibilityLabel={`${item.symbol} ${item.name}`}
-      style={({ pressed }) => [styles.itemTile, { backgroundColor: theme.card }, pressed && styles.pressed]}
+      accessibilityHint={accessibilityHint ?? item.name}
+      style={[styles.itemTile, { backgroundColor: theme.card }]}
       testID={`favorite-tile-${item.symbol}`}
     >
       <View style={styles.head}>
@@ -157,12 +160,13 @@ export const FavoriteTile = memo(function FavoriteTile({ item, theme, labels, on
           </Text>
         </View>
         {trailing ?? null}
+        <TapHint color={theme.textMuted} />
       </View>
       <FavoriteFacts item={item} theme={theme} labels={labels} />
       {item.headline ? (
         <Text style={[theme.text.sub, { color: theme.textMuted }]} numberOfLines={1}>{item.headline}</Text>
       ) : null}
-    </Pressable>
+    </PressableCard>
   );
 });
 
