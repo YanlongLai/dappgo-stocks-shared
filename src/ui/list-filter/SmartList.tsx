@@ -2,6 +2,7 @@ import React, { useCallback, useEffect, useMemo, useRef, useState, type ReactEle
 import {
   FlatList, Pressable, ScrollView, StyleSheet, Text, View,
   type LayoutChangeEvent, type ListRenderItemInfo, type NativeScrollEvent, type NativeSyntheticEvent, type RefreshControlProps,
+  type StyleProp, type ViewStyle,
 } from 'react-native';
 import { chipKey, groupItems, type FilterChip, type ListConfig, type ListFilter, type ListItem, type SortKey } from '../../mobile/list-filter/model';
 import { tapHaptic } from '../tiles/PressableCard';
@@ -34,7 +35,7 @@ type Item =
  */
 export function SmartList({
   items, cfg, segments, defaultSort, sortOptions, renderRow, rowHeight, fixedRows = true, groupBy, theme, labels, header, footer, refreshControl,
-  initialFilter, initialOffset, onStateChange, recentSearches = [], commonChips = [], rankChip, onSearchSubmit, onUse, testID = 'smart-list',
+  initialFilter, initialOffset, onStateChange, recentSearches = [], commonChips = [], rankChip, onSearchSubmit, onUse, contentContainerStyle, onScrollExtra, testID = 'smart-list',
 }: {
   items: readonly ListItem[];
   cfg: ListConfig;
@@ -60,6 +61,9 @@ export function SmartList({
   rankChip?: (chip: FilterChip) => number;
   onSearchSubmit?: (query: string) => void;
   onUse?: (key: string) => void;
+  /** e.g. a collapsible screen header's padding and scroll handler. */
+  contentContainerStyle?: StyleProp<ViewStyle>;
+  onScrollExtra?: (e: NativeSyntheticEvent<NativeScrollEvent>) => void;
   testID?: string;
 }) {
   const f = useListFilter(items, cfg, { initial: initialFilter, defaultSort, rankChip, onUse });
@@ -108,7 +112,8 @@ export function SmartList({
     offset.current = y;
     // Thin bar while reading down the list; the full bar comes back when scrolling up.
     setCompact(y > headerHeight && down);
-  }, [headerHeight]);
+    onScrollExtra?.(e);
+  }, [headerHeight, onScrollExtra]);
   const onScrollEnd = useCallback(() => { onStateChange?.(f.filter, offset.current); }, [onStateChange, f.filter]);
 
   const toggleGroup = useCallback((group: string) => {
@@ -216,6 +221,7 @@ export function SmartList({
         keyboardShouldPersistTaps="handled"
         keyboardDismissMode="on-drag"
         style={{ backgroundColor: theme.background }}
+        contentContainerStyle={contentContainerStyle}
       />
       {compact ? (
         <View style={styles.compactWrap} pointerEvents="box-none">
