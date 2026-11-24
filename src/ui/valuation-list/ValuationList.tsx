@@ -10,6 +10,7 @@ import {
   View,
   type LayoutChangeEvent,
   type ListRenderItemInfo,
+  useWindowDimensions,
   type TextStyle,
   type RefreshControlProps,
 } from 'react-native';
@@ -30,9 +31,14 @@ import {
   type ZoneTab,
 } from '../../mobile/valuation-list/model';
 
-/** Fixed heights: the list never measures a row. */
+/** Fixed heights: the list never measures a row. They grow with Dynamic Type (capped) so large text never clips. */
 export const VALUATION_ROW_HEIGHT = 60;
 export const VALUATION_GROUP_HEIGHT = 40;
+const MAX_ROW_SCALE = 2;
+export function valuationRowHeights(fontScale: number): { row: number; group: number } {
+  const scale = Math.min(Math.max(fontScale || 1, 1), MAX_ROW_SCALE);
+  return { row: Math.round(VALUATION_ROW_HEIGHT * scale), group: Math.round(VALUATION_GROUP_HEIGHT * scale) };
+}
 /** Favourites shown before 「顯示全部」. */
 const FAVORITES_PREVIEW = 8;
 const SEARCH_DEBOUNCE_MS = 200;
@@ -141,16 +147,18 @@ interface RowProps {
   onToggleFavorite?: (symbol: string) => void;
   /** Rows straight in the list (not inside a card) keep the page's side margin. */
   inset?: boolean;
+  /** Row height for the current Dynamic Type size. */
+  height?: number;
 }
 
 /** One compact row: ☆ · code/name · zone · gap% over P/E/yield. Fixed height, no charts. */
-export const ValuationRow = memo(function ValuationRow({ row, favorite, theme, labels, onOpen, onToggleFavorite, inset }: RowProps) {
+export const ValuationRow = memo(function ValuationRow({ row, favorite, theme, labels, onOpen, onToggleFavorite, inset, height }: RowProps) {
   const color = row.zone ? theme.zone[row.zone] : theme.textMuted;
   const zoneText = row.zone ? labels.zone(row.zone) : labels.noZone;
   return (
     <Pressable
       onPress={() => onOpen(row)}
-      style={({ pressed }) => [styles.row, inset && styles.inset, { borderBottomColor: theme.border }, pressed && styles.pressed]}
+      style={({ pressed }) => [styles.row, height ? { height } : null, inset && styles.inset, { borderBottomColor: theme.border }, pressed && styles.pressed]}
       accessibilityRole="button"
       accessibilityLabel={[row.symbol, row.name, zoneText, row.gapPct !== null ? labels.formatPct(row.gapPct) : null, row.risk ? labels.risk(row.risk) : null].filter(Boolean).join(' ')}
       testID={`valuation-list-row-${row.symbol}`}
@@ -188,13 +196,13 @@ export const ValuationRow = memo(function ValuationRow({ row, favorite, theme, l
   );
 });
 
-const GroupHeader = memo(function GroupHeader({ industry, count, collapsed, theme, onToggle }: {
-  industry: string; count: number; collapsed: boolean; theme: ValuationListTheme; onToggle: (industry: string) => void;
+const GroupHeader = memo(function GroupHeader({ industry, count, collapsed, theme, onToggle, height }: {
+  industry: string; count: number; collapsed: boolean; theme: ValuationListTheme; onToggle: (industry: string) => void; height?: number;
 }) {
   return (
     <Pressable
       onPress={() => onToggle(industry)}
-      style={[styles.group, styles.inset, { backgroundColor: theme.background, borderBottomColor: theme.border }]}
+      style={[styles.group, height ? { height } : null, styles.inset, { backgroundColor: theme.background, borderBottomColor: theme.border }]}
       accessibilityRole="button"
       accessibilityState={{ expanded: !collapsed }}
       testID={`valuation-list-group-${industry}`}
@@ -281,6 +289,8 @@ export function ValuationList({
   const [favoritesOpen, setFavoritesOpen] = useState(false);
   const [headerHeight, setHeaderHeight] = useState(0);
 
+  const { fontScale } = useWindowDimensions();
+  const heights = useMemo(() => valuationRowHeights(fontScale), [fontScale]);
   const select = useMemo(() => createValuationListSelector(), []);
   const { rows: shown, counts } = useMemo(
     () => select(rows, { query: debouncedQuery, tab, sort, market, industry, minYield, risk }),
@@ -293,7 +303,7 @@ export function ValuationList({
     () => valuationListItems(shown, { groupBy: grouped ? 'industry' : null, collapsed }),
     [shown, grouped, collapsed],
   );
-  const offsets = useMemo(() => valuationItemOffsets(items, VALUATION_ROW_HEIGHT, VALUATION_GROUP_HEIGHT), [items]);
+  const offsets = useMemo(() => valuationItemOffsets(items, heights.row, heights.group), [items, heights]);
 
   const toggleGroup = useCallback((name: string) => {
     setCollapsed((current) => {
@@ -323,11 +333,11 @@ export function ValuationList({
 
   const renderItem = useCallback(({ item }: ListRenderItemInfo<ValuationListItem>) => (
     item.type === 'group' ? (
-      <GroupHeader industry={item.industry} count={item.count} collapsed={item.collapsed} theme={theme} onToggle={toggleGroup} />
+      <GroupHeader industry={item.industry} count={item.count} collapsed={item.collapsed} theme={theme} onToggle={toggleGroup} height={heights.group} />
     ) : (
-      <ValuationRow row={item.row} favorite={favoriteSet.has(item.row.symbol)} theme={theme} labels={labels} onOpen={onOpen} onToggleFavorite={onToggleFavorite} inset />
+      <ValuationRow row={item.row} favorite={favoriteSet.has(item.row.symbol)} theme={theme} labels={labels} onOpen={onOpen} onToggleFavorite={onToggleFavorite} inset height={heights.row} />
     )
-  ), [theme, labels, onOpen, onToggleFavorite, favoriteSet, toggleGroup]);
+  ), [theme, labels, onOpen, onToggleFavorite, favoriteSet, toggleGroup, heights]);
   const getItemLayout = useCallback((_: unknown, index: number) => ({
     length: offsets[index + 1] - offsets[index],
     offset: headerHeight + offsets[index],
@@ -372,7 +382,7 @@ export function ValuationList({
             <Text style={[theme.text.sub, styles.hint, { color: theme.textMuted }]} testID="valuation-list-favorites-empty">{labels.favoritesEmpty}</Text>
           ) : (
             shownFavorites.map((row) => (
-              <ValuationRow key={row.symbol} row={row} favorite theme={theme} labels={labels} onOpen={onOpen} onToggleFavorite={onToggleFavorite} />
+              <ValuationRow key={row.symbol} row={row} favorite theme={theme} labels={labels} onOpen={onOpen} onToggleFavorite={onToggleFavorite} height={heights.row} />
             ))
           )}
           {favoriteList.rows.length > FAVORITES_PREVIEW ? (
@@ -510,7 +520,7 @@ const styles = StyleSheet.create({
   right: { textAlign: 'right' },
   group: { height: VALUATION_GROUP_HEIGHT, flexDirection: 'row', alignItems: 'center', gap: 8, borderBottomWidth: StyleSheet.hairlineWidth, paddingHorizontal: 4 },
   chevron: { width: 16, textAlign: 'center' },
-  search: { flexDirection: 'row', alignItems: 'center', gap: 8, borderWidth: StyleSheet.hairlineWidth, borderRadius: 12, paddingHorizontal: 12, height: 40, marginBottom: 12 },
+  search: { flexDirection: 'row', alignItems: 'center', gap: 8, borderWidth: StyleSheet.hairlineWidth, borderRadius: 12, paddingHorizontal: 12, minHeight: 40, paddingVertical: 6, marginBottom: 12 },
   searchInput: { flex: 1, paddingVertical: 0 },
   overview: { gap: 8, marginBottom: 12 },
   tile: { borderRadius: 14, padding: 12, gap: 6 },
