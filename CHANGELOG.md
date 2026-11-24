@@ -11,6 +11,12 @@ All notable changes to this project will be documented in this file.
 
 Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Versioning: [SemVer](https://semver.org/).
 
+## 0.5.2
+
+- Add `packTiles` / `spanWidth`: tile grids fill every row (the last tile of a short row widens), so 3- and 4-column layouts never leave an empty slot.
+- Add `advanceDecline` for the 漲跌家數 tile.
+- Add `trendInsights` for the stock-detail 30-day chart: change, high/low, range position, biggest one-day move, moving average, volume vs median.
+
 ## 0.5.1
 
 - Add `TILE_TYPE` tokens: one type scale for tiles, list rows, news rows and the stock-detail summary.

@@ -212,3 +212,5 @@ export {
   type RiskNotices,
   type RiskNoticeItem,
 } from './utils/valuation-tile';
+export { packTiles, spanWidth, advanceDecline, type PackedTile } from './utils/tile-pack';
+export { trendInsights, type TrendBar, type TrendInsights, type TrendExtreme } from './utils/trend-insights';
