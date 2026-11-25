@@ -186,7 +186,7 @@ export const ValuationRow = memo(function ValuationRow({ row, favorite, theme, l
     >
       {onToggleFavorite ? (
         // Shared star: 16pt from the edge, 12pt before the code (the row's gap is 8).
-        <View style={styles.starSlot}>
+        <View style={[styles.starSlot, inset && styles.starSlotInset]}>
           <FavoriteToggle
             on={favorite}
             onToggle={() => onToggleFavorite(row.symbol)}
@@ -563,6 +563,8 @@ const styles = StyleSheet.create({
   pressed: { opacity: 0.6 },
   row: { height: VALUATION_ROW_HEIGHT, flexDirection: 'row', alignItems: 'center', gap: 8, borderBottomWidth: StyleSheet.hairlineWidth, paddingHorizontal: 4 },
   starSlot: { marginLeft: FAVORITE_TOGGLE_INSET - 4, marginRight: -8 },
+  // Inset rows sit 16pt in already: pull the 44pt target back so the star lines up with the section title (16pt).
+  starSlotInset: { marginLeft: -16 },
   names: { flex: 1, minWidth: 0, gap: 2 },
   codeLine: { flexDirection: 'row', alignItems: 'center', gap: 6 },
   code: { fontWeight: '700' },
