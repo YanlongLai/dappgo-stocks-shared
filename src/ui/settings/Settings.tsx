@@ -26,6 +26,11 @@ import {
 } from '../../mobile/settings/settings-order';
 import { tapHaptic } from '../tiles/PressableCard';
 
+/** Off-switch track: the muted text colour at 40% (visible on light and dark cards). */
+export function switchOffTrack(textMuted: string): string {
+  return /^#[0-9a-f]{6}$/i.test(textMuted) ? `${textMuted}66` : textMuted;
+}
+
 export type SettingsIconName = 'chevron-forward' | 'open-outline' | 'checkmark' | 'information-circle-outline' | 'close' | (string & {});
 
 export interface SettingsTheme {
@@ -130,9 +135,10 @@ export function SettingsRow(p: SettingsRowProps) {
           accessibilityHint={p.accessibilityHint}
           accessibilityRole="switch"
           accessibilityState={{ checked: p.toggle.value, disabled: !!p.toggle.disabled }}
-          // Off track stays the platform's own grey: the app border token is
-          // near-white on light cards and made an off switch invisible.
-          trackColor={{ true: theme.switchOn ?? theme.accent }}
+          // The border token (and even iOS's own default) is near-white on a
+          // white card, so an off switch vanished: use the muted text at 40%.
+          trackColor={{ false: switchOffTrack(theme.textMuted), true: theme.switchOn ?? theme.accent }}
+          ios_backgroundColor={switchOffTrack(theme.textMuted)}
           testID={p.toggle.testID ?? (p.testID ? `${p.testID}-switch` : undefined)}
         />
       ) : null}
