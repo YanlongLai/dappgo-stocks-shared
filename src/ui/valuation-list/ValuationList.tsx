@@ -1,3 +1,4 @@
+import { pillWidth } from '../../mobile/list-row/columns';
 import { FAVORITE_TOGGLE_INSET, FavoriteToggle, SwipeFavoriteRow } from '../favorites/FavoriteToggle';
 import React, { memo, useCallback, useEffect, useMemo, useRef, useState, type ReactElement } from 'react';
 import {
@@ -173,6 +174,8 @@ interface RowProps {
 export const ValuationRow = memo(function ValuationRow({ row, favorite, theme, labels, onOpen, onToggleFavorite, inset, height, stacked }: RowProps) {
   const color = row.zone ? theme.zone[row.zone] : theme.textMuted;
   const zoneText = row.zone ? labels.zone(row.zone) : labels.noZone;
+  const { fontScale } = useWindowDimensions();
+  const zoneWidth = pillWidth([...VALUATION_ZONES.map((z) => labels.zone(z)), labels.noZone], 13, Math.min(fontScale, 1.6));
   const content = (
     <Pressable
       onPress={() => onOpen(row)}
@@ -222,11 +225,12 @@ export const ValuationRow = memo(function ValuationRow({ row, favorite, theme, l
           </View>
           <Text style={[theme.text.sub, { color: theme.textMuted }]} numberOfLines={1}>{row.name}</Text>
         </View>
-        <View style={[styles.badge, { borderColor: color }]}>
-          <Text style={[theme.text.label, { color }]} numberOfLines={1}>{zoneText}</Text>
+        {/* One badge width for every row (2.0.1): the widest zone label in this language. */}
+        <View style={[styles.badge, { borderColor: color, width: zoneWidth }]}>
+          <Text style={[theme.text.label, styles.badgeText, { color }]} numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.75}>{zoneText}</Text>
         </View>
         <View style={styles.numbers}>
-          <Text style={[theme.text.mono, styles.gap, { color }]} numberOfLines={1}>{row.gapPct !== null ? labels.formatPct(row.gapPct) : '—'}</Text>
+          <Text style={[theme.text.mono, styles.gap, styles.tabular, { color }]} numberOfLines={1}>{row.gapPct !== null ? labels.formatPct(row.gapPct) : '—'}</Text>
           <Text style={[theme.text.label, styles.right, { color: theme.textMuted }]} numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.8}>{labels.rowFacts(row)}</Text>
         </View>
       </>
@@ -563,7 +567,9 @@ const styles = StyleSheet.create({
   codeLine: { flexDirection: 'row', alignItems: 'center', gap: 6 },
   code: { fontWeight: '700' },
   riskTag: { borderWidth: StyleSheet.hairlineWidth, borderRadius: 4, paddingHorizontal: 4, overflow: 'hidden' },
-  badge: { borderWidth: 1, borderRadius: 999, paddingHorizontal: 8, paddingVertical: 2, maxWidth: 88 },
+  badge: { borderWidth: 1, borderRadius: 999, paddingHorizontal: 6, paddingVertical: 2, alignItems: 'center' },
+  badgeText: { textAlign: 'center' },
+  tabular: { fontVariant: ['tabular-nums'] },
   numbers: { width: 132, alignItems: 'flex-end', gap: 2 },
   stack: { flex: 1, minWidth: 0, gap: 2, justifyContent: 'center' },
   stackLine: { flexDirection: 'row', alignItems: 'center', flexWrap: 'wrap', gap: 8 },
