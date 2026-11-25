@@ -59,8 +59,12 @@ export interface PressableCardProps {
 export function PressableCard({ onPress, accessibilityHint, accessibilityLabel, style, pressedColor, accentColor, testID, children }: PressableCardProps) {
   const { scale, pressIn, pressOut } = usePressSpring();
   const handlePressIn = useCallback(() => { tapHaptic(); pressIn(); }, [pressIn]);
+  // Layout keys size the card inside its row/grid, so they belong on the
+  // outer (scaling) view; otherwise the wrapper shrinks to its content and a
+  // flexBasis/width on the card does nothing.
+  const { outer, inner } = splitLayoutStyle(style);
   return (
-    <Animated.View style={{ transform: [{ scale }] }}>
+    <Animated.View style={[outer, { transform: [{ scale }] }]}>
       <Pressable
         onPress={onPress}
         onPressIn={handlePressIn}
@@ -68,7 +72,7 @@ export function PressableCard({ onPress, accessibilityHint, accessibilityLabel, 
         accessibilityRole="button"
         accessibilityLabel={accessibilityLabel}
         accessibilityHint={accessibilityHint}
-        style={({ pressed }) => [style, accentColor ? styles.clip : null, pressed && pressedColor ? { backgroundColor: pressedColor } : null]}
+        style={({ pressed }) => [inner, accentColor ? styles.clip : null, pressed && pressedColor ? { backgroundColor: pressedColor } : null]}
         testID={testID}
       >
         {accentColor ? <AccentBar color={accentColor} /> : null}
@@ -76,6 +80,22 @@ export function PressableCard({ onPress, accessibilityHint, accessibilityLabel, 
       </Pressable>
     </Animated.View>
   );
+}
+
+const OUTER_KEYS = new Set([
+  'flex', 'flexGrow', 'flexShrink', 'flexBasis', 'width', 'minWidth', 'maxWidth', 'alignSelf',
+  'margin', 'marginHorizontal', 'marginVertical', 'marginTop', 'marginBottom', 'marginLeft', 'marginRight', 'marginStart', 'marginEnd',
+]);
+
+/** Exported for tests: layout keys go to the wrapper, the rest stays on the card. */
+export function splitLayoutStyle(style: StyleProp<ViewStyle>): { outer: ViewStyle | null; inner: ViewStyle } {
+  const flat = (StyleSheet.flatten(style) ?? {}) as Record<string, unknown>;
+  const outer: Record<string, unknown> = {};
+  const inner: Record<string, unknown> = {};
+  for (const [k, v] of Object.entries(flat)) (OUTER_KEYS.has(k) ? outer : inner)[k] = v;
+  if (Object.keys(outer).length === 0) return { outer: null, inner: inner as ViewStyle };
+  // The card fills the wrapper (equal-height tiles in a row stretch together).
+  return { outer: outer as ViewStyle, inner: { flexGrow: 1, ...inner } as ViewStyle };
 }
 
 /** A 3-pt colour strip flush with the card's left edge; the card's own radius rounds it. */
