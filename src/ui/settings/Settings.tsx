@@ -130,7 +130,9 @@ export function SettingsRow(p: SettingsRowProps) {
           accessibilityHint={p.accessibilityHint}
           accessibilityRole="switch"
           accessibilityState={{ checked: p.toggle.value, disabled: !!p.toggle.disabled }}
-          trackColor={{ false: theme.border, true: theme.switchOn ?? theme.accent }}
+          // Off track stays the platform's own grey: the app border token is
+          // near-white on light cards and made an off switch invisible.
+          trackColor={{ true: theme.switchOn ?? theme.accent }}
           testID={p.toggle.testID ?? (p.testID ? `${p.testID}-switch` : undefined)}
         />
       ) : null}
