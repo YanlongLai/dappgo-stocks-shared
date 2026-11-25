@@ -276,8 +276,9 @@ export function ChoiceSheet({ visible, title, options, selected, onSelect, onClo
 
 // ── Theme (segmented) ────────────────────────────────────────────────
 
-export function SegmentedSetting<K extends string>({ label, options, value, onChange, closeLabel, testID = 'settings-segmented' }: {
+export function SegmentedSetting<K extends string>({ label, icon, options, value, onChange, closeLabel, testID = 'settings-segmented' }: {
   label: string;
+  icon?: SettingsIconName | null;
   options: readonly { key: K; label: string; testID?: string; accessibilityLabel?: string }[];
   value: K;
   onChange: (key: K) => void;
@@ -291,7 +292,7 @@ export function SegmentedSetting<K extends string>({ label, options, value, onCh
   if (large) {
     return (
       <>
-        <SettingsRow kind="value" label={label} value={current?.label ?? null} onPress={() => setOpen(true)} testID={testID} />
+        <SettingsRow kind="value" icon={icon} label={label} value={current?.label ?? null} onPress={() => setOpen(true)} testID={testID} />
         <ChoiceSheet
           visible={open}
           title={label}
@@ -307,7 +308,10 @@ export function SegmentedSetting<K extends string>({ label, options, value, onCh
   }
   return (
     <View style={styles.segmentedRow} testID={testID}>
-      <Text style={[theme.text.row, { color: theme.textHeading }]}>{label}</Text>
+      <View style={styles.segmentedLabel}>
+        {icon ? <View style={styles.icon}>{theme.renderIcon(icon, 18, theme.accent)}</View> : null}
+        <Text style={[theme.text.row, { color: theme.textHeading }]}>{label}</Text>
+      </View>
       <View style={[styles.segments, { borderColor: theme.border }]} accessibilityRole="radiogroup">
         {options.map((o, i) => {
           const on = o.key === value;
@@ -356,7 +360,8 @@ export interface LanguagePickerLabels {
   close: string;
 }
 
-export function LanguagePicker({ language, source, deviceLanguage, onSelect, onUseDevice, labels, testID = 'language-row' }: {
+export function LanguagePicker({ language, source, deviceLanguage, onSelect, onUseDevice, labels, icon, testID = 'language-row' }: {
+  icon?: SettingsIconName | null;
   /** The language the app shows now. */
   language: Locale;
   source: 'device' | 'manual';
@@ -375,7 +380,7 @@ export function LanguagePicker({ language, source, deviceLanguage, onSelect, onU
   ];
   return (
     <>
-      <SettingsRow kind="value" label={labels.title} value={LOCALE_LABELS[language]} onPress={() => setOpen(true)} testID={testID} />
+      <SettingsRow kind="value" icon={icon} label={labels.title} value={LOCALE_LABELS[language]} onPress={() => setOpen(true)} testID={testID} />
       <ChoiceSheet
         visible={open}
         title={labels.title}
@@ -392,7 +397,8 @@ export function LanguagePicker({ language, source, deviceLanguage, onSelect, onU
 
 const styles = StyleSheet.create({
   section: { marginTop: 24 },
-  sectionTitle: { marginBottom: 8, marginLeft: 4 },
+  // One look in every language: uppercase titles (no effect on CJK).
+  sectionTitle: { marginBottom: 8, marginLeft: 4, textTransform: 'uppercase' },
   group: { borderRadius: 14, borderWidth: StyleSheet.hairlineWidth, paddingHorizontal: 16, overflow: 'hidden' },
   extra: { marginTop: 12, gap: 12 },
   footer: { marginTop: 6, marginHorizontal: 4 },
@@ -407,6 +413,7 @@ const styles = StyleSheet.create({
   value: { flexShrink: 1, maxWidth: '50%', textAlign: 'right' },
   valueStacked: { marginTop: 2 },
   segmentedRow: { paddingVertical: 12, gap: 10 },
+  segmentedLabel: { flexDirection: 'row', alignItems: 'center', gap: 12 },
   segments: { flexDirection: 'row', borderWidth: StyleSheet.hairlineWidth, borderRadius: 10, overflow: 'hidden' },
   segment: { flex: 1, minHeight: 44, alignItems: 'center', justifyContent: 'center', paddingHorizontal: 6 },
   segmentText: { fontWeight: '600' },

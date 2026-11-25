@@ -239,7 +239,7 @@ export const ValuationRow = memo(function ValuationRow({ row, favorite, theme, l
       on={favorite}
       onToggle={() => onToggleFavorite(row.symbol)}
       labels={{ add: labels.swipeAdd, remove: labels.swipeRemove }}
-      theme={{ accent: theme.accent, onAccent: theme.onAccent, negative: theme.negative ?? theme.risk }}
+      theme={{ accent: theme.accent, onAccent: theme.onAccent, negative: theme.negative ?? theme.risk, background: theme.background }}
       testID={`valuation-list-swipe-${row.symbol}`}
     >
       {content}

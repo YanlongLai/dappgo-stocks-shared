@@ -120,7 +120,7 @@ export function FavoriteToastHost({ labels, theme, bottom = 96, testID = 'favori
 // ── Swipe ────────────────────────────────────────────────────────────
 
 const ACTION_WIDTH = 104;
-const OPEN_AT = 48;
+const OPEN_AT = 40;
 const COMMIT_AT = 180;
 
 /**
@@ -133,15 +133,21 @@ export function SwipeFavoriteRow({ children, on, onToggle, labels, theme, testID
   on: boolean;
   onToggle: () => void;
   labels: { add: string; remove: string };
-  theme: { accent: string; onAccent: string; negative: string };
+  /** background: the row's own surface, so the action never shows through. */
+  theme: { accent: string; onAccent: string; negative: string; background: string };
   testID?: string;
 }) {
   const x = useRef(new Animated.Value(0)).current;
+  // The action is invisible until the row actually moves.
+  const actionOpacity = x.interpolate({ inputRange: [0, 12], outputRange: [0, 1], extrapolate: 'clamp' });
   const open = useRef(false);
   const close = () => { open.current = false; Animated.spring(x, { toValue: 0, useNativeDriver: true, bounciness: 0 }).start(); };
   const run = () => { tapHaptic(); onToggle(); close(); };
   const responder = useRef(PanResponder.create({
-    onMoveShouldSetPanResponder: (_e, g) => Math.abs(g.dx) > 12 && Math.abs(g.dx) > Math.abs(g.dy) * 2 && (g.dx > 0 || open.current),
+    // Capture phase: the row's own Pressable holds the touch, so the swipe must claim a clearly
+    // horizontal drag before it (vertical scrolling still goes to the list).
+    onMoveShouldSetPanResponderCapture: (_e, g) => Math.abs(g.dx) > 12 && Math.abs(g.dx) > Math.abs(g.dy) * 2 && (g.dx > 0 || open.current),
+    onPanResponderTerminationRequest: () => false,
     onPanResponderMove: (_e, g) => { x.setValue(Math.max(0, Math.min(COMMIT_AT + 40, (open.current ? ACTION_WIDTH : 0) + g.dx))); },
     onPanResponderRelease: (_e, g) => {
       const d = (open.current ? ACTION_WIDTH : 0) + g.dx;
@@ -156,10 +162,12 @@ export function SwipeFavoriteRow({ children, on, onToggle, labels, theme, testID
   const bg = on ? theme.negative : theme.accent;
   return (
     <View style={styles.swipe} testID={testID}>
-      <Pressable onPress={run} style={[styles.swipeAction, { backgroundColor: bg }]} accessibilityRole="button" accessibilityLabel={on ? labels.remove : labels.add} testID={testID ? `${testID}-action` : undefined}>
-        <Text style={{ color: theme.onAccent, fontSize: 14, fontWeight: '700', textAlign: 'center' }} numberOfLines={2}>{on ? labels.remove : labels.add}</Text>
+      <Animated.View style={[styles.swipeAction, { backgroundColor: bg, opacity: actionOpacity }]}>
+      <Pressable onPress={run} style={styles.swipeActionInner} accessibilityRole="button" accessibilityLabel={on ? labels.remove : labels.add} testID={testID ? `${testID}-action` : undefined}>
+        <Text style={{ color: theme.onAccent, fontSize: 14, fontWeight: '700' }} numberOfLines={2}>{on ? labels.remove : labels.add}</Text>
       </Pressable>
-      <Animated.View style={{ transform: [{ translateX: x }] }} {...responder.panHandlers}>
+      </Animated.View>
+      <Animated.View style={{ backgroundColor: theme.background, transform: [{ translateX: x }] }} {...responder.panHandlers}>
         {children}
       </Animated.View>
     </View>
@@ -176,5 +184,7 @@ const styles = StyleSheet.create({
   },
   undo: { marginLeft: 'auto', minHeight: 44, justifyContent: 'center' },
   swipe: { overflow: 'hidden' },
-  swipeAction: { position: 'absolute', left: 0, top: 0, bottom: 0, width: ACTION_WIDTH, alignItems: 'center', justifyContent: 'center', paddingHorizontal: 8 },
+  swipeAction: { position: 'absolute', left: 0, top: 0, bottom: 0, width: ACTION_WIDTH },
+  // Label at the leading edge so it reads from the first ~50pt of a swipe.
+  swipeActionInner: { flex: 1, alignItems: 'flex-start', justifyContent: 'center', paddingLeft: 14, paddingRight: 6 },
 });
