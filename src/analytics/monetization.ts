@@ -107,3 +107,12 @@ export function priceTier(usd: number | null | undefined): string {
   if (usd < 10) return 'mid';
   return 'high';
 }
+
+/**
+ * Trial requests say which kind of build sent them (2.0.1) so the gateway can
+ * count test and real users apart. Only the channel word — never an id.
+ */
+export const CHANNEL_HEADER = 'X-DappGo-Channel';
+export function channelHeader(channel: BuildChannel): Record<string, string> {
+  return { [CHANNEL_HEADER]: (BUILD_CHANNELS as readonly string[]).includes(channel) ? channel : 'dev' };
+}

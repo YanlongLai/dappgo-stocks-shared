@@ -43,3 +43,14 @@ describe('monetization events (plan §3.6)', () => {
     expect([priceTier(2.99), priceTier(4.99), priceTier(29.99), priceTier(null)]).toEqual(['low', 'mid', 'high', 'unknown']);
   });
 });
+
+describe('channel header (2.0.1)', () => {
+  const { channelHeader, CHANNEL_HEADER } = require('./monetization');
+  it('sends only the channel word', () => {
+    expect(CHANNEL_HEADER).toBe('X-DappGo-Channel');
+    expect(channelHeader('testflight')).toEqual({ 'X-DappGo-Channel': 'testflight' });
+    expect(channelHeader('production')).toEqual({ 'X-DappGo-Channel': 'production' });
+    expect(channelHeader('anything' as never)).toEqual({ 'X-DappGo-Channel': 'dev' });
+  });
+});
+

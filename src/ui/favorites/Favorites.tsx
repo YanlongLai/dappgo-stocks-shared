@@ -130,12 +130,14 @@ export function FavoriteFacts({ item, theme, labels }: { item: FavoriteView; the
 }
 
 /** A favorite as one tile: symbol, name and price, the record line, tags, and the latest headline. */
-export const FavoriteTile = memo(function FavoriteTile({ item, theme, labels, onPress, trailing, accessibilityHint }: {
+export const FavoriteTile = memo(function FavoriteTile({ item, theme, labels, onPress, leading, trailing, accessibilityHint }: {
   item: FavoriteView;
   theme: FavoritesTheme;
   labels: FavoritesLabels;
   onPress: (symbol: string) => void;
-  /** e.g. the app's star toggle. */
+  /** The shared star (2.0.1): sits 16pt from the tile edge, 12pt before the symbol. */
+  leading?: ReactElement | null;
+  /** e.g. a badge after the price. */
   trailing?: ReactElement | null;
   /** Where a tap goes (screen readers), e.g. 「打開台積電個股頁」. */
   accessibilityHint?: string;
@@ -149,9 +151,10 @@ export const FavoriteTile = memo(function FavoriteTile({ item, theme, labels, on
       testID={`favorite-tile-${item.symbol}`}
     >
       <View style={styles.head}>
+        {leading ? <View style={styles.leading}>{leading}</View> : null}
         <View style={styles.names}>
           <Text style={[theme.text.rowTitle, styles.symbol, { color: theme.textHeading }]} numberOfLines={1}>{item.symbol}</Text>
-          <Text style={[theme.text.sub, { color: theme.textMuted }]} numberOfLines={1}>{item.name}</Text>
+          {item.name && item.name !== item.symbol ? <Text style={[theme.text.sub, { color: theme.textMuted }]} numberOfLines={1}>{item.name}</Text> : null}
         </View>
         <View style={styles.price}>
           <Text style={[theme.text.mono, { color: theme.textHeading }]} numberOfLines={1}>{item.price !== null ? labels.formatPrice(item.price) : '—'}</Text>
@@ -234,10 +237,14 @@ const styles = StyleSheet.create({
   pressed: { opacity: 0.6 },
   tile: { borderRadius: 18, padding: 12, gap: 6, marginBottom: 8 },
   eventRow: { flexDirection: 'row', alignItems: 'flex-start', gap: 8, paddingVertical: 2 },
-  eventTag: { minWidth: 52, fontWeight: '700' },
+  // One column for every line: the move/tag is right-aligned in a fixed width, so the text starts at one x.
+  eventTag: { width: 64, textAlign: 'right', fontWeight: '700', fontVariant: ['tabular-nums'] },
   itemTile: { borderRadius: 18, padding: 12, gap: 6, marginBottom: 8 },
   head: { flexDirection: 'row', alignItems: 'center', gap: 8 },
   names: { flex: 1, minWidth: 0, gap: 1 },
+  // Tile padding 12 + head gap 8: the 44pt target starts 4pt from the edge so the
+  // 20pt star sits at 16, and ends 12pt before the symbol.
+  leading: { marginLeft: -8, marginRight: -8, marginVertical: -12 },
   symbol: { fontWeight: '700' },
   price: { alignItems: 'flex-end', gap: 1, flexShrink: 0 },
   facts: { gap: 6 },

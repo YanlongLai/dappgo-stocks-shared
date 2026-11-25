@@ -1,3 +1,5 @@
+import { pillWidth } from '../../mobile/list-row/columns';
+import { FAVORITE_TOGGLE_INSET, FavoriteToggle, SwipeFavoriteRow } from '../favorites/FavoriteToggle';
 import React, { memo, useCallback, useEffect, useMemo, useRef, useState, type ReactElement } from 'react';
 import {
   FlatList,
@@ -63,6 +65,8 @@ export interface ValuationListTheme {
   /** Text on an accent background. */
   onAccent: string;
   star: string;
+  /** Swipe 「移除」 background; defaults to the risk colour. */
+  negative?: string;
   risk: string;
   zone: Record<ValuationZone, string>;
   text: { label: TextStyle; value: TextStyle; sub: TextStyle; body: TextStyle; mono: TextStyle };
@@ -97,6 +101,9 @@ export interface ValuationListLabels {
   rowFacts: (row: ValuationListRow) => string;
   favoriteAdd: (name: string) => string;
   favoriteRemove: (name: string) => string;
+  /** Swipe-right actions (2.0.1); without them rows do not swipe. */
+  swipeAdd?: string;
+  swipeRemove?: string;
   formatPct: (value: number) => string;
   formatRatio: (value: number) => string;
 }
@@ -167,7 +174,9 @@ interface RowProps {
 export const ValuationRow = memo(function ValuationRow({ row, favorite, theme, labels, onOpen, onToggleFavorite, inset, height, stacked }: RowProps) {
   const color = row.zone ? theme.zone[row.zone] : theme.textMuted;
   const zoneText = row.zone ? labels.zone(row.zone) : labels.noZone;
-  return (
+  const { fontScale } = useWindowDimensions();
+  const zoneWidth = pillWidth([...VALUATION_ZONES.map((z) => labels.zone(z)), labels.noZone], 13, Math.min(fontScale, 1.6));
+  const content = (
     <Pressable
       onPress={() => onOpen(row)}
       style={({ pressed }) => [styles.row, height ? { height } : null, inset && styles.inset, { borderBottomColor: theme.border }, pressed && styles.pressed]}
@@ -176,17 +185,17 @@ export const ValuationRow = memo(function ValuationRow({ row, favorite, theme, l
       testID={`valuation-list-row-${row.symbol}`}
     >
       {onToggleFavorite ? (
-      <Pressable
-        onPress={() => onToggleFavorite(row.symbol)}
-        hitSlop={10}
-        style={styles.star}
-        accessibilityRole="button"
-        accessibilityState={{ selected: favorite }}
-        accessibilityLabel={favorite ? labels.favoriteRemove(row.name) : labels.favoriteAdd(row.name)}
-        testID={`valuation-list-star-${row.symbol}`}
-      >
-        <Text style={[styles.starGlyph, { color: favorite ? theme.star : theme.textMuted }]}>{favorite ? '★' : '☆'}</Text>
-      </Pressable>
+        // Shared star: 16pt from the edge, 12pt before the code (the row's gap is 8).
+        <View style={[styles.starSlot, inset && styles.starSlotInset]}>
+          <FavoriteToggle
+            on={favorite}
+            onToggle={() => onToggleFavorite(row.symbol)}
+            accessibilityLabel={favorite ? labels.favoriteRemove(`${row.symbol} ${row.name}`.trim()) : labels.favoriteAdd(`${row.symbol} ${row.name}`.trim())}
+            accent={theme.star}
+            muted={theme.textMuted}
+            testID={`valuation-list-star-${row.symbol}`}
+          />
+        </View>
       ) : null}
       {stacked ? (
         <View style={styles.stack}>
@@ -216,16 +225,29 @@ export const ValuationRow = memo(function ValuationRow({ row, favorite, theme, l
           </View>
           <Text style={[theme.text.sub, { color: theme.textMuted }]} numberOfLines={1}>{row.name}</Text>
         </View>
-        <View style={[styles.badge, { borderColor: color }]}>
-          <Text style={[theme.text.label, { color }]} numberOfLines={1}>{zoneText}</Text>
+        {/* One badge width for every row (2.0.1): the widest zone label in this language. */}
+        <View style={[styles.badge, { borderColor: color, width: zoneWidth }]}>
+          <Text style={[theme.text.label, styles.badgeText, { color }]} numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.75}>{zoneText}</Text>
         </View>
         <View style={styles.numbers}>
-          <Text style={[theme.text.mono, styles.gap, { color }]} numberOfLines={1}>{row.gapPct !== null ? labels.formatPct(row.gapPct) : '—'}</Text>
+          <Text style={[theme.text.mono, styles.gap, styles.tabular, { color }]} numberOfLines={1}>{row.gapPct !== null ? labels.formatPct(row.gapPct) : '—'}</Text>
           <Text style={[theme.text.label, styles.right, { color: theme.textMuted }]} numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.8}>{labels.rowFacts(row)}</Text>
         </View>
       </>
       )}
     </Pressable>
+  );
+  if (!onToggleFavorite || !labels.swipeAdd || !labels.swipeRemove) return content;
+  return (
+    <SwipeFavoriteRow
+      on={favorite}
+      onToggle={() => onToggleFavorite(row.symbol)}
+      labels={{ add: labels.swipeAdd, remove: labels.swipeRemove }}
+      theme={{ accent: theme.accent, onAccent: theme.onAccent, negative: theme.negative ?? theme.risk, background: theme.background }}
+      testID={`valuation-list-swipe-${row.symbol}`}
+    >
+      {content}
+    </SwipeFavoriteRow>
   );
 });
 
@@ -540,13 +562,16 @@ const styles = StyleSheet.create({
   listContent: { paddingBottom: 32 },
   pressed: { opacity: 0.6 },
   row: { height: VALUATION_ROW_HEIGHT, flexDirection: 'row', alignItems: 'center', gap: 8, borderBottomWidth: StyleSheet.hairlineWidth, paddingHorizontal: 4 },
-  star: { width: 28, alignItems: 'center', justifyContent: 'center' },
-  starGlyph: { fontSize: 18 },
+  starSlot: { marginLeft: FAVORITE_TOGGLE_INSET - 4, marginRight: -8 },
+  // Inset rows sit 16pt in already: pull the 44pt target back so the star lines up with the section title (16pt).
+  starSlotInset: { marginLeft: -16 },
   names: { flex: 1, minWidth: 0, gap: 2 },
   codeLine: { flexDirection: 'row', alignItems: 'center', gap: 6 },
   code: { fontWeight: '700' },
   riskTag: { borderWidth: StyleSheet.hairlineWidth, borderRadius: 4, paddingHorizontal: 4, overflow: 'hidden' },
-  badge: { borderWidth: 1, borderRadius: 999, paddingHorizontal: 8, paddingVertical: 2, maxWidth: 88 },
+  badge: { borderWidth: 1, borderRadius: 999, paddingHorizontal: 6, paddingVertical: 2, alignItems: 'center' },
+  badgeText: { textAlign: 'center' },
+  tabular: { fontVariant: ['tabular-nums'] },
   numbers: { width: 132, alignItems: 'flex-end', gap: 2 },
   stack: { flex: 1, minWidth: 0, gap: 2, justifyContent: 'center' },
   stackLine: { flexDirection: 'row', alignItems: 'center', flexWrap: 'wrap', gap: 8 },
