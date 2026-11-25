@@ -48,7 +48,7 @@ type Item =
  */
 export function SmartList({
   items, cfg, segments, defaultSort, sortOptions, renderRow, rowHeight, fixedRows = true, groupBy, theme, labels, header, footer, refreshControl,
-  initialFilter, initialOffset, onStateChange, recentSearches = [], commonChips = [], rankChip, onSearchSubmit, onUse, contentContainerStyle, onScrollExtra, pinTop = 0, pinTranslateY, chrome, testID = 'smart-list',
+  initialFilter, initialOffset, onStateChange, recentSearches = [], commonChips = [], rankChip, onSearchSubmit, onUse, contentContainerStyle, contentInsetAdjustmentBehavior, onScrollExtra, pinTop = 0, pinTranslateY, chrome, testID = 'smart-list',
 }: {
   items: readonly ListItem[];
   cfg: ListConfig;
@@ -76,6 +76,8 @@ export function SmartList({
   onUse?: (key: string) => void;
   /** e.g. a collapsible screen header's padding and scroll handler. */
   contentContainerStyle?: StyleProp<ViewStyle>;
+  /** iOS: 'never' when the screen already pads for its own header (tab roots); default keeps the system inset. */
+  contentInsetAdjustmentBehavior?: 'automatic' | 'never' | 'always' | 'scrollableAxes';
   onScrollExtra?: (e: NativeSyntheticEvent<NativeScrollEvent>) => void;
   /** Where the pinned industry row sits: below a collapsible screen header… */
   pinTop?: number;
@@ -317,6 +319,7 @@ export function SmartList({
         keyboardDismissMode="on-drag"
         style={{ backgroundColor: theme.background }}
         contentContainerStyle={contentContainerStyle}
+        contentInsetAdjustmentBehavior={contentInsetAdjustmentBehavior}
       />
       {compact ? (
         <View style={styles.compactWrap} pointerEvents="box-none">

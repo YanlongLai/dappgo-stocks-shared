@@ -151,7 +151,7 @@ export const FavoriteTile = memo(function FavoriteTile({ item, theme, labels, on
       <View style={styles.head}>
         <View style={styles.names}>
           <Text style={[theme.text.rowTitle, styles.symbol, { color: theme.textHeading }]} numberOfLines={1}>{item.symbol}</Text>
-          <Text style={[theme.text.sub, { color: theme.textMuted }]} numberOfLines={1}>{item.name}</Text>
+          {item.name && item.name !== item.symbol ? <Text style={[theme.text.sub, { color: theme.textMuted }]} numberOfLines={1}>{item.name}</Text> : null}
         </View>
         <View style={styles.price}>
           <Text style={[theme.text.mono, { color: theme.textHeading }]} numberOfLines={1}>{item.price !== null ? labels.formatPrice(item.price) : '—'}</Text>
@@ -234,7 +234,8 @@ const styles = StyleSheet.create({
   pressed: { opacity: 0.6 },
   tile: { borderRadius: 18, padding: 12, gap: 6, marginBottom: 8 },
   eventRow: { flexDirection: 'row', alignItems: 'flex-start', gap: 8, paddingVertical: 2 },
-  eventTag: { minWidth: 52, fontWeight: '700' },
+  // One column for every line: the move/tag is right-aligned in a fixed width, so the text starts at one x.
+  eventTag: { width: 64, textAlign: 'right', fontWeight: '700', fontVariant: ['tabular-nums'] },
   itemTile: { borderRadius: 18, padding: 12, gap: 6, marginBottom: 8 },
   head: { flexDirection: 'row', alignItems: 'center', gap: 8 },
   names: { flex: 1, minWidth: 0, gap: 1 },
