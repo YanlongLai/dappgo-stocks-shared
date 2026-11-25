@@ -81,6 +81,7 @@ export function useScrollChrome(): ScrollChrome {
   const idleTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   /** Offset where 「↑」 stepped aside on idle; it returns only after a real new scroll up. */
   const idleHiddenAt = useRef<number | null>(null);
+  const lastMoveY = useRef(0);
   /** 「↑」 steps aside once scrolling has stopped, so it never sits over content while reading. */
   const scheduleIdleHide = useCallback(() => {
     if (idleTimer.current) clearTimeout(idleTimer.current);
@@ -130,7 +131,10 @@ export function useScrollChrome(): ScrollChrome {
       if (idleHiddenAt.current !== null && y >= idleHiddenAt.current - 48) next = { ...next, showTop: false };
       else idleHiddenAt.current = null;
     }
-    if (next.showTop) scheduleIdleHide();
+    // Restart the idle clock only on real movement; layout and content-size
+    // updates also fire onScroll and must not keep 「↑」 up forever.
+    if (next.showTop && Math.abs(y - lastMoveY.current) >= 2) scheduleIdleHide();
+    if (Math.abs(y - lastMoveY.current) >= 2) lastMoveY.current = y;
     if (next.showTop !== cur.showTop || next.direction !== cur.direction || Math.abs(next.y - cur.y) > 24 || (y <= TOP_SLOP) !== (cur.y <= TOP_SLOP)) setState(next);
     else stateRef.current = next;
   }, [viewport, keyboardOpen, offerReturn, dismissReturn, returnTo, scheduleIdleHide]);
