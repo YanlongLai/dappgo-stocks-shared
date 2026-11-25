@@ -38,6 +38,9 @@ function scrollTo(target: Scrollable | null | undefined, y: number, animated: bo
   else target.scrollTo?.({ y, animated });
 }
 
+/** 「↑」 hides this long after the last scroll movement. */
+export const TOP_IDLE_HIDE_MS = 2500;
+
 export interface ScrollChrome {
   ref: React.MutableRefObject<Scrollable | null>;
   state: ChromeState;
@@ -75,11 +78,19 @@ export function useScrollChrome(): ScrollChrome {
   const lastY = useRef(0);
   const deepest = useRef(0);
   const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const idleTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  /** 「↑」 steps aside once scrolling has stopped, so it never sits over content while reading. */
+  const scheduleIdleHide = useCallback(() => {
+    if (idleTimer.current) clearTimeout(idleTimer.current);
+    idleTimer.current = setTimeout(() => {
+      if (stateRef.current.showTop) setState((st) => ({ ...st, showTop: false }));
+    }, TOP_IDLE_HIDE_MS);
+  }, []);
 
   useEffect(() => {
     const show = Keyboard.addListener('keyboardDidShow', () => setKeyboardOpen(true));
     const hide = Keyboard.addListener('keyboardDidHide', () => setKeyboardOpen(false));
-    return () => { show.remove(); hide.remove(); if (timer.current) clearTimeout(timer.current); };
+    return () => { show.remove(); hide.remove(); if (timer.current) clearTimeout(timer.current); if (idleTimer.current) clearTimeout(idleTimer.current); };
   }, []);
 
   const offerReturn = useCallback((y: number) => {
@@ -109,9 +120,10 @@ export function useScrollChrome(): ScrollChrome {
     lastY.current = y;
     const next = nextChrome(stateRef.current, y, v, contentSize.height, keyboardOpen);
     const cur = stateRef.current;
+    if (next.showTop) scheduleIdleHide();
     if (next.showTop !== cur.showTop || next.direction !== cur.direction || Math.abs(next.y - cur.y) > 24 || (y <= TOP_SLOP) !== (cur.y <= TOP_SLOP)) setState(next);
     else stateRef.current = next;
-  }, [viewport, keyboardOpen, offerReturn, dismissReturn, returnTo]);
+  }, [viewport, keyboardOpen, offerReturn, dismissReturn, returnTo, scheduleIdleHide]);
 
   const scrollToTop = useCallback(() => {
     const from = lastY.current;
