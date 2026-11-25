@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, Text, View, type TextStyle } from 'react-native';
+import { StyleSheet, Text, View, type TextStyle, useWindowDimensions } from 'react-native';
 import { PressableCard, TapHint } from '../tiles/PressableCard';
 import { SIGNAL_TONES, type SignalsOverview as Overview, type SignalTone } from '../../mobile/signals/model';
 
@@ -47,6 +47,8 @@ export interface SignalsOverviewProps {
  * of small tiles. Two columns on a phone; the row wraps on wider screens.
  */
 export function SignalsOverview({ overview, theme, toneLabel, distributionTitle, tiles, hideDistribution, testID }: SignalsOverviewProps) {
+  // Large text: one tile per row and wrapping text instead of truncation.
+  const big = useWindowDimensions().fontScale >= 1.5;
   const parts = SIGNAL_TONES.filter((tone) => overview.counts[tone] > 0);
   const legend = parts.map((tone) => `${toneLabel(tone)} ${overview.counts[tone]}`).join(' · ');
   return (
@@ -67,16 +69,16 @@ export function SignalsOverview({ overview, theme, toneLabel, distributionTitle,
           const body = (
             <>
               <View style={styles.labelRow}>
-                <Text style={[theme.text.label, styles.flex, { color: theme.textMuted }]} numberOfLines={1}>{tile.label}</Text>
+                <Text style={[theme.text.label, styles.flex, { color: theme.textMuted }]} numberOfLines={big ? 3 : 1}>{tile.label}</Text>
                 {tile.onPress ? <TapHint color={theme.textMuted} /> : null}
               </View>
               <Text style={[theme.text.value, styles.value, { color: tile.valueColor ?? theme.textHeading }]} numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.7}>
                 {tile.value}
               </Text>
-              {tile.sub ? <Text style={[theme.text.sub, { color: tile.subColor ?? theme.textMuted }]} numberOfLines={1}>{tile.sub}</Text> : null}
+              {tile.sub ? <Text style={[theme.text.sub, { color: tile.subColor ?? theme.textMuted }]} numberOfLines={big ? 3 : 1}>{tile.sub}</Text> : null}
             </>
           );
-          const style = [styles.tile, styles.small, { backgroundColor: theme.card }];
+          const style = [styles.tile, big ? styles.full : styles.small, { backgroundColor: theme.card }];
           return tile.onPress ? (
             <PressableCard key={tile.key} style={style} onPress={tile.onPress}
               accessibilityHint={tile.accessibilityHint ?? tile.label}
@@ -99,6 +101,7 @@ const styles = StyleSheet.create({
   row: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
   tile: { borderRadius: 16, paddingHorizontal: 12, paddingVertical: 10, minWidth: 0 },
   wide: { gap: 4 },
+  full: { width: '100%' },
   small: { flexGrow: 1, flexBasis: '30%' },
   value: { marginTop: 2 },
   bar: { flexDirection: 'row', height: 8, borderRadius: 4, overflow: 'hidden', marginTop: 2 },

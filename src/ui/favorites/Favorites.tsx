@@ -178,7 +178,7 @@ export function FavoriteSortChips({ value, onChange, theme, labels, sorts = FAVO
   sorts?: readonly FavoriteSort[];
 }) {
   return (
-    <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.chips} testID="favorites-sort">
+    <ScrollView scrollsToTop={false} horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.chips} testID="favorites-sort">
       {sorts.map((sort) => {
         const on = sort === value;
         return (

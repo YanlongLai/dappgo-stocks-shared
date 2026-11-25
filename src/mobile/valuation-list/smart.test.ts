@@ -36,3 +36,22 @@ describe('valuation smart list', () => {
     expect(filterItems(items, { ...emptyFilter('edge'), favoritesOnly: true }, cfg)).toHaveLength(1);
   });
 });
+
+describe('valuationSmartConfig industry label', () => {
+  it('uses the app label for industries when given', () => {
+    const base = { zone: (s: string) => s, market: (m: string) => m, risk: (r: string) => r, yieldAtLeast: (p: number) => `${p}`, keywords: { zone: [], yield: [], risk: [] } };
+    const cfg = valuationSmartConfig({ ...base, industry: (v) => (v === '半導體業' ? 'Semiconductors' : v) } as never);
+    expect(cfg.facets.find((f) => f.dim === 'industry')!.label('半導體業')).toBe('Semiconductors');
+    expect(valuationSmartConfig(base as never).facets.find((f) => f.dim === 'industry')!.label('半導體業')).toBe('半導體業');
+  });
+});
+
+describe('valuation bar adds up', () => {
+  it('stocks without a range form the 無區間 segment', () => {
+    const base = { zone: (s: string) => s, market: (m: string) => m, risk: (r: string) => r, yieldAtLeast: (p: number) => `${p}`, keywords: { zone: [], yield: [], risk: [] } };
+    const cfg = valuationSmartConfig(base as never);
+    expect(cfg.segments).toEqual(['below', 'within', 'above', 'none']);
+    expect(cfg.segmentOf({ symbol: 'X', facets: { zone: null }, numbers: {} } as never)).toBe('none');
+    expect(cfg.segmentOf({ symbol: 'Y', facets: { zone: 'below' }, numbers: {} } as never)).toBe('below');
+  });
+});

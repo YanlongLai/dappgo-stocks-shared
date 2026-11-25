@@ -228,6 +228,35 @@ export function priceTicks(min: number, max: number, areaHeight: number, top: nu
   return out;
 }
 
+/** A "nice" step (1 / 2 / 2.5 / 5 × 10^n) for about `count` intervals across `range`. */
+export function niceStep(range: number, count = 4): number {
+  if (!(range > 0) || !Number.isFinite(range)) return 1;
+  const raw = range / Math.max(1, count);
+  const mag = 10 ** Math.floor(Math.log10(raw));
+  for (const m of [1, 2, 2.5, 5, 10]) if (m * mag >= raw) return m * mag;
+  return 10 * mag;
+}
+
+/**
+ * Round-number price ticks inside [min, max] (e.g. 85, 95, 105, 115) with
+ * their y positions; never the domain's own ragged edges.
+ */
+export function nicePriceTicks(min: number, max: number, areaHeight: number, top: number, count = 4): { price: number; y: number }[] {
+  const range = max - min || 1;
+  let step = niceStep(range, count);
+  // Rounding up can leave only two ticks (e.g. 450–2,700 → 1,000 steps); then take
+  // the next smaller nice step so the axis always reads at least three values.
+  const inside = (st: number) => Math.floor(max / st + 1e-9) - Math.ceil(min / st - 1e-9) + 1;
+  if (inside(step) < 3) step = niceStep(range, count + 2);
+  const first = Math.ceil(min / step - 1e-9) * step;
+  const out: { price: number; y: number }[] = [];
+  for (let v = first; v <= max + 1e-9 && out.length < 12; v += step) {
+    const price = Number(v.toFixed(10));
+    out.push({ price, y: top + areaHeight - ((price - min) / range) * areaHeight });
+  }
+  return out;
+}
+
 /** Up to `count` evenly spaced indexes for date labels. */
 export function dateTickIndexes(length: number, count = 4): number[] {
   if (length <= 0) return [];
@@ -240,4 +269,17 @@ export function dateTickIndexes(length: number, count = 4): number[] {
 export function periodChangePct(bars: readonly ChartBar[]): number {
   if (bars.length < 2 || bars[0].close === 0) return 0;
   return ((bars[bars.length - 1].close - bars[0].close) / Math.abs(bars[0].close)) * 100;
+}
+
+/** Ranges where the Bollinger envelope starts hidden: too busy to read (3Y). */
+export const BOLLINGER_HIDDEN_FRAMES: readonly string[] = ['3Y'];
+
+/**
+ * Whether the BB envelope is drawn (2.0.0 「BB」 chip). It follows the user's
+ * choice, except on a busy range (3Y), where it stays hidden until the chip is
+ * tapped on that range. Leaving the range resets that one-off reveal.
+ */
+export function bollingerVisible(on: boolean, frameKey: string, revealedOnBusyRange: boolean, hiddenFrames: readonly string[] = BOLLINGER_HIDDEN_FRAMES): boolean {
+  if (!on) return false;
+  return hiddenFrames.includes(frameKey) ? revealedOnBusyRange : true;
 }

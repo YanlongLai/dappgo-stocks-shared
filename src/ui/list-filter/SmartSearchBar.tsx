@@ -23,6 +23,8 @@ export interface SearchLabels {
   commonTitle: string;
   removeChip: (label: string) => string;
   clear: string;
+  /** Shown in the panel on focus before typing, e.g. 「例如：2330、台積電、偏低、殖利率」. */
+  examples?: string;
 }
 
 export interface ActiveChip { key: string; label: string; onRemove: () => void }
@@ -33,7 +35,8 @@ export interface QuickItem { key: string; label: string; onPress: () => void }
  * 智慧搜尋列 (plan §3.3):
  * 1. typing filters, and offers condition chips (「半導體」「偏低」「殖利率」);
  * 2. matches code, name and (TW) 注音首字 — the list does the matching;
- * 3. the result count stays on the right, no 「套用」;
+ * 3. one short single-line placeholder; examples live in the panel that opens
+ *    on focus; the result count sits under the distribution bar (1.12.1);
  * 4. each suggestion shows its count after adding;
  * 5. chips have ×; the distribution bar shares the same state;
  * 6. before typing: recent searches and 3 common conditions;
@@ -64,7 +67,7 @@ export function SmartSearchBar({
     </Text>
   );
   const chipRow = chips.length ? (
-    <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.chips} keyboardShouldPersistTaps="handled">
+    <ScrollView scrollsToTop={false} horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.chips} keyboardShouldPersistTaps="handled">
       {chips.map((c) => (
         <Pressable
           key={c.key}
@@ -90,7 +93,7 @@ export function SmartSearchBar({
     );
   }
 
-  const showQuick = focused && !query && (recent.length > 0 || common.length > 0);
+  const showQuick = focused && !query && (recent.length > 0 || common.length > 0 || !!labels.examples);
   const showSuggest = query.trim().length > 0 && suggestions.length > 0;
   return (
     <View style={styles.wrap} testID={testID}>
@@ -107,12 +110,15 @@ export function SmartSearchBar({
           style={[theme.text.body, styles.input, { color: theme.textHeading }]}
           returnKeyType="search"
           autoCorrect={false}
+          // A search field, not a form: no AutoFill bubble over the examples.
+          autoComplete="off"
+          textContentType="none"
           autoCapitalize="characters"
           clearButtonMode="while-editing"
           accessibilityLabel={labels.placeholder}
+          numberOfLines={1}
           testID={`${testID}-input`}
         />
-        {count}
       </View>
       {chipRow}
       {showSuggest ? (
@@ -128,6 +134,7 @@ export function SmartSearchBar({
       ) : null}
       {showQuick ? (
         <View style={[styles.panel, { backgroundColor: theme.card, borderColor: theme.border }]} testID={`${testID}-quick`}>
+          {labels.examples ? <Text style={[theme.text.label, styles.examples, { color: theme.textMuted }]} testID={`${testID}-examples`}>{labels.examples}</Text> : null}
           {recent.length ? <Text style={[theme.text.label, styles.panelTitle, { color: theme.textMuted }]}>{labels.recentTitle}</Text> : null}
           {recent.map((r) => (
             <Pressable key={r.key} onPress={r.onPress} accessibilityRole="button" style={styles.suggestRow} testID={`${testID}-recent-${r.key}`}>
@@ -154,13 +161,15 @@ const styles = StyleSheet.create({
   flex: { flex: 1, minWidth: 0 },
   box: { flexDirection: 'row', alignItems: 'center', minHeight: 44, borderRadius: 12, borderWidth: StyleSheet.hairlineWidth, paddingHorizontal: 10, gap: 6 },
   icon: { fontSize: 18 },
-  input: { flex: 1, minWidth: 0, paddingVertical: 8 },
+  // No fixed height: the box grows with the text size so nothing is clipped.
+  input: { flex: 1, minWidth: 0, paddingVertical: 10 },
   count: { fontVariant: ['tabular-nums'], fontWeight: '600' },
   chips: { gap: 6, paddingVertical: 2 },
   chip: { borderRadius: 999, paddingHorizontal: 10, paddingVertical: 5 },
   chipText: { fontWeight: '600' },
   panel: { borderRadius: 12, borderWidth: StyleSheet.hairlineWidth, paddingVertical: 4, paddingHorizontal: 10 },
   panelTitle: { marginTop: 6, marginBottom: 2 },
+  examples: { paddingVertical: 8 },
   suggestRow: { flexDirection: 'row', alignItems: 'center', minHeight: 40, gap: 8 },
   commonRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 6, paddingVertical: 6 },
   compact: { flexDirection: 'row', alignItems: 'center', minHeight: 36, paddingHorizontal: 12, gap: 8, borderBottomWidth: StyleSheet.hairlineWidth },

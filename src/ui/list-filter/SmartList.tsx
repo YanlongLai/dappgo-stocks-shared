@@ -1,18 +1,25 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState, type ReactElement } from 'react';
 import {
-  FlatList, Pressable, ScrollView, StyleSheet, Text, View,
+  Animated, FlatList, Pressable, useWindowDimensions, StyleSheet, Text, View,
   type LayoutChangeEvent, type ListRenderItemInfo, type NativeScrollEvent, type NativeSyntheticEvent, type RefreshControlProps,
-  type StyleProp, type ViewStyle,
+  type StyleProp, type ViewStyle, type ViewToken,
 } from 'react-native';
 import { chipKey, groupItems, type FilterChip, type ListConfig, type ListFilter, type ListItem, type SortKey } from '../../mobile/list-filter/model';
 import { tapHaptic } from '../tiles/PressableCard';
 import { DistributionBar, type DistributionTheme } from './DistributionBar';
+import { ResultLine } from './ResultLine';
+import { IndustryChipRow, IndustrySheet, type IndustryGroup, type IndustryJumpLabels } from './IndustryJump';
 import { SmartSearchBar, type SearchLabels, type SearchTheme } from './SmartSearchBar';
 import { useListFilter } from './useListFilter';
+import { FLOATING_SLOT_CLEARANCE, type ScrollChrome } from '../scroll/ScrollChrome';
 
 export type SmartListTheme = Omit<SearchTheme, 'text'> & Omit<DistributionTheme, 'text'> & { text: SearchTheme['text'] & DistributionTheme['text'] };
 
-export interface SmartListLabels extends SearchLabels {
+export interface SmartListLabels extends SearchLabels, IndustryJumpLabels {
+  /** 「依離區間邊界排序」 */
+  sortedBy: (sortLabel: string) => string;
+  /** Title of the sort menu, 「排序方式」 */
+  sortMenuTitle: string;
   favorites: string;
   noResults: string;
   clearFilters: string;
@@ -23,25 +30,31 @@ export interface SmartListLabels extends SearchLabels {
 }
 
 type Item =
-  | { type: 'group'; key: string; title: string; total: number }
+  | { type: 'group'; key: string; group: string; title: string; total: number }
   | { type: 'row'; key: string; item: ListItem }
   | { type: 'more'; key: string; group: string; hidden: number; open: boolean };
 
 /**
- * A big list with the 1.12.0 controls (plan §3.3–3.4): distribution bar and
- * smart search sharing one filter, sort chips, optional industry sections of
- * 5 with 「再看 N 檔」 and a side index, a thin bar while scrolling down, and
- * the filter + scroll position handed back to be remembered.
+ * A big list with the shared controls: smart search and distribution bar on
+ * one filter; under the bar one small line 「1,097 檔 · 依離區間邊界排序 ▾」 that
+ * opens the sort menu; optional industry sections of 5 with 「再看 N 檔」.
+ *
+ * Industries (1.12.1, replaces the side index): a horizontally scrolling chip
+ * row (「全部產業」 + each industry by size, full name and count). A tap jumps to
+ * that section and highlights it; a second tap clears it. 「全部產業」 opens a
+ * bottom sheet (two-column grid, 「找產業」 search). While scrolling, the chip
+ * row and the current section title stay pinned at the top; tapping the title
+ * opens the same sheet. Rows use the full width.
  */
 export function SmartList({
   items, cfg, segments, defaultSort, sortOptions, renderRow, rowHeight, fixedRows = true, groupBy, theme, labels, header, footer, refreshControl,
-  initialFilter, initialOffset, onStateChange, recentSearches = [], commonChips = [], rankChip, onSearchSubmit, onUse, contentContainerStyle, onScrollExtra, testID = 'smart-list',
+  initialFilter, initialOffset, onStateChange, recentSearches = [], commonChips = [], rankChip, onSearchSubmit, onUse, contentContainerStyle, onScrollExtra, pinTop = 0, pinTranslateY, chrome, testID = 'smart-list',
 }: {
   items: readonly ListItem[];
   cfg: ListConfig;
   segments: readonly { key: string; label: string; color: string }[];
   defaultSort: SortKey;
-  sortOptions: readonly { key: SortKey; label: string }[];
+  sortOptions: readonly { key: SortKey; label: string; short?: string }[];
   renderRow: (item: ListItem) => ReactElement;
   /** Row height: exact when `fixedRows` (getItemLayout), else an estimate for index jumps. */
   rowHeight: number;
@@ -64,23 +77,38 @@ export function SmartList({
   /** e.g. a collapsible screen header's padding and scroll handler. */
   contentContainerStyle?: StyleProp<ViewStyle>;
   onScrollExtra?: (e: NativeSyntheticEvent<NativeScrollEvent>) => void;
+  /** Where the pinned industry row sits: below a collapsible screen header… */
+  pinTop?: number;
+  /** …and that header's (native-driven) translateY, so the row follows it. */
+  pinTranslateY?: Animated.Value | Animated.AnimatedInterpolation<number>;
+  /** Shared scroll chrome (offset, direction, back to top). */
+  chrome?: ScrollChrome | null;
   testID?: string;
 }) {
   const f = useListFilter(items, cfg, { initial: initialFilter, defaultSort, rankChip, onUse });
   const [expanded, setExpanded] = useState<ReadonlySet<string>>(new Set());
   const [headerHeight, setHeaderHeight] = useState(0);
   const [compact, setCompact] = useState(false);
+  const [headerY, setHeaderY] = useState(0);
+  const [chipsY, setChipsY] = useState<number | null>(null);
+  const [pinned, setPinned] = useState(false);
+  const [activeGroup, setActiveGroup] = useState<string | null>(null);
+  const [currentGroup, setCurrentGroup] = useState<number | null>(null);
+  const [sheetOpen, setSheetOpen] = useState(false);
+  const [chipsH, setChipsH] = useState(46);
   const listRef = useRef<FlatList<Item>>(null);
   const offset = useRef(initialOffset ?? 0);
   const lastY = useRef(0);
 
-  const GROUP_H = 40;
-  const MORE_H = 44;
+  // Section and 「再看」 rows grow with the text size so titles are never clipped.
+  const textScale = Math.min(Math.max(useWindowDimensions().fontScale || 1, 1), 3.2);
+  const GROUP_H = Math.round(40 * textScale);
+  const MORE_H = Math.round(44 * textScale);
   const rowsAndGroups = useMemo<Item[]>(() => {
     if (!groupBy) return f.results.map((it) => ({ type: 'row' as const, key: it.symbol, item: it }));
     const out: Item[] = [];
     for (const g of groupItems(f.results, groupBy.dim, { perGroup: groupBy.perGroup ?? 5, expanded, otherTitle: labels.otherGroup, title: groupBy.title })) {
-      out.push({ type: 'group', key: `g:${g.key}`, title: g.title, total: g.total });
+      out.push({ type: 'group', key: `g:${g.key}`, group: g.key, title: g.title, total: g.total });
       for (const it of g.items) out.push({ type: 'row', key: it.symbol, item: it });
       if (g.total > (groupBy.perGroup ?? 5)) out.push({ type: 'more', key: `m:${g.key}`, group: g.key, hidden: g.hidden, open: expanded.has(g.key) });
     }
@@ -93,8 +121,45 @@ export function SmartList({
     return o;
   }, [rowsAndGroups, rowHeight]);
 
-  const groupIndex = useMemo(() => rowsAndGroups.flatMap((it, index) => (it.type === 'group' ? [{ title: it.title, index }] : [])), [rowsAndGroups]);
-  const showIndex = !!groupBy && groupIndex.length > 5;
+  /** Index of each section header in the list, for jumps. */
+  const groupIndex = useMemo(() => {
+    const m = new Map<string, number>();
+    rowsAndGroups.forEach((it, index) => { if (it.type === 'group') m.set(it.group, index); });
+    return m;
+  }, [rowsAndGroups]);
+  /** For every list index, the index of the section it belongs to. */
+  const sectionOf = useMemo(() => {
+    let cur = -1;
+    return rowsAndGroups.map((it, index) => { if (it.type === 'group') cur = index; return cur; });
+  }, [rowsAndGroups]);
+  const industries = useMemo<IndustryGroup[]>(
+    () => rowsAndGroups.flatMap((it) => (it.type === 'group' ? [{ key: it.group, title: it.title, count: it.total }] : [])),
+    [rowsAndGroups],
+  );
+  const showIndustries = !!groupBy && industries.length > 1;
+  useEffect(() => { if (activeGroup && !groupIndex.has(activeGroup)) setActiveGroup(null); }, [activeGroup, groupIndex]);
+
+  const jumpTo = useCallback((group: string | null) => {
+    setActiveGroup(group);
+    if (!group) return;
+    const index = groupIndex.get(group);
+    if (index == null) return;
+    setCurrentGroup(index);
+    listRef.current?.scrollToIndex({ index, animated: false, viewOffset: pinTop + chipsH });
+  }, [groupIndex, chipsH, pinTop]);
+
+  const viewabilityConfig = useRef({ itemVisiblePercentThreshold: 1 }).current;
+  const sectionOfRef = useRef(sectionOf);
+  sectionOfRef.current = sectionOf;
+  const fixedRef = useRef(fixedRows);
+  fixedRef.current = fixedRows;
+  const onViewableItemsChanged = useRef(({ viewableItems }: { viewableItems: ViewToken[] }) => {
+    if (fixedRef.current) return; // exact offsets are used instead (onScroll)
+    const first = viewableItems.find((v) => v.index != null);
+    if (!first || first.index == null) return;
+    const sec = sectionOfRef.current[first.index];
+    setCurrentGroup(sec != null && sec >= 0 ? sec : null);
+  }).current;
 
   // Hand the filter and scroll offset back (debounced by the caller's store being cheap).
   useEffect(() => { onStateChange?.(f.filter, offset.current); }, [f.filter]); // eslint-disable-line react-hooks/exhaustive-deps
@@ -111,32 +176,60 @@ export function SmartList({
     const down = y > lastY.current;
     lastY.current = y;
     offset.current = y;
-    // Thin bar while reading down the list; the full bar comes back when scrolling up.
-    setCompact(y > headerHeight && down);
+    chrome?.onScroll(e);
+    // Industry lists pin the chip row + section title once the row scrolls away;
+    // other lists show a thin search bar while reading down.
+    if (showIndustries) {
+      const pin = chipsY != null && y > headerY + chipsY;
+      setPinned(pin);
+      // The section under the pinned row's bottom edge is the current one. With
+      // fixed rows the offsets are exact; otherwise viewability is the fallback.
+      if (pin && fixedRows) {
+        const target = y + pinTop + chipsH + GROUP_H - (headerY + headerHeight);
+        let lo = 0, hi = offsets.length - 2;
+        while (lo < hi) { const mid = (lo + hi + 1) >> 1; if (offsets[mid] <= target) lo = mid; else hi = mid - 1; }
+        const sec = sectionOf[lo];
+        setCurrentGroup(sec != null && sec >= 0 ? sec : null);
+      }
+    }
+    else setCompact(y > headerHeight && (chrome ? chrome.state.direction !== 'up' : down));
     onScrollExtra?.(e);
-  }, [headerHeight, onScrollExtra]);
+  }, [headerHeight, onScrollExtra, showIndustries, chipsY, headerY, fixedRows, pinTop, chipsH, offsets, sectionOf, chrome]);
   const onScrollEnd = useCallback(() => { onStateChange?.(f.filter, offset.current); }, [onStateChange, f.filter]);
 
   const toggleGroup = useCallback((group: string) => {
     setExpanded((cur) => { const next = new Set(cur); if (next.has(group)) next.delete(group); else next.add(group); return next; });
   }, []);
 
+  function sectionHeader(item: Extract<Item, { type: 'group' }>, pinnedCopy = false) {
+    const on = activeGroup === item.group;
+    return (
+      <Pressable
+        onPress={showIndustries ? () => { tapHaptic(); setSheetOpen(true); } : undefined}
+        disabled={!showIndustries}
+        accessibilityRole={showIndustries ? 'button' : 'header'}
+        accessibilityLabel={`${item.title} ${item.total}`}
+        accessibilityHint={showIndustries ? labels.allIndustries : undefined}
+        style={[styles.group, { height: GROUP_H, backgroundColor: on ? theme.card : theme.background, borderBottomColor: on ? theme.accent : theme.border }]}
+        testID={pinnedCopy ? `${testID}-pinned-group` : `${testID}-group-${item.title}`}
+      >
+        {on ? <View style={[styles.groupMark, { backgroundColor: theme.accent }]} /> : null}
+        <Text style={[theme.text.body, styles.groupTitle, { color: on ? theme.accent : theme.textHeading }]} numberOfLines={textScale >= 1.5 ? 2 : 1}>{item.title}</Text>
+        <Text style={[theme.text.label, { color: theme.textMuted }]}>{item.total}</Text>
+        {showIndustries ? <Text style={[theme.text.label, { color: theme.textMuted }]} accessible={false}>▾</Text> : null}
+      </Pressable>
+    );
+  }
+
   const renderItem = useCallback(({ item }: ListRenderItemInfo<Item>) => {
     if (item.type === 'row') return renderRow(item.item);
-    if (item.type === 'group') {
-      return (
-        <View style={[styles.group, { height: GROUP_H, backgroundColor: theme.background, borderBottomColor: theme.border }]} testID={`${testID}-group-${item.title}`}>
-          <Text style={[theme.text.body, styles.groupTitle, { color: theme.textHeading }]} numberOfLines={1}>{item.title}</Text>
-          <Text style={[theme.text.label, { color: theme.textMuted }]}>{item.total}</Text>
-        </View>
-      );
-    }
+    if (item.type === 'group') return sectionHeader(item);
     return (
       <Pressable onPress={() => { tapHaptic(); toggleGroup(item.group); }} accessibilityRole="button" style={[styles.more, { height: MORE_H }]} testID={`${testID}-more-${item.group}`}>
         <Text style={[theme.text.label, styles.moreText, { color: theme.accent }]}>{item.open ? labels.showLess : labels.showMore(item.hidden)}</Text>
       </Pressable>
     );
-  }, [renderRow, theme, labels, toggleGroup, testID]);
+  }, [renderRow, theme, labels, toggleGroup, testID, activeGroup, showIndustries]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const getItemLayout = useCallback((_: unknown, index: number) => ({
     length: offsets[index + 1] - offsets[index], offset: headerHeight + offsets[index], index,
@@ -157,8 +250,11 @@ export function SmartList({
       testID={`${testID}-search`}
     />
   );
+  const chipRow = showIndustries ? (
+    <IndustryChipRow groups={industries} active={activeGroup} onJump={jumpTo} onOpenAll={() => setSheetOpen(true)} theme={theme} labels={labels} testID={`${testID}-industries`} />
+  ) : null;
   const listHeader = (
-    <View onLayout={(e: LayoutChangeEvent) => setHeaderHeight(e.nativeEvent.layout.height)}>
+    <View onLayout={(e: LayoutChangeEvent) => { setHeaderHeight(e.nativeEvent.layout.height); setHeaderY(e.nativeEvent.layout.y); }}>
       {header}
       <View style={styles.controls}>
         {search}
@@ -169,23 +265,14 @@ export function SmartList({
           })}
           selected={f.filter.segment}
           onSelect={f.selectSegment}
-          favorites={{ label: labels.favorites, count: f.favorites, on: f.filter.favoritesOnly, onToggle: f.toggleFavorites }}
           theme={theme}
           testID={`${testID}-bar`}
         />
-        <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.sorts} testID={`${testID}-sorts`}>
-          {sortOptions.map((o) => {
-            const on = f.filter.sort === o.key;
-            return (
-              <Pressable key={o.key} onPress={() => { tapHaptic(); f.setSort(o.key); }} accessibilityRole="button" accessibilityState={{ selected: on }}
-                style={[styles.sort, on ? { backgroundColor: theme.accent, borderColor: theme.accent } : { backgroundColor: theme.card, borderColor: theme.border }]}
-                testID={`${testID}-sort-${o.key}`}>
-                <Text style={[theme.text.label, styles.sortText, { color: on ? theme.onAccent : theme.textHeading }]} numberOfLines={1}>{o.label}</Text>
-              </Pressable>
-            );
-          })}
-        </ScrollView>
+        <ResultLine count={f.results.length} sorts={sortOptions} sort={f.filter.sort} onSort={(k) => f.setSort(k as SortKey)} favorites={{ label: labels.favorites, count: f.favorites, on: f.filter.favoritesOnly, onToggle: f.toggleFavorites }} theme={theme} labels={labels} testID={`${testID}-result-line`} />
       </View>
+      {chipRow ? (
+        <View onLayout={(e: LayoutChangeEvent) => { setChipsY(e.nativeEvent.layout.y); setChipsH(e.nativeEvent.layout.height); }}>{chipRow}</View>
+      ) : null}
     </View>
   );
   const empty = (
@@ -200,20 +287,27 @@ export function SmartList({
   return (
     <View style={styles.flex} testID={testID}>
       <FlatList
-        ref={listRef}
+        ref={(node) => { (listRef as React.MutableRefObject<FlatList<Item> | null>).current = node; if (chrome) chrome.ref.current = node as never; }}
+        onLayout={chrome?.onLayout}
+        onScrollBeginDrag={chrome?.onScrollBeginDrag}
+        onMomentumScrollBegin={chrome?.onMomentumScrollBegin}
+        onScrollToTop={chrome?.onScrollToTop}
+        scrollsToTop
         data={rowsAndGroups}
         keyExtractor={(it) => it.key}
         renderItem={renderItem}
         getItemLayout={fixedRows ? getItemLayout : undefined}
-        onScrollToIndexFailed={({ index }) => listRef.current?.scrollToOffset({ offset: headerHeight + (offsets[index] ?? 0), animated: false })}
+        onScrollToIndexFailed={({ index }) => listRef.current?.scrollToOffset({ offset: headerY + headerHeight + (offsets[index] ?? 0) - chipsH, animated: false })}
         ListHeaderComponent={listHeader}
-        ListFooterComponent={footer}
+        ListFooterComponent={<>{footer}{chrome ? <View style={{ height: FLOATING_SLOT_CLEARANCE }} /> : null}</>}
         ListEmptyComponent={empty}
         refreshControl={refreshControl}
         onScroll={onScroll}
-        onMomentumScrollEnd={onScrollEnd}
-        onScrollEndDrag={onScrollEnd}
+        onMomentumScrollEnd={() => { chrome?.onMomentumScrollEnd(); onScrollEnd(); }}
+        onScrollEndDrag={() => { chrome?.onScrollEndDrag(); onScrollEnd(); }}
         onContentSizeChange={onContentSizeChange}
+        onViewableItemsChanged={onViewableItemsChanged}
+        viewabilityConfig={viewabilityConfig}
         scrollEventThrottle={32}
         initialNumToRender={14}
         maxToRenderPerBatch={20}
@@ -222,25 +316,35 @@ export function SmartList({
         keyboardShouldPersistTaps="handled"
         keyboardDismissMode="on-drag"
         style={{ backgroundColor: theme.background }}
-        // Keep rows clear of the side index when it is shown.
-        contentContainerStyle={[contentContainerStyle, showIndex ? styles.indexGutter : null]}
+        contentContainerStyle={contentContainerStyle}
       />
       {compact ? (
         <View style={styles.compactWrap} pointerEvents="box-none">
           <SmartSearchBar {...search.props} compact onExpand={() => listRef.current?.scrollToOffset({ offset: 0, animated: true })} />
         </View>
       ) : null}
-      {showIndex ? (
-        <View style={styles.index} pointerEvents="box-none" testID={`${testID}-index`}>
-          <ScrollView contentContainerStyle={styles.indexInner} showsVerticalScrollIndicator={false}>
-            {groupIndex.map((g) => (
-              <Pressable key={g.index} onPress={() => { tapHaptic(); listRef.current?.scrollToIndex({ index: g.index, animated: false }); }}
-                accessibilityRole="button" accessibilityLabel={g.title} hitSlop={{ left: 12, right: 4 }} testID={`${testID}-index-${g.title}`}>
-                <Text style={[styles.indexText, { color: theme.accent }]} numberOfLines={1}>{[...g.title].slice(0, 2).join('')}</Text>
-              </Pressable>
-            ))}
-          </ScrollView>
-        </View>
+      {pinned && chipRow && pinTop > 0 && !pinTranslateY ? (
+        // Nothing sits above the list (its header scrolled away): cover the status bar strip.
+        <View style={[styles.pinBackdrop, { height: pinTop, backgroundColor: theme.background }]} pointerEvents="none" />
+      ) : null}
+      {pinned && chipRow ? (
+        <Animated.View style={[styles.pinned, { top: pinTop, transform: pinTranslateY ? [{ translateY: pinTranslateY }] : [] }]} pointerEvents="box-none" testID={`${testID}-pinned`}>
+          {chipRow}
+          {currentGroup != null && rowsAndGroups[currentGroup]?.type === 'group'
+            ? sectionHeader(rowsAndGroups[currentGroup] as Extract<Item, { type: 'group' }>, true)
+            : null}
+        </Animated.View>
+      ) : null}
+      {showIndustries ? (
+        <IndustrySheet
+          visible={sheetOpen}
+          groups={industries}
+          onPick={(key) => { setSheetOpen(false); jumpTo(key); }}
+          onClose={() => setSheetOpen(false)}
+          theme={theme}
+          labels={labels}
+          testID={`${testID}-industry-sheet`}
+        />
       ) : null}
     </View>
   );
@@ -248,19 +352,15 @@ export function SmartList({
 
 const styles = StyleSheet.create({
   flex: { flex: 1 },
-  controls: { gap: 10, paddingHorizontal: 16, paddingBottom: 8 },
-  sorts: { gap: 6, paddingVertical: 2 },
-  sort: { borderRadius: 999, borderWidth: StyleSheet.hairlineWidth, paddingHorizontal: 12, paddingVertical: 6 },
-  sortText: { fontWeight: '600' },
+  controls: { gap: 8, paddingHorizontal: 16, paddingBottom: 2 },
   group: { flexDirection: 'row', alignItems: 'center', paddingHorizontal: 16, borderBottomWidth: StyleSheet.hairlineWidth, gap: 8 },
   groupTitle: { flex: 1, fontWeight: '700' },
+  groupMark: { position: 'absolute', left: 0, top: 8, bottom: 8, width: 3, borderRadius: 2 },
   more: { justifyContent: 'center', paddingHorizontal: 16 },
   moreText: { fontWeight: '700' },
   empty: { alignItems: 'center', paddingVertical: 32, gap: 8 },
   clear: { minHeight: 40, justifyContent: 'center' },
   compactWrap: { position: 'absolute', top: 0, left: 0, right: 0 },
-  index: { position: 'absolute', right: 0, top: 120, bottom: 80, width: 30, justifyContent: 'center' },
-  indexInner: { alignItems: 'center', gap: 2, paddingVertical: 4 },
-  indexText: { fontSize: 10, fontWeight: '700' },
-  indexGutter: { paddingRight: 30 },
+  pinned: { position: 'absolute', left: 0, right: 0 },
+  pinBackdrop: { position: 'absolute', top: 0, left: 0, right: 0 },
 });

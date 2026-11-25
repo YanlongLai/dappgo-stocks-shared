@@ -164,8 +164,17 @@ export function markFavoriteHinted<F>(s: PersonalizationState<F>, symbol: string
 
 export type ForYouReason = 'favorite' | 'often_viewed';
 export type ForYouChange = 'zone' | 'signal' | 'flow';
-export interface ForYouCandidate { symbol: string; change: ForYouChange | null; magnitude?: number }
-export interface ForYouItem { symbol: string; reason: ForYouReason; change: ForYouChange }
+export interface ForYouCandidate {
+  symbol: string;
+  change: ForYouChange | null;
+  magnitude?: number;
+  /** Previous and current zone / signal (for 「訊號 偏多 → 中性」). */
+  from?: string | null;
+  to?: string | null;
+  /** Today's mark (price, range edges, P/C) for the concrete line. */
+  mark?: StockMark;
+}
+export interface ForYouItem { symbol: string; reason: ForYouReason; change: ForYouChange; from?: string | null; to?: string | null; mark?: StockMark }
 
 /**
  * 「為你帶出」: up to 3 stocks from the user's favorites and most-viewed that
@@ -181,7 +190,7 @@ export function forYou(s: PersonalizationState, candidates: readonly ForYouCandi
     .map((c) => ({ ...c, reason: (favorites.has(c.symbol) ? 'favorite' : 'often_viewed') as ForYouReason }))
     .sort((a, b) => Number(a.reason !== 'favorite') - Number(b.reason !== 'favorite') || rank[a.change] - rank[b.change] || (b.magnitude ?? 0) - (a.magnitude ?? 0))
     .slice(0, limit)
-    .map(({ symbol, reason, change }) => ({ symbol, reason, change }));
+    .map(({ symbol, reason, change, from, to, mark }) => ({ symbol, reason, change, from, to, mark }));
 }
 
 /** 「清除使用紀錄」 and 「刪除我的資料」: everything goes; the on/off switch stays as the user set it. */
@@ -199,7 +208,20 @@ export function setPersonalizationEnabled<F>(s: PersonalizationState<F>, enabled
  * date, kept on the phone. When a new report date arrives the current
  * snapshot becomes the previous one.
  */
-export interface StockMark { zone: string | null; signal: string | null; flowFlag?: string | null }
+export interface StockMark {
+  zone: string | null;
+  signal: string | null;
+  flowFlag?: string | null;
+  /** Optional numbers for the alert line. */
+  price?: number | null;
+  low?: number | null;
+  high?: number | null;
+  /** Put/Call volume ratio today. */
+  pc?: number | null;
+}
+
+/** Flow flags that count as a change worth an alert ('neutral' / 'unknown' do not). */
+export const ALERT_FLOW_FLAGS: ReadonlySet<string> = new Set(['unusual_put', 'unusual_call', 'unusual_volume', 'bullish_oi', 'bearish_oi']);
 export interface DailyMarks { date: string; marks: Record<string, StockMark> }
 export interface MarksHistory { prev: DailyMarks | null; cur: DailyMarks | null }
 
@@ -209,15 +231,20 @@ export function rollMarks(history: MarksHistory | null | undefined, date: string
   return { prev: h.cur, cur: { date, marks } };
 }
 
-/** Candidates for forYou: zone crossed or signal changed since the previous report day; unusual flow today. */
+/**
+ * Candidates for 今日提醒: zone crossed or signal changed since the previous
+ * report day, or unusual flow today. Nothing until a previous day exists
+ * (first use on this phone): there is no baseline to compare against.
+ */
 export function changesSince(history: MarksHistory): ForYouCandidate[] {
-  const cur = history.cur?.marks ?? {};
-  const prev = history.prev?.marks ?? {};
+  if (!history.prev || !history.cur) return [];
+  const cur = history.cur.marks;
+  const prev = history.prev.marks;
   return Object.entries(cur).map(([symbol, m]) => {
     const p = prev[symbol];
-    const change: ForYouChange | null = p && p.zone && m.zone && p.zone !== m.zone ? 'zone'
-      : p && p.signal && m.signal && p.signal !== m.signal ? 'signal'
-        : m.flowFlag ? 'flow' : null;
-    return { symbol, change };
+    if (p && p.zone && m.zone && p.zone !== m.zone) return { symbol, change: 'zone' as const, from: p.zone, to: m.zone, mark: m };
+    if (p && p.signal && m.signal && p.signal !== m.signal) return { symbol, change: 'signal' as const, from: p.signal, to: m.signal, mark: m };
+    if (m.flowFlag && ALERT_FLOW_FLAGS.has(m.flowFlag)) return { symbol, change: 'flow' as const, magnitude: m.pc ?? 0, mark: m };
+    return { symbol, change: null };
   });
 }

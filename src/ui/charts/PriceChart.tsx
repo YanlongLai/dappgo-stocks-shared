@@ -16,7 +16,8 @@
  * chip component, so the chart looks native in each app without app imports.
  */
 
-import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import React, { useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
+import { FloatingSlotContext } from '../scroll/FloatingSlotContext';
 import { Animated, PanResponder, StyleSheet, Text, View, type GestureResponderEvent, type LayoutChangeEvent } from 'react-native';
 import Svg, { Circle, Defs, G, Line, LinearGradient, Path, Polyline, Rect, Stop, Text as SvgText } from 'react-native-svg';
 import {
@@ -24,6 +25,7 @@ import {
   MA_SPECS,
   areaPath,
   bollingerSeries,
+  bollingerVisible,
   coverageDays,
   dateTickIndexes,
   defaultModeForFrame,
@@ -36,7 +38,7 @@ import {
   normalizeBars,
   periodChangePct,
   priceDomain,
-  priceTicks,
+  nicePriceTicks,
   smoothPath,
   type ChartBarInput,
   type ChartFrame,
@@ -104,8 +106,12 @@ export interface PriceChartProps {
   showMA?: ShowMA;
   /** Show the MA chips. Default true. */
   maToggles?: boolean;
-  /** Draw the Bollinger envelope. Default true. */
+  /** Offer the Bollinger envelope (the 「BB」 chip). Default true. */
   bollinger?: boolean;
+  /** Whether BB starts on: the user's saved choice or the app default. */
+  bollingerOn?: boolean;
+  /** Called when the user taps the BB chip, to remember the choice. */
+  onBollingerChange?: (on: boolean) => void;
   theme: PriceChartTheme;
   labels: PriceChartLabels;
   Chip: React.ComponentType<PriceChartChipProps>;
@@ -117,6 +123,8 @@ export interface PriceChartProps {
   scaleFont?: (size: number) => number;
   onHaptic?: () => void;
   reduceMotion?: boolean;
+  /** Long history still loading: only the chart area shows a skeleton. */
+  loading?: boolean;
   testID?: string;
 }
 
@@ -138,6 +146,8 @@ export const PriceChart = React.memo(function PriceChart({
   showMA,
   maToggles = true,
   bollinger = true,
+  bollingerOn = false,
+  onBollingerChange,
   theme,
   labels,
   Chip,
@@ -149,6 +159,7 @@ export const PriceChart = React.memo(function PriceChart({
   scaleFont = id,
   onHaptic,
   reduceMotion = false,
+  loading = false,
   testID = 'price-chart',
 }: PriceChartProps) {
   const all = useMemo(() => normalizeBars(rawBars), [rawBars]);
@@ -184,12 +195,19 @@ export const PriceChart = React.memo(function PriceChart({
     ma200: fullMa.ma200.slice(sliceFrom),
   }), [fullMa, sliceFrom]);
   const maOk = useMemo(() => ({ ma20: maAvailable(ma.ma20), ma60: maAvailable(ma.ma60), ma200: maAvailable(ma.ma200) }), [ma]);
+  // 「BB」 chip: follows the saved choice (it may arrive after mount), hidden on 3Y
+  // until tapped there.
+  const [bbOn, setBbOn] = useState(bollingerOn);
+  useEffect(() => { setBbOn(bollingerOn); }, [bollingerOn]);
+  const [bbRevealed, setBbRevealed] = useState(false);
+  useEffect(() => { setBbRevealed(false); }, [frameKey]);
+  const bbVisible = bollinger && bollingerVisible(bbOn, frameKey, bbRevealed);
   const bb = useMemo(() => {
-    if (!bollinger) return null;
+    if (!bbVisible) return null;
     const full = bollingerSeries(all);
     const s = { upper: full.upper.slice(sliceFrom), middle: full.middle.slice(sliceFrom), lower: full.lower.slice(sliceFrom) };
     return s.upper.some((v) => v != null) ? s : null;
-  }, [all, sliceFrom, bollinger]);
+  }, [all, sliceFrom, bbVisible]);
 
   // ── Toast ──
   const toastOpacity = useRef(new Animated.Value(0)).current;
@@ -234,12 +252,14 @@ export const PriceChart = React.memo(function PriceChart({
   const dom = useMemo(() => priceDomain(bars, mode, overlays), [bars, mode, overlays]);
   const range = dom.max - dom.min || 1;
   const yAt = useCallback((p: number) => PAD.top + areaH - ((p - dom.min) / range) * areaH, [areaH, dom.min, range]);
-  const xAt = useCallback((i: number, n: number) => PAD.left + (i / Math.max(1, n - 1)) * plotW, [plotW]);
+  // Candles get half a slot of room at each end so the first and last bodies are not clipped.
+  const edge = layers.candles ? Math.min(16, plotW / (Math.max(1, bars.length) * 2)) : 0;
+  const xAt = useCallback((i: number, n: number) => PAD.left + edge + (i / Math.max(1, n - 1)) * (plotW - edge * 2), [plotW, edge]);
 
   const points = useMemo(() => bars.map((b, i) => ({ x: xAt(i, bars.length), y: yAt(b.close) })), [bars, xAt, yAt]);
   const linePath = useMemo(() => smoothPath(points), [points]);
   const fillPath = useMemo(() => (layers.fill ? areaPath(linePath, points, PAD.top + areaH) : ''), [layers.fill, linePath, points, areaH]);
-  const ticks = useMemo(() => priceTicks(dom.min, dom.max, areaH, PAD.top, 4), [dom, areaH]);
+  const ticks = useMemo(() => nicePriceTicks(dom.min, dom.max, areaH, PAD.top, 4), [dom, areaH]);
   const dateIdx = useMemo(() => dateTickIndexes(bars.length, 4), [bars.length]);
   const maxVol = useMemo(() => Math.max(1, ...bars.map((b) => b.volume)), [bars]);
 
@@ -247,21 +267,34 @@ export const PriceChart = React.memo(function PriceChart({
   const lineColor = changePct >= 0 ? theme.positive : theme.negative;
   const gradId = `${testID}-grad`;
 
-  // ── Crosshair ──
+  // ── Crosshair ── (the floating 「↑」 steps aside while a finger is on the chart)
+  const floating = useContext(FloatingSlotContext);
+  // The whole chart card (chips, plot, ranges, MA row) is off limits for the floating 「↑」.
+  const cardRef = useRef<View | null>(null);
+  useEffect(() => {
+    if (!floating) return undefined;
+    floating.avoid(testID, cardRef.current);
+    return () => floating.avoid(testID, null);
+  }, [floating, testID]);
   const raf = useRef<number | null>(null);
   const setTouchThrottled = useCallback((x: number) => {
     if (raf.current != null) return;
     raf.current = requestAnimationFrame(() => { raf.current = null; setTouchX(x); });
   }, []);
-  useEffect(() => () => { if (raf.current != null) cancelAnimationFrame(raf.current); }, []);
+  const cancelPending = useCallback(() => {
+    if (raf.current != null) { cancelAnimationFrame(raf.current); raf.current = null; }
+  }, []);
+  useEffect(() => cancelPending, [cancelPending]);
   const pan = useMemo(() => PanResponder.create({
     onStartShouldSetPanResponder: () => true,
     onMoveShouldSetPanResponder: (_e, g) => Math.abs(g.dx) > Math.abs(g.dy),
-    onPanResponderGrant: (e: GestureResponderEvent) => setTouchX(e.nativeEvent.locationX),
+    onPanResponderGrant: (e: GestureResponderEvent) => { floating?.suppress(true); setTouchX(e.nativeEvent.locationX); },
     onPanResponderMove: (e: GestureResponderEvent) => setTouchThrottled(e.nativeEvent.locationX),
-    onPanResponderRelease: () => setTouchX(null),
-    onPanResponderTerminate: () => setTouchX(null),
-  }), [setTouchThrottled]);
+    // A move queued for the next frame must not bring the crosshair back after the
+    // finger lifts or the page scroll takes the gesture over.
+    onPanResponderRelease: () => { cancelPending(); floating?.suppress(false); setTouchX(null); },
+    onPanResponderTerminate: () => { cancelPending(); floating?.suppress(false); setTouchX(null); },
+  }), [setTouchThrottled, cancelPending, floating]);
   const cross = useMemo(() => {
     if (touchX == null || bars.length < 2) return null;
     const idx = Math.max(0, Math.min(bars.length - 1, Math.round(((touchX - PAD.left) / plotW) * (bars.length - 1))));
@@ -279,11 +312,21 @@ export const PriceChart = React.memo(function PriceChart({
     setTouchX(null);
   }, [states, showToast, labels, all, initialMode, onHaptic]);
 
+  const toggleBB = useCallback(() => {
+    onHaptic?.();
+    const next = !bbVisible;
+    setBbOn(next);
+    setBbRevealed(next);
+    onBollingerChange?.(next);
+  }, [bbVisible, onHaptic, onBollingerChange]);
+
   const toggleMA = useCallback((key: MaKey, label: string) => {
     onHaptic?.();
     if (!maOk[key]) { showToast(labels.maUnavailable(label)); return; }
     setActiveMA((s) => ({ ...s, [key]: !s[key] }));
   }, [maOk, showToast, labels, onHaptic]);
+
+  if (loading) return <ChartSkeleton height={height} theme={theme} reduceMotion={reduceMotion} testID={`${testID}-skeleton`} />;
 
   if (all.length < 2 || !frame) {
     return (
@@ -297,7 +340,7 @@ export const PriceChart = React.memo(function PriceChart({
   const axisPrice = formatAxisPrice ?? formatPrice;
 
   return (
-    <View testID={testID} style={[styles.container, { backgroundColor: theme.card }]}>
+    <View ref={(n) => { cardRef.current = n; floating?.avoid(testID, n); }} testID={testID} style={[styles.container, { backgroundColor: theme.card }]}>
       <View style={styles.header}>
         <Text testID={`${testID}-change`} style={[styles.change, { color: lineColor, fontSize: scaleFont(12) }]}>
           {`${formatPct(changePct)} (${frame.label})`}
@@ -355,21 +398,6 @@ export const PriceChart = React.memo(function PriceChart({
             </SvgText>
           ))}
 
-          {MA_SPECS.map((spec) => {
-            if (!activeMA[spec.key] || !maOk[spec.key]) return null;
-            return (
-              <Polyline
-                key={spec.key}
-                testID={`${testID}-ma-line-${spec.key}`}
-                points={seriesPoints(ma[spec.key], xAt, yAt)}
-                fill="none"
-                stroke={spec.color}
-                strokeWidth={spec.strokeWidth}
-                strokeLinejoin="round"
-                strokeLinecap="round"
-              />
-            );
-          })}
 
           {layers.volume && bars.map((b, i) => {
             const w = Math.max(2, (plotW / bars.length) * 0.65);
@@ -419,6 +447,22 @@ export const PriceChart = React.memo(function PriceChart({
             />
           ) : null}
 
+          {/* MA lines on top of the Bollinger band and the price line, so an active MA is always visible. */}
+          {MA_SPECS.map((spec) => {
+            if (!activeMA[spec.key] || !maOk[spec.key]) return null;
+            return (
+              <Polyline
+                key={spec.key}
+                testID={`${testID}-ma-line-${spec.key}`}
+                points={seriesPoints(ma[spec.key], xAt, yAt)}
+                fill="none"
+                stroke={spec.color}
+                strokeWidth={Math.max(1.5, spec.strokeWidth)}
+                strokeLinejoin="round"
+                strokeLinecap="round"
+              />
+            );
+          })}
           {cross && (
             <G>
               <Line x1={cross.x} y1={PAD.top} x2={cross.x} y2={PAD.top + areaH} stroke={theme.textMuted} strokeWidth={0.8} strokeDasharray="3,3" />
@@ -467,7 +511,7 @@ export const PriceChart = React.memo(function PriceChart({
             key={f.key}
             label={f.label}
             selected={f.key === frame.key}
-            dimmed={states[f.key] !== 'full'}
+            dimmed={states[f.key] !== 'full' && f.key !== frame.key}
             fill
             onPress={() => pickFrame(f)}
             accessibilityRole="tab"
@@ -484,8 +528,8 @@ export const PriceChart = React.memo(function PriceChart({
             <Chip
               key={spec.key}
               label={spec.label}
-              icon="ellipse"
-              iconColor={maOk[spec.key] ? spec.color : theme.textMuted}
+              // Four equal columns (MA20 · MA60 · MA200 · BB) on one row; on = filled chip.
+              fill
               selected={!!activeMA[spec.key] && maOk[spec.key]}
               dimmed={!maOk[spec.key]}
               onPress={() => toggleMA(spec.key, spec.label)}
@@ -493,11 +537,17 @@ export const PriceChart = React.memo(function PriceChart({
               testID={`${testID}-ma-${spec.key}`}
             />
           ))}
+          {bollinger ? (
+            <Chip
+              label="BB"
+              fill
+              selected={bbVisible}
+              onPress={toggleBB}
+              accessibilityHint={labels.bollingerLegend}
+              testID={`${testID}-bb`}
+            />
+          ) : null}
         </View>
-      )}
-
-      {bb && (
-        <Text style={[styles.legend, { color: theme.textMuted, fontSize: scaleFont(10) }]}>{labels.bollingerLegend}</Text>
       )}
     </View>
   );
@@ -526,6 +576,29 @@ function bandPoints(upper: readonly (number | null)[], lower: readonly (number |
   return up.length > 1 ? `${up.join(' ')} ${down.join(' ')}` : '';
 }
 
+/** Same footprint as the chart (header, plot, ranges, MA row), gently pulsing. */
+function ChartSkeleton({ height, theme, reduceMotion, testID }: { height: number; theme: PriceChartTheme; reduceMotion: boolean; testID: string }) {
+  const pulse = useRef(new Animated.Value(0.55)).current;
+  useEffect(() => {
+    if (reduceMotion) return undefined;
+    const loop = Animated.loop(Animated.sequence([
+      Animated.timing(pulse, { toValue: 0.9, duration: 700, useNativeDriver: true }),
+      Animated.timing(pulse, { toValue: 0.55, duration: 700, useNativeDriver: true }),
+    ]));
+    loop.start();
+    return () => loop.stop();
+  }, [pulse, reduceMotion]);
+  const block = { backgroundColor: theme.backgroundAlt, borderRadius: 8 };
+  return (
+    <Animated.View testID={testID} accessibilityRole="progressbar" style={[styles.container, { backgroundColor: theme.card, opacity: pulse, gap: 10 }]}>
+      <View style={[block, { height: 28, width: '45%' }]} />
+      <View style={[block, { height }]} />
+      <View style={[block, { height: 36 }]} />
+      <View style={[block, { height: 36, width: '70%' }]} />
+    </Animated.View>
+  );
+}
+
 const styles = StyleSheet.create({
   container: { overflow: 'hidden', paddingBottom: 4 },
   empty: { borderRadius: 8, alignItems: 'center', justifyContent: 'center' },
@@ -546,5 +619,4 @@ const styles = StyleSheet.create({
   hintText: { textAlign: 'center' },
   frameRow: { flexDirection: 'row', gap: 4, paddingVertical: 4 },
   maRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 8, paddingBottom: 4 },
-  legend: { paddingBottom: 4 },
 });

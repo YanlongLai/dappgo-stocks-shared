@@ -35,9 +35,19 @@ import {
 export const VALUATION_ROW_HEIGHT = 60;
 export const VALUATION_GROUP_HEIGHT = 40;
 const MAX_ROW_SCALE = 2;
-export function valuationRowHeights(fontScale: number): { row: number; group: number } {
-  const scale = Math.min(Math.max(fontScale || 1, 1), MAX_ROW_SCALE);
-  return { row: Math.round(VALUATION_ROW_HEIGHT * scale), group: Math.round(VALUATION_GROUP_HEIGHT * scale) };
+/** From this text scale a row stacks into two lines instead of truncating. */
+export const VALUATION_STACK_SCALE = 1.5;
+const MAX_STACK_SCALE = 3.2;
+
+export function valuationRowHeights(fontScale: number): { row: number; group: number; stacked: boolean } {
+  const f = Math.max(fontScale || 1, 1);
+  if (f >= VALUATION_STACK_SCALE) {
+    // Two lines (code + name, then zone + numbers) of roughly 2 text lines each.
+    const s = Math.min(f, MAX_STACK_SCALE);
+    return { row: Math.round(26 + 4 * 21 * s), group: Math.round(VALUATION_GROUP_HEIGHT * s), stacked: true };
+  }
+  const scale = Math.min(f, MAX_ROW_SCALE);
+  return { row: Math.round(VALUATION_ROW_HEIGHT * scale), group: Math.round(VALUATION_GROUP_HEIGHT * scale), stacked: false };
 }
 /** Favourites shown before 「顯示全部」. */
 const FAVORITES_PREVIEW = 8;
@@ -149,10 +159,12 @@ interface RowProps {
   inset?: boolean;
   /** Row height for the current Dynamic Type size. */
   height?: number;
+  /** Large text: code + name on one line, zone + numbers on the next. */
+  stacked?: boolean;
 }
 
 /** One compact row: ☆ · code/name · zone · gap% over P/E/yield. Fixed height, no charts. */
-export const ValuationRow = memo(function ValuationRow({ row, favorite, theme, labels, onOpen, onToggleFavorite, inset, height }: RowProps) {
+export const ValuationRow = memo(function ValuationRow({ row, favorite, theme, labels, onOpen, onToggleFavorite, inset, height, stacked }: RowProps) {
   const color = row.zone ? theme.zone[row.zone] : theme.textMuted;
   const zoneText = row.zone ? labels.zone(row.zone) : labels.noZone;
   return (
@@ -176,22 +188,43 @@ export const ValuationRow = memo(function ValuationRow({ row, favorite, theme, l
         <Text style={[styles.starGlyph, { color: favorite ? theme.star : theme.textMuted }]}>{favorite ? '★' : '☆'}</Text>
       </Pressable>
       ) : null}
-      <View style={styles.names}>
-        <View style={styles.codeLine}>
-          <Text style={[theme.text.body, styles.code, { color: theme.textHeading }]} numberOfLines={1}>{row.symbol}</Text>
-          {row.risk ? (
-            <Text style={[theme.text.label, styles.riskTag, { color: theme.risk, borderColor: theme.risk }]} numberOfLines={1}>{labels.risk(row.risk)}</Text>
-          ) : null}
+      {stacked ? (
+        <View style={styles.stack}>
+          <View style={styles.codeLine}>
+            <Text style={[theme.text.body, styles.code, { color: theme.textHeading }]} numberOfLines={1}>{row.symbol}</Text>
+            <Text style={[theme.text.sub, styles.flex, { color: theme.textMuted }]} numberOfLines={1}>{row.name}</Text>
+          </View>
+          <View style={styles.stackLine}>
+            <View style={[styles.badgeStacked, { borderColor: color }]}>
+              <Text style={[theme.text.label, { color }]} numberOfLines={1}>{zoneText}</Text>
+            </View>
+            <Text style={[theme.text.mono, styles.gap, { color }]} numberOfLines={1}>{row.gapPct !== null ? labels.formatPct(row.gapPct) : '—'}</Text>
+            {row.risk ? (
+              <Text style={[theme.text.label, styles.riskTag, { color: theme.risk, borderColor: theme.risk }]} numberOfLines={1}>{labels.risk(row.risk)}</Text>
+            ) : null}
+          </View>
+          <Text style={[theme.text.label, { color: theme.textMuted }]} numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.6}>{labels.rowFacts(row)}</Text>
         </View>
-        <Text style={[theme.text.sub, { color: theme.textMuted }]} numberOfLines={1}>{row.name}</Text>
-      </View>
-      <View style={[styles.badge, { borderColor: color }]}>
-        <Text style={[theme.text.label, { color }]} numberOfLines={1}>{zoneText}</Text>
-      </View>
-      <View style={styles.numbers}>
-        <Text style={[theme.text.mono, styles.gap, { color }]} numberOfLines={1}>{row.gapPct !== null ? labels.formatPct(row.gapPct) : '—'}</Text>
-        <Text style={[theme.text.label, styles.right, { color: theme.textMuted }]} numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.8}>{labels.rowFacts(row)}</Text>
-      </View>
+      ) : (
+      <>
+      <View style={styles.names}>
+          <View style={styles.codeLine}>
+            <Text style={[theme.text.body, styles.code, { color: theme.textHeading }]} numberOfLines={1}>{row.symbol}</Text>
+            {row.risk ? (
+              <Text style={[theme.text.label, styles.riskTag, { color: theme.risk, borderColor: theme.risk }]} numberOfLines={1}>{labels.risk(row.risk)}</Text>
+            ) : null}
+          </View>
+          <Text style={[theme.text.sub, { color: theme.textMuted }]} numberOfLines={1}>{row.name}</Text>
+        </View>
+        <View style={[styles.badge, { borderColor: color }]}>
+          <Text style={[theme.text.label, { color }]} numberOfLines={1}>{zoneText}</Text>
+        </View>
+        <View style={styles.numbers}>
+          <Text style={[theme.text.mono, styles.gap, { color }]} numberOfLines={1}>{row.gapPct !== null ? labels.formatPct(row.gapPct) : '—'}</Text>
+          <Text style={[theme.text.label, styles.right, { color: theme.textMuted }]} numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.8}>{labels.rowFacts(row)}</Text>
+        </View>
+      </>
+      )}
     </Pressable>
   );
 });
@@ -335,7 +368,7 @@ export function ValuationList({
     item.type === 'group' ? (
       <GroupHeader industry={item.industry} count={item.count} collapsed={item.collapsed} theme={theme} onToggle={toggleGroup} height={heights.group} />
     ) : (
-      <ValuationRow row={item.row} favorite={favoriteSet.has(item.row.symbol)} theme={theme} labels={labels} onOpen={onOpen} onToggleFavorite={onToggleFavorite} inset height={heights.row} />
+      <ValuationRow row={item.row} favorite={favoriteSet.has(item.row.symbol)} theme={theme} labels={labels} onOpen={onOpen} onToggleFavorite={onToggleFavorite} inset height={heights.row} stacked={heights.stacked} />
     )
   ), [theme, labels, onOpen, onToggleFavorite, favoriteSet, toggleGroup, heights]);
   const getItemLayout = useCallback((_: unknown, index: number) => ({
@@ -382,7 +415,7 @@ export function ValuationList({
             <Text style={[theme.text.sub, styles.hint, { color: theme.textMuted }]} testID="valuation-list-favorites-empty">{labels.favoritesEmpty}</Text>
           ) : (
             shownFavorites.map((row) => (
-              <ValuationRow key={row.symbol} row={row} favorite theme={theme} labels={labels} onOpen={onOpen} onToggleFavorite={onToggleFavorite} height={heights.row} />
+              <ValuationRow key={row.symbol} row={row} favorite theme={theme} labels={labels} onOpen={onOpen} onToggleFavorite={onToggleFavorite} height={heights.row} stacked={heights.stacked} />
             ))
           )}
           {favoriteList.rows.length > FAVORITES_PREVIEW ? (
@@ -415,7 +448,7 @@ export function ValuationList({
         </View>
 
         {features.markets || features.industries || features.yieldChips || features.risk ? (
-          <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.chips} testID="valuation-list-filters" keyboardShouldPersistTaps="handled">
+          <ScrollView scrollsToTop={false} horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.chips} testID="valuation-list-filters" keyboardShouldPersistTaps="handled">
             {features.markets ? (['twse', 'tpex'] as const).map((key) => (
               <Chip key={key} label={labels.market(key)} on={market === key} onPress={() => setMarket(market === key ? null : key)} theme={theme} testID={`valuation-list-market-${key}`} />
             )) : null}
@@ -435,7 +468,7 @@ export function ValuationList({
           </ScrollView>
         ) : null}
         {industryOpen && industries.length > 1 ? (
-          <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.chips} testID="valuation-list-industries">
+          <ScrollView scrollsToTop={false} horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.chips} testID="valuation-list-industries">
             <Chip label={labels.allIndustries} on={industry === null} onPress={() => { setIndustry(null); setIndustryOpen(false); }} theme={theme} />
             {industries.map(({ industry: name, count }) => (
               <Chip key={name} label={`${name} ${count}`} on={industry === name} onPress={() => { setIndustry(name); setIndustryOpen(false); }} theme={theme} />
@@ -443,7 +476,7 @@ export function ValuationList({
           </ScrollView>
         ) : null}
 
-        <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.chips} testID="valuation-list-sorts">
+        <ScrollView scrollsToTop={false} horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.chips} testID="valuation-list-sorts">
           {sorts.map((key) => (
             <Chip key={key} label={labels.sort(key)} on={sort === key} onPress={() => setSort(key)} theme={theme} testID={`valuation-list-sort-${key}`} />
           ))}
@@ -515,6 +548,9 @@ const styles = StyleSheet.create({
   riskTag: { borderWidth: StyleSheet.hairlineWidth, borderRadius: 4, paddingHorizontal: 4, overflow: 'hidden' },
   badge: { borderWidth: 1, borderRadius: 999, paddingHorizontal: 8, paddingVertical: 2, maxWidth: 88 },
   numbers: { width: 132, alignItems: 'flex-end', gap: 2 },
+  stack: { flex: 1, minWidth: 0, gap: 2, justifyContent: 'center' },
+  stackLine: { flexDirection: 'row', alignItems: 'center', flexWrap: 'wrap', gap: 8 },
+  badgeStacked: { borderWidth: 1, borderRadius: 999, paddingHorizontal: 8, paddingVertical: 2 },
   inset: { marginHorizontal: 16 },
   gap: { fontWeight: '700' },
   right: { textAlign: 'right' },
