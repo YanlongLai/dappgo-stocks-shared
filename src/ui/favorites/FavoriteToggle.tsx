@@ -77,6 +77,11 @@ export interface FavoriteToastLabels {
   removed: string;
   /** 「復原」 */
   undo: string;
+  /**
+   * Say what was saved (Options: 「已加入我的最愛：SPY 600C 12/19」), so a contract is
+   * not mistaken for the stock. Used when the toast carries a name.
+   */
+  named?: { added: (name: string) => string; removed: (name: string) => string } | null;
 }
 
 export function FavoriteToastHost({ labels, theme, bottom = 96, testID = 'favorite-toast' }: {
@@ -93,7 +98,9 @@ export function FavoriteToastHost({ labels, theme, bottom = 96, testID = 'favori
     Animated.timing(opacity, { toValue: toast ? 1 : 0, duration: 160, useNativeDriver: true }).start();
   }, [toast, opacity]);
   if (!toast) return null;
-  const text = toast.kind === 'removed' ? labels.removed : labels.added;
+  const text = labels.named && toast.name
+    ? (toast.kind === 'removed' ? labels.named.removed(toast.name) : labels.named.added(toast.name))
+    : (toast.kind === 'removed' ? labels.removed : labels.added);
   return (
     <Animated.View pointerEvents="box-none" style={[styles.toastWrap, { bottom, opacity }]} testID={testID}>
       <View style={[styles.toast, { backgroundColor: theme.card, borderColor: theme.border }]} accessibilityLiveRegion="polite">
