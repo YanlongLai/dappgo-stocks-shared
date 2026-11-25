@@ -104,3 +104,15 @@ describe('nice price ticks', () => {
     expect(nicePriceTicks(452, 2702, 200, 0, 4).map((x: { price: number }) => x.price)).toEqual([500, 1000, 1500, 2000, 2500]);
   });
 });
+
+describe('BB chip visibility', () => {
+  const { bollingerVisible } = require('./price-chart');
+  it('follows the choice, but starts hidden on 3Y until tapped there', () => {
+    expect(bollingerVisible(true, '6M', false)).toBe(true);
+    expect(bollingerVisible(false, '6M', false)).toBe(false);
+    expect(bollingerVisible(true, '3Y', false)).toBe(false);
+    expect(bollingerVisible(true, '3Y', true)).toBe(true);
+    expect(bollingerVisible(false, '3Y', true)).toBe(false);
+  });
+});
+

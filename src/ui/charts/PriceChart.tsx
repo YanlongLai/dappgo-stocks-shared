@@ -25,6 +25,7 @@ import {
   MA_SPECS,
   areaPath,
   bollingerSeries,
+  bollingerVisible,
   coverageDays,
   dateTickIndexes,
   defaultModeForFrame,
@@ -105,8 +106,12 @@ export interface PriceChartProps {
   showMA?: ShowMA;
   /** Show the MA chips. Default true. */
   maToggles?: boolean;
-  /** Draw the Bollinger envelope. Default true. */
+  /** Offer the Bollinger envelope (the 「BB」 chip). Default true. */
   bollinger?: boolean;
+  /** Whether BB starts on: the user's saved choice or the app default. */
+  bollingerOn?: boolean;
+  /** Called when the user taps the BB chip, to remember the choice. */
+  onBollingerChange?: (on: boolean) => void;
   theme: PriceChartTheme;
   labels: PriceChartLabels;
   Chip: React.ComponentType<PriceChartChipProps>;
@@ -141,6 +146,8 @@ export const PriceChart = React.memo(function PriceChart({
   showMA,
   maToggles = true,
   bollinger = true,
+  bollingerOn = false,
+  onBollingerChange,
   theme,
   labels,
   Chip,
@@ -188,12 +195,19 @@ export const PriceChart = React.memo(function PriceChart({
     ma200: fullMa.ma200.slice(sliceFrom),
   }), [fullMa, sliceFrom]);
   const maOk = useMemo(() => ({ ma20: maAvailable(ma.ma20), ma60: maAvailable(ma.ma60), ma200: maAvailable(ma.ma200) }), [ma]);
+  // 「BB」 chip: follows the saved choice (it may arrive after mount), hidden on 3Y
+  // until tapped there.
+  const [bbOn, setBbOn] = useState(bollingerOn);
+  useEffect(() => { setBbOn(bollingerOn); }, [bollingerOn]);
+  const [bbRevealed, setBbRevealed] = useState(false);
+  useEffect(() => { setBbRevealed(false); }, [frameKey]);
+  const bbVisible = bollinger && bollingerVisible(bbOn, frameKey, bbRevealed);
   const bb = useMemo(() => {
-    if (!bollinger) return null;
+    if (!bbVisible) return null;
     const full = bollingerSeries(all);
     const s = { upper: full.upper.slice(sliceFrom), middle: full.middle.slice(sliceFrom), lower: full.lower.slice(sliceFrom) };
     return s.upper.some((v) => v != null) ? s : null;
-  }, [all, sliceFrom, bollinger]);
+  }, [all, sliceFrom, bbVisible]);
 
   // ── Toast ──
   const toastOpacity = useRef(new Animated.Value(0)).current;
@@ -297,6 +311,14 @@ export const PriceChart = React.memo(function PriceChart({
     setUserMode(initialMode ?? null);
     setTouchX(null);
   }, [states, showToast, labels, all, initialMode, onHaptic]);
+
+  const toggleBB = useCallback(() => {
+    onHaptic?.();
+    const next = !bbVisible;
+    setBbOn(next);
+    setBbRevealed(next);
+    onBollingerChange?.(next);
+  }, [bbVisible, onHaptic, onBollingerChange]);
 
   const toggleMA = useCallback((key: MaKey, label: string) => {
     onHaptic?.();
@@ -506,9 +528,8 @@ export const PriceChart = React.memo(function PriceChart({
             <Chip
               key={spec.key}
               label={spec.label}
-              // Off: hollow grey dot. On: filled in the line's colour (the chip itself is highlighted too).
-              icon={activeMA[spec.key] && maOk[spec.key] ? 'ellipse' : 'ellipse-outline'}
-              iconColor={activeMA[spec.key] && maOk[spec.key] ? spec.color : theme.textMuted}
+              // Four equal columns (MA20 · MA60 · MA200 · BB) on one row; on = filled chip.
+              fill
               selected={!!activeMA[spec.key] && maOk[spec.key]}
               dimmed={!maOk[spec.key]}
               onPress={() => toggleMA(spec.key, spec.label)}
@@ -516,11 +537,17 @@ export const PriceChart = React.memo(function PriceChart({
               testID={`${testID}-ma-${spec.key}`}
             />
           ))}
+          {bollinger ? (
+            <Chip
+              label="BB"
+              fill
+              selected={bbVisible}
+              onPress={toggleBB}
+              accessibilityHint={labels.bollingerLegend}
+              testID={`${testID}-bb`}
+            />
+          ) : null}
         </View>
-      )}
-
-      {bb && (
-        <Text style={[styles.legend, { color: theme.textMuted, fontSize: scaleFont(10) }]}>{labels.bollingerLegend}</Text>
       )}
     </View>
   );
@@ -592,5 +619,4 @@ const styles = StyleSheet.create({
   hintText: { textAlign: 'center' },
   frameRow: { flexDirection: 'row', gap: 4, paddingVertical: 4 },
   maRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 8, paddingBottom: 4 },
-  legend: { paddingBottom: 4 },
 });

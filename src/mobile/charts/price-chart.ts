@@ -270,3 +270,16 @@ export function periodChangePct(bars: readonly ChartBar[]): number {
   if (bars.length < 2 || bars[0].close === 0) return 0;
   return ((bars[bars.length - 1].close - bars[0].close) / Math.abs(bars[0].close)) * 100;
 }
+
+/** Ranges where the Bollinger envelope starts hidden: too busy to read (3Y). */
+export const BOLLINGER_HIDDEN_FRAMES: readonly string[] = ['3Y'];
+
+/**
+ * Whether the BB envelope is drawn (2.0.0 「BB」 chip). It follows the user's
+ * choice, except on a busy range (3Y), where it stays hidden until the chip is
+ * tapped on that range. Leaving the range resets that one-off reveal.
+ */
+export function bollingerVisible(on: boolean, frameKey: string, revealedOnBusyRange: boolean, hiddenFrames: readonly string[] = BOLLINGER_HIDDEN_FRAMES): boolean {
+  if (!on) return false;
+  return hiddenFrames.includes(frameKey) ? revealedOnBusyRange : true;
+}
