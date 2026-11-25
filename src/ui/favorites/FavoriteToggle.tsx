@@ -95,7 +95,9 @@ export function FavoriteToastHost({ labels, theme, bottom = 96, testID = 'favori
   const opacity = useRef(new Animated.Value(0)).current;
   useEffect(() => subscribeFavoriteToast(setToast), []);
   useEffect(() => {
-    Animated.timing(opacity, { toValue: toast ? 1 : 0, duration: 160, useNativeDriver: true }).start();
+    // JS driver: a native-driven fade started while the view mounts can be lost (the
+    // first toast then stayed invisible on device); a 160 ms opacity fade is cheap.
+    Animated.timing(opacity, { toValue: toast ? 1 : 0, duration: 160, useNativeDriver: false }).start();
   }, [toast, opacity]);
   if (!toast) return null;
   const text = labels.named && toast.name
