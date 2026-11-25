@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Modal, Pressable, ScrollView, StyleSheet, Text, View, type TextStyle } from 'react-native';
 import { tapHaptic } from '../tiles/PressableCard';
+import { FavoriteToggle } from '../favorites/FavoriteToggle';
 
 export interface TodayAlertRow {
   key: string;
@@ -12,6 +13,8 @@ export interface TodayAlertRow {
   /** 「自選」 / 「常看」 */
   tag: string;
   onPress: () => void;
+  /** Leading shared star (2.0.1): add a 常看 stock or remove a 自選 one in place. */
+  favorite?: { on: boolean; onToggle: () => void; accessibilityLabel: string } | null;
 }
 
 export interface TodayAlertsTheme {
@@ -109,6 +112,13 @@ function AlertRow({ row, theme, labels, first, testID }: { row: TodayAlertRow; t
       style={({ pressed }) => [styles.row, !first && { borderTopColor: theme.border, borderTopWidth: StyleSheet.hairlineWidth }, pressed && styles.pressed]}
       testID={testID}
     >
+      {row.favorite ? (
+        // Card padding is 16: pull the 44pt target in so the star sits 16pt from the edge, 12pt before the code.
+        <View style={styles.starSlot}>
+          <FavoriteToggle on={row.favorite.on} onToggle={row.favorite.onToggle} accessibilityLabel={row.favorite.accessibilityLabel}
+            accent={theme.accent} muted={theme.textMuted} testID={`${testID}-star`} />
+        </View>
+      ) : null}
       <View style={styles.flex}>
         <Text style={[theme.text.body, styles.symbol, { color: theme.textHeading }]} numberOfLines={1}>
           {row.symbol}
@@ -126,6 +136,7 @@ function AlertRow({ row, theme, labels, first, testID }: { row: TodayAlertRow; t
 
 const styles = StyleSheet.create({
   flex: { flex: 1, minWidth: 0 },
+  starSlot: { marginLeft: -12, marginRight: -10 },
   head: { gap: 2, marginBottom: 8 },
   title: { fontWeight: '700' },
   card: { borderRadius: 16, paddingHorizontal: 16 },

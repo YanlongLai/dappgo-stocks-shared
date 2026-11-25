@@ -1,3 +1,4 @@
+import { FAVORITE_TOGGLE_INSET, FavoriteToggle, SwipeFavoriteRow } from '../favorites/FavoriteToggle';
 import React, { memo, useCallback, useEffect, useMemo, useRef, useState, type ReactElement } from 'react';
 import {
   FlatList,
@@ -63,6 +64,8 @@ export interface ValuationListTheme {
   /** Text on an accent background. */
   onAccent: string;
   star: string;
+  /** Swipe 「移除」 background; defaults to the risk colour. */
+  negative?: string;
   risk: string;
   zone: Record<ValuationZone, string>;
   text: { label: TextStyle; value: TextStyle; sub: TextStyle; body: TextStyle; mono: TextStyle };
@@ -97,6 +100,9 @@ export interface ValuationListLabels {
   rowFacts: (row: ValuationListRow) => string;
   favoriteAdd: (name: string) => string;
   favoriteRemove: (name: string) => string;
+  /** Swipe-right actions (2.0.1); without them rows do not swipe. */
+  swipeAdd?: string;
+  swipeRemove?: string;
   formatPct: (value: number) => string;
   formatRatio: (value: number) => string;
 }
@@ -167,7 +173,7 @@ interface RowProps {
 export const ValuationRow = memo(function ValuationRow({ row, favorite, theme, labels, onOpen, onToggleFavorite, inset, height, stacked }: RowProps) {
   const color = row.zone ? theme.zone[row.zone] : theme.textMuted;
   const zoneText = row.zone ? labels.zone(row.zone) : labels.noZone;
-  return (
+  const content = (
     <Pressable
       onPress={() => onOpen(row)}
       style={({ pressed }) => [styles.row, height ? { height } : null, inset && styles.inset, { borderBottomColor: theme.border }, pressed && styles.pressed]}
@@ -176,17 +182,17 @@ export const ValuationRow = memo(function ValuationRow({ row, favorite, theme, l
       testID={`valuation-list-row-${row.symbol}`}
     >
       {onToggleFavorite ? (
-      <Pressable
-        onPress={() => onToggleFavorite(row.symbol)}
-        hitSlop={10}
-        style={styles.star}
-        accessibilityRole="button"
-        accessibilityState={{ selected: favorite }}
-        accessibilityLabel={favorite ? labels.favoriteRemove(row.name) : labels.favoriteAdd(row.name)}
-        testID={`valuation-list-star-${row.symbol}`}
-      >
-        <Text style={[styles.starGlyph, { color: favorite ? theme.star : theme.textMuted }]}>{favorite ? '★' : '☆'}</Text>
-      </Pressable>
+        // Shared star: 16pt from the edge, 12pt before the code (the row's gap is 8).
+        <View style={styles.starSlot}>
+          <FavoriteToggle
+            on={favorite}
+            onToggle={() => onToggleFavorite(row.symbol)}
+            accessibilityLabel={favorite ? labels.favoriteRemove(`${row.symbol} ${row.name}`.trim()) : labels.favoriteAdd(`${row.symbol} ${row.name}`.trim())}
+            accent={theme.star}
+            muted={theme.textMuted}
+            testID={`valuation-list-star-${row.symbol}`}
+          />
+        </View>
       ) : null}
       {stacked ? (
         <View style={styles.stack}>
@@ -226,6 +232,18 @@ export const ValuationRow = memo(function ValuationRow({ row, favorite, theme, l
       </>
       )}
     </Pressable>
+  );
+  if (!onToggleFavorite || !labels.swipeAdd || !labels.swipeRemove) return content;
+  return (
+    <SwipeFavoriteRow
+      on={favorite}
+      onToggle={() => onToggleFavorite(row.symbol)}
+      labels={{ add: labels.swipeAdd, remove: labels.swipeRemove }}
+      theme={{ accent: theme.accent, onAccent: theme.onAccent, negative: theme.negative ?? theme.risk }}
+      testID={`valuation-list-swipe-${row.symbol}`}
+    >
+      {content}
+    </SwipeFavoriteRow>
   );
 });
 
@@ -540,8 +558,7 @@ const styles = StyleSheet.create({
   listContent: { paddingBottom: 32 },
   pressed: { opacity: 0.6 },
   row: { height: VALUATION_ROW_HEIGHT, flexDirection: 'row', alignItems: 'center', gap: 8, borderBottomWidth: StyleSheet.hairlineWidth, paddingHorizontal: 4 },
-  star: { width: 28, alignItems: 'center', justifyContent: 'center' },
-  starGlyph: { fontSize: 18 },
+  starSlot: { marginLeft: FAVORITE_TOGGLE_INSET - 4, marginRight: -8 },
   names: { flex: 1, minWidth: 0, gap: 2 },
   codeLine: { flexDirection: 'row', alignItems: 'center', gap: 6 },
   code: { fontWeight: '700' },
