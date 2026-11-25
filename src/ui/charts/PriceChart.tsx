@@ -118,6 +118,8 @@ export interface PriceChartProps {
   scaleFont?: (size: number) => number;
   onHaptic?: () => void;
   reduceMotion?: boolean;
+  /** Long history still loading: only the chart area shows a skeleton. */
+  loading?: boolean;
   testID?: string;
 }
 
@@ -150,6 +152,7 @@ export const PriceChart = React.memo(function PriceChart({
   scaleFont = id,
   onHaptic,
   reduceMotion = false,
+  loading = false,
   testID = 'price-chart',
 }: PriceChartProps) {
   const all = useMemo(() => normalizeBars(rawBars), [rawBars]);
@@ -252,20 +255,32 @@ export const PriceChart = React.memo(function PriceChart({
 
   // ── Crosshair ── (the floating 「↑」 steps aside while a finger is on the chart)
   const floating = useContext(FloatingSlotContext);
+  // The whole chart card (chips, plot, ranges, MA row) is off limits for the floating 「↑」.
+  const cardRef = useRef<View | null>(null);
+  useEffect(() => {
+    if (!floating) return undefined;
+    floating.avoid(testID, cardRef.current);
+    return () => floating.avoid(testID, null);
+  }, [floating, testID]);
   const raf = useRef<number | null>(null);
   const setTouchThrottled = useCallback((x: number) => {
     if (raf.current != null) return;
     raf.current = requestAnimationFrame(() => { raf.current = null; setTouchX(x); });
   }, []);
-  useEffect(() => () => { if (raf.current != null) cancelAnimationFrame(raf.current); }, []);
+  const cancelPending = useCallback(() => {
+    if (raf.current != null) { cancelAnimationFrame(raf.current); raf.current = null; }
+  }, []);
+  useEffect(() => cancelPending, [cancelPending]);
   const pan = useMemo(() => PanResponder.create({
     onStartShouldSetPanResponder: () => true,
     onMoveShouldSetPanResponder: (_e, g) => Math.abs(g.dx) > Math.abs(g.dy),
     onPanResponderGrant: (e: GestureResponderEvent) => { floating?.suppress(true); setTouchX(e.nativeEvent.locationX); },
     onPanResponderMove: (e: GestureResponderEvent) => setTouchThrottled(e.nativeEvent.locationX),
-    onPanResponderRelease: () => { floating?.suppress(false); setTouchX(null); },
-    onPanResponderTerminate: () => { floating?.suppress(false); setTouchX(null); },
-  }), [setTouchThrottled, floating]);
+    // A move queued for the next frame must not bring the crosshair back after the
+    // finger lifts or the page scroll takes the gesture over.
+    onPanResponderRelease: () => { cancelPending(); floating?.suppress(false); setTouchX(null); },
+    onPanResponderTerminate: () => { cancelPending(); floating?.suppress(false); setTouchX(null); },
+  }), [setTouchThrottled, cancelPending, floating]);
   const cross = useMemo(() => {
     if (touchX == null || bars.length < 2) return null;
     const idx = Math.max(0, Math.min(bars.length - 1, Math.round(((touchX - PAD.left) / plotW) * (bars.length - 1))));
@@ -289,6 +304,8 @@ export const PriceChart = React.memo(function PriceChart({
     setActiveMA((s) => ({ ...s, [key]: !s[key] }));
   }, [maOk, showToast, labels, onHaptic]);
 
+  if (loading) return <ChartSkeleton height={height} theme={theme} reduceMotion={reduceMotion} testID={`${testID}-skeleton`} />;
+
   if (all.length < 2 || !frame) {
     return (
       <View testID={testID} style={[styles.empty, { backgroundColor: theme.backgroundAlt, height }]}>
@@ -301,7 +318,7 @@ export const PriceChart = React.memo(function PriceChart({
   const axisPrice = formatAxisPrice ?? formatPrice;
 
   return (
-    <View testID={testID} style={[styles.container, { backgroundColor: theme.card }]}>
+    <View ref={(n) => { cardRef.current = n; floating?.avoid(testID, n); }} testID={testID} style={[styles.container, { backgroundColor: theme.card }]}>
       <View style={styles.header}>
         <Text testID={`${testID}-change`} style={[styles.change, { color: lineColor, fontSize: scaleFont(12) }]}>
           {`${formatPct(changePct)} (${frame.label})`}
@@ -530,6 +547,29 @@ function bandPoints(upper: readonly (number | null)[], lower: readonly (number |
     down.unshift(`${xAt(i, lower.length)},${yAt(l)}`);
   }
   return up.length > 1 ? `${up.join(' ')} ${down.join(' ')}` : '';
+}
+
+/** Same footprint as the chart (header, plot, ranges, MA row), gently pulsing. */
+function ChartSkeleton({ height, theme, reduceMotion, testID }: { height: number; theme: PriceChartTheme; reduceMotion: boolean; testID: string }) {
+  const pulse = useRef(new Animated.Value(0.55)).current;
+  useEffect(() => {
+    if (reduceMotion) return undefined;
+    const loop = Animated.loop(Animated.sequence([
+      Animated.timing(pulse, { toValue: 0.9, duration: 700, useNativeDriver: true }),
+      Animated.timing(pulse, { toValue: 0.55, duration: 700, useNativeDriver: true }),
+    ]));
+    loop.start();
+    return () => loop.stop();
+  }, [pulse, reduceMotion]);
+  const block = { backgroundColor: theme.backgroundAlt, borderRadius: 8 };
+  return (
+    <Animated.View testID={testID} accessibilityRole="progressbar" style={[styles.container, { backgroundColor: theme.card, opacity: pulse, gap: 10 }]}>
+      <View style={[block, { height: 28, width: '45%' }]} />
+      <View style={[block, { height }]} />
+      <View style={[block, { height: 36 }]} />
+      <View style={[block, { height: 36, width: '70%' }]} />
+    </Animated.View>
+  );
 }
 
 const styles = StyleSheet.create({

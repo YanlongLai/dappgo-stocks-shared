@@ -56,3 +56,32 @@ export function scrollToTopPlan(y: number, viewport: number): { jumpTo: number |
 export function isExternalReturnToTop(prevY: number, y: number, viewport: number, dragging: boolean): boolean {
   return !dragging && y <= TOP_SLOP && prevY > viewport;
 }
+
+/** Window-space rectangle (measureInWindow). */
+export interface WinRect { x: number; y: number; width: number; height: number }
+
+/** Size of the 「↑」 button and the slot's right inset (ScrollChrome styles). */
+export const SLOT_BUTTON = 44;
+export const SLOT_RIGHT = 16;
+/** Breathing room kept between the slot and content it must not cover. */
+export const SLOT_AVOID_MARGIN = 8;
+
+/** Where the floating slot's button sits, given the screen container and its bottom offset. */
+export function slotRect(container: WinRect, bottom: number): WinRect {
+  return {
+    x: container.x + container.width - SLOT_RIGHT - SLOT_BUTTON,
+    y: container.y + container.height - bottom - SLOT_BUTTON,
+    width: SLOT_BUTTON,
+    height: SLOT_BUTTON,
+  };
+}
+
+/**
+ * True when the slot would cover any region content asked it to avoid (e.g. a
+ * chart card): the slot steps aside instead of hiding content or controls.
+ */
+export function slotBlocked(slot: WinRect, avoid: readonly WinRect[], margin = SLOT_AVOID_MARGIN): boolean {
+  return avoid.some((r) => r.width > 0 && r.height > 0
+    && slot.x < r.x + r.width + margin && slot.x + slot.width > r.x - margin
+    && slot.y < r.y + r.height + margin && slot.y + slot.height > r.y - margin);
+}

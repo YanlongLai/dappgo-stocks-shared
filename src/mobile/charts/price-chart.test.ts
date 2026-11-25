@@ -100,5 +100,7 @@ describe('nice price ticks', () => {
     const t = nicePriceTicks(83.1, 117.4, 200, 0, 4).map((x: { price: number }) => x.price);
     expect(t).toEqual([90, 100, 110]);
     for (const v of nicePriceTicks(2010.3, 2441.9, 200, 0, 4).map((x: { price: number }) => x.price)) expect(v % 100).toBe(0);
+    // 3Y of a stock that went 450 → 2,700: 500 steps, not two lonely 1,000 ticks.
+    expect(nicePriceTicks(452, 2702, 200, 0, 4).map((x: { price: number }) => x.price)).toEqual([500, 1000, 1500, 2000, 2500]);
   });
 });

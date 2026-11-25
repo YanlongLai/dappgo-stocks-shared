@@ -243,7 +243,11 @@ export function niceStep(range: number, count = 4): number {
  */
 export function nicePriceTicks(min: number, max: number, areaHeight: number, top: number, count = 4): { price: number; y: number }[] {
   const range = max - min || 1;
-  const step = niceStep(range, count);
+  let step = niceStep(range, count);
+  // Rounding up can leave only two ticks (e.g. 450–2,700 → 1,000 steps); then take
+  // the next smaller nice step so the axis always reads at least three values.
+  const inside = (st: number) => Math.floor(max / st + 1e-9) - Math.ceil(min / st - 1e-9) + 1;
+  if (inside(step) < 3) step = niceStep(range, count + 2);
   const first = Math.ceil(min / step - 1e-9) * step;
   const out: { price: number; y: number }[] = [];
   for (let v = first; v <= max + 1e-9 && out.length < 12; v += step) {

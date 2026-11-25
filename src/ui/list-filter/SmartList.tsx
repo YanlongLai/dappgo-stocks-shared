@@ -54,7 +54,7 @@ export function SmartList({
   cfg: ListConfig;
   segments: readonly { key: string; label: string; color: string }[];
   defaultSort: SortKey;
-  sortOptions: readonly { key: SortKey; label: string }[];
+  sortOptions: readonly { key: SortKey; label: string; short?: string }[];
   renderRow: (item: ListItem) => ReactElement;
   /** Row height: exact when `fixedRows` (getItemLayout), else an estimate for index jumps. */
   rowHeight: number;

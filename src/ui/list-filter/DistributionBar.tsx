@@ -1,6 +1,7 @@
-import React, { useEffect, useRef } from 'react';
-import { Animated, Pressable, StyleSheet, Text, View, useWindowDimensions, type TextStyle } from 'react-native';
+import React, { useEffect, useRef, useState } from 'react';
+import { Animated, Pressable, StyleSheet, Text, View, useWindowDimensions, type LayoutChangeEvent, type TextStyle } from 'react-native';
 import { tapHaptic } from '../tiles/PressableCard';
+import { LABEL_GAP, labelLayout } from '../../mobile/list-filter/label-layout';
 
 export interface DistributionSegment {
   key: string;
@@ -52,6 +53,19 @@ export function DistributionBar({ segments, selected, onSelect, favorites, theme
   const visible = segments.filter((s) => s.count > 0);
   // Large text: one label per line, so names and counts are never broken up.
   const big = useWindowDimensions().fontScale >= 1.5;
+  // Natural label widths come from an invisible copy laid out without wrapping.
+  const [rowWidth, setRowWidth] = useState(0);
+  const [natural, setNatural] = useState<Record<string, number>>({});
+  const layout = big ? 'column' : labelLayout(visible.map((s) => natural[s.key] ?? 0), rowWidth);
+  const renderLabel = (s: DistributionSegment, measureOnly = false) => (
+    <View style={styles.labelInner}>
+      <View style={[styles.dot, { backgroundColor: s.color }]} />
+      <Text style={[theme.text.label, styles.labelText, { color: theme.textHeading }]} numberOfLines={big ? 2 : 1} accessible={!measureOnly}>
+        {s.label}
+        <Text style={styles.count}>{` ${s.count.toLocaleString('en-US')}`}</Text>
+      </Text>
+    </View>
+  );
 
   return (
     <View style={styles.wrap} testID={testID}>
@@ -70,7 +84,23 @@ export function DistributionBar({ segments, selected, onSelect, favorites, theme
           );
         })}
       </Animated.View>
-      <View style={[styles.labels, big && styles.labelsColumn]}>
+      {!big ? (
+        <View style={styles.measure} pointerEvents="none" accessibilityElementsHidden importantForAccessibility="no-hide-descendants">
+          {visible.map((s) => (
+            <View key={s.key} style={styles.label} onLayout={(e: LayoutChangeEvent) => {
+              const w = Math.ceil(e.nativeEvent.layout.width);
+              setNatural((n) => (n[s.key] === w ? n : { ...n, [s.key]: w }));
+            }}>
+              {renderLabel(s, true)}
+            </View>
+          ))}
+        </View>
+      ) : null}
+      <View
+        style={[styles.labels, layout === 'column' && styles.labelsColumn, layout === 'grid' && styles.labelsGrid]}
+        onLayout={(e: LayoutChangeEvent) => setRowWidth(Math.floor(e.nativeEvent.layout.width))}
+        testID={`${testID}-labels-${layout}`}
+      >
         {visible.map((s) => {
           const on = selected === s.key;
           return (
@@ -80,14 +110,10 @@ export function DistributionBar({ segments, selected, onSelect, favorites, theme
               accessibilityRole="button"
               accessibilityState={{ selected: on }}
               accessibilityLabel={a11yLabel ? a11yLabel(s) : `${s.label} ${s.count}`}
-              style={[styles.label, big && styles.labelBig, on ? { borderColor: s.color, backgroundColor: theme.card } : { borderColor: 'transparent' }]}
+              style={[styles.label, big && styles.labelBig, layout === 'grid' && styles.labelGrid, on ? { borderColor: s.color, backgroundColor: theme.card } : { borderColor: 'transparent' }]}
               testID={`${testID}-${s.key}`}
             >
-              <View style={[styles.dot, { backgroundColor: s.color }]} />
-              <Text style={[theme.text.label, styles.labelText, { color: theme.textHeading }]} numberOfLines={big ? 2 : 1}>
-                {s.label}
-                <Text style={styles.count}>{` ${s.count.toLocaleString('en-US')}`}</Text>
-              </Text>
+              {renderLabel(s)}
             </Pressable>
           );
         })}
@@ -101,11 +127,15 @@ const styles = StyleSheet.create({
   bar: { flexDirection: 'row', height: BAR_HEIGHT, borderRadius: BAR_HEIGHT / 2, overflow: 'hidden', gap: 2 },
   block: { minWidth: 4 },
   empty: { flex: 1 },
-  // One line per label (「● Below 1,097」) at natural width; the row wraps only if all do not fit.
-  labels: { flexDirection: 'row', alignItems: 'center', flexWrap: 'wrap', columnGap: 6, rowGap: 2 },
-  label: { minHeight: 32, paddingVertical: 4, flexDirection: 'row', alignItems: 'center', gap: 5, borderRadius: 8, borderWidth: 1, paddingHorizontal: 6 },
+  // One row spread evenly when all labels fit (「● Below 1,097」 …); otherwise a two-column grid.
+  labels: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', columnGap: LABEL_GAP },
+  labelsGrid: { flexWrap: 'wrap', justifyContent: 'flex-start', rowGap: 2 },
+  label: { minHeight: 32, paddingVertical: 4, borderRadius: 8, borderWidth: 1, paddingHorizontal: 4, justifyContent: 'center' },
+  labelInner: { flexDirection: 'row', alignItems: 'center', gap: 5 },
+  labelGrid: { width: '49%' },
   labelsColumn: { flexDirection: 'column', alignItems: 'stretch' },
   labelBig: { alignSelf: 'stretch', paddingHorizontal: 8 },
+  measure: { position: 'absolute', left: 0, top: 0, width: 4000, flexDirection: 'row', alignItems: 'flex-start', opacity: 0 },
   dot: { width: 8, height: 8, borderRadius: 4 },
   labelText: { fontWeight: '600', flexShrink: 1 },
   count: { fontWeight: '700', fontVariant: ['tabular-nums'] },

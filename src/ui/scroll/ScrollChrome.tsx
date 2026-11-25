@@ -19,12 +19,23 @@ import {
   type LayoutChangeEvent, type NativeScrollEvent, type NativeSyntheticEvent, type ScrollViewProps, type TextStyle,
 } from 'react-native';
 import {
-  CHROME_ANIM_MS, INITIAL_CHROME, RETURN_PILL_MS, TOP_SLOP, isExternalReturnToTop, nextChrome, scrollToTopPlan, type ChromeState,
+  CHROME_ANIM_MS, INITIAL_CHROME, RETURN_PILL_MS, TOP_SLOP, isExternalReturnToTop, nextChrome, scrollToTopPlan, slotBlocked, slotRect,
+  type ChromeState, type WinRect,
 } from '../../mobile/scroll/scroll-chrome';
 import { tapHaptic } from '../tiles/PressableCard';
-import { FloatingSlotContext } from './FloatingSlotContext';
+import { FloatingSlotContext, type Measurable } from './FloatingSlotContext';
 
-export { FloatingSlotContext } from './FloatingSlotContext';
+export { FloatingSlotContext, type FloatingSlotControl, type Measurable } from './FloatingSlotContext';
+
+function measure(target: Measurable): Promise<WinRect> {
+  return new Promise((resolve) => {
+    try { target.measureInWindow((x, y, width, height) => resolve({ x, y, width, height })); }
+    catch { resolve({ x: 0, y: 0, width: 0, height: 0 }); }
+  });
+}
+
+/** How often, while scrolling, the slot re-checks the regions it must not cover. */
+const AVOID_CHECK_MS = 80;
 
 /** Anything with scrollTo / scrollToOffset (ScrollView, FlatList, SectionList). */
 export interface Scrollable {
@@ -385,7 +396,29 @@ export const ScreenScroll = React.forwardRef<ScrollView, ScrollViewProps & {
   const chrome = useScrollChrome();
   if (chromeRef) chromeRef.current = chrome;
   const [suppressed, setSuppressed] = useState(false);
-  const slotCtx = useMemo(() => ({ suppress: setSuppressed }), []);
+  // Regions (e.g. the chart card) the slot must not cover: 「↑」 hides while one is under it.
+  const [blocked, setBlocked] = useState(false);
+  const avoidRef = useRef(new Map<string, Measurable>());
+  const containerRef = useRef<View | null>(null);
+  const lastCheck = useRef(0);
+  const checkAvoid = useCallback(() => {
+    lastCheck.current = Date.now();
+    const container = containerRef.current;
+    const targets = [...avoidRef.current.values()];
+    if (!container || !targets.length) { setBlocked(false); return; }
+    void Promise.all([measure(container as unknown as Measurable), ...targets.map(measure)]).then(([box, ...rects]) => {
+      setBlocked(box.height > 0 && slotBlocked(slotRect(box, bottom), rects));
+    });
+  }, [bottom]);
+  const slotCtx = useMemo(() => ({
+    suppress: setSuppressed,
+    avoid: (key: string, target: Measurable | null) => {
+      if (target) avoidRef.current.set(key, target); else avoidRef.current.delete(key);
+    },
+  }), []);
+  const showTopRaw = chrome.state.showTop;
+  // Measure when 「↑」 is about to show, so it never flashes over the chart.
+  useEffect(() => { if (showTopRaw) checkAvoid(); }, [showTopRaw, checkAvoid]);
   const showTop = chrome.state.showTop && !chrome.keyboardOpen;
   useEffect(() => { onShowTopChange?.(showTop); }, [showTop, onShowTopChange]);
   const setRef = useCallback((node: ScrollView | null) => {
@@ -395,24 +428,28 @@ export const ScreenScroll = React.forwardRef<ScrollView, ScrollViewProps & {
   }, [chrome.ref, forwarded]);
   const Comp = (ScrollComponent ?? ScrollView) as React.ComponentType<ScrollViewProps & { ref?: unknown }>;
   const handlers = useMemo(() => ({
-    onScroll: (e: NativeSyntheticEvent<NativeScrollEvent>) => { chrome.onScroll(e); onScroll?.(e); },
+    onScroll: (e: NativeSyntheticEvent<NativeScrollEvent>) => {
+      chrome.onScroll(e);
+      if (avoidRef.current.size && Date.now() - lastCheck.current >= AVOID_CHECK_MS) checkAvoid();
+      onScroll?.(e);
+    },
     onLayout: (e: LayoutChangeEvent) => { chrome.onLayout(e); onLayout?.(e); },
     onScrollBeginDrag: (e: NativeSyntheticEvent<NativeScrollEvent>) => { chrome.onScrollBeginDrag(); onScrollBeginDrag?.(e); },
-    onScrollEndDrag: (e: NativeSyntheticEvent<NativeScrollEvent>) => { chrome.onScrollEndDrag(); onScrollEndDrag?.(e); },
+    onScrollEndDrag: (e: NativeSyntheticEvent<NativeScrollEvent>) => { chrome.onScrollEndDrag(); checkAvoid(); onScrollEndDrag?.(e); },
     onMomentumScrollBegin: (e: NativeSyntheticEvent<NativeScrollEvent>) => { chrome.onMomentumScrollBegin(); onMomentumScrollBegin?.(e); },
-    onMomentumScrollEnd: (e: NativeSyntheticEvent<NativeScrollEvent>) => { chrome.onMomentumScrollEnd(); onMomentumScrollEnd?.(e); },
+    onMomentumScrollEnd: (e: NativeSyntheticEvent<NativeScrollEvent>) => { chrome.onMomentumScrollEnd(); checkAvoid(); onMomentumScrollEnd?.(e); },
     onScrollToTop: (e: NativeSyntheticEvent<NativeScrollEvent>) => { chrome.onScrollToTop(); onScrollToTop?.(e); },
     onContentSizeChange: (w: number, h: number) => { chrome.onContentSizeChange(w, h); onContentSizeChange?.(w, h); },
-  }), [chrome, onScroll, onLayout, onScrollBeginDrag, onScrollEndDrag, onMomentumScrollBegin, onMomentumScrollEnd, onScrollToTop, onContentSizeChange]);
+  }), [chrome, checkAvoid, onScroll, onLayout, onScrollBeginDrag, onScrollEndDrag, onMomentumScrollBegin, onMomentumScrollEnd, onScrollToTop, onContentSizeChange]);
   return (
     <FloatingSlotContext.Provider value={slotCtx}>
-    <View style={[styles.flex, style as object]}>
+    <View ref={containerRef} style={[styles.flex, style as object]}>
       <Comp ref={setRef} scrollEventThrottle={16} scrollsToTop {...rest} {...handlers} style={styles.flex}>
         {rest.children}
         {/* Room under the last row so the floating slot never covers it. */}
         <View style={{ height: FLOATING_SLOT_CLEARANCE }} testID="scroll-chrome-clearance" />
       </Comp>
-      <ScrollChromeOverlay chrome={chrome} theme={theme} labels={labels} bottom={bottom} cta={cta} compactTitle={compactTitle} returnTop={returnTop} suppressed={suppressed} />
+      <ScrollChromeOverlay chrome={chrome} theme={theme} labels={labels} bottom={bottom} cta={cta} compactTitle={compactTitle} returnTop={returnTop} suppressed={suppressed || blocked} />
     </View>
     </FloatingSlotContext.Provider>
   );

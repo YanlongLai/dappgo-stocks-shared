@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Modal, Pressable, StyleSheet, Text, View, type TextStyle } from 'react-native';
+import { Modal, Pressable, StyleSheet, Text, View, useWindowDimensions, type TextStyle } from 'react-native';
 import { tapHaptic } from '../tiles/PressableCard';
 
 export interface ResultLineTheme {
@@ -29,7 +29,8 @@ export function ResultLine({ count, sorts, sort, onSort, favorites, theme, label
   count: number;
   /** 「★ 自選 N」 toggle at the right end of the line (2.0.0). */
   favorites?: { label: string; count: number; on: boolean; onToggle: () => void } | null;
-  sorts: readonly { key: string; label: string }[];
+  /** `short` is what the line shows (「依離邊界排序」 / "Nearest edge"); the menu shows `label`. */
+  sorts: readonly { key: string; label: string; short?: string }[];
   sort: string;
   onSort: (key: string) => void;
   theme: ResultLineTheme;
@@ -39,6 +40,8 @@ export function ResultLine({ count, sorts, sort, onSort, favorites, theme, label
   const [open, setOpen] = useState(false);
   const current = sorts.find((o) => o.key === sort) ?? null;
   const menu = sorts.length > 1;
+  // Default text sizes keep the line on one row; only large text may wrap.
+  const big = useWindowDimensions().fontScale >= 1.3;
   return (
     <>
       <View style={styles.row}>
@@ -50,9 +53,9 @@ export function ResultLine({ count, sorts, sort, onSort, favorites, theme, label
         style={styles.line}
         testID={testID}
       >
-        <Text style={[theme.text.label, styles.text, { color: theme.textMuted }]} numberOfLines={2} accessibilityLiveRegion="polite" testID={`${testID}-text`}>
+        <Text style={[theme.text.label, styles.text, { color: theme.textMuted }]} numberOfLines={big ? 2 : 1} accessibilityLiveRegion="polite" testID={`${testID}-text`}>
           {labels.resultCount(count)}
-          {current ? ` · ${labels.sortedBy(current.label)}${menu ? ' ▾' : ''}` : ''}
+          {current ? ` · ${current.short ?? labels.sortedBy(current.label)}${menu ? ' ▾' : ''}` : ''}
         </Text>
       </Pressable>
       {favorites && favorites.count > 0 ? (
