@@ -79,11 +79,16 @@ export function useScrollChrome(): ScrollChrome {
   const deepest = useRef(0);
   const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const idleTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  /** Offset where 「↑」 stepped aside on idle; it returns only after a real new scroll up. */
+  const idleHiddenAt = useRef<number | null>(null);
   /** 「↑」 steps aside once scrolling has stopped, so it never sits over content while reading. */
   const scheduleIdleHide = useCallback(() => {
     if (idleTimer.current) clearTimeout(idleTimer.current);
     idleTimer.current = setTimeout(() => {
-      if (stateRef.current.showTop) setState((st) => ({ ...st, showTop: false }));
+      if (stateRef.current.showTop) {
+        idleHiddenAt.current = lastY.current;
+        setState((st) => ({ ...st, showTop: false }));
+      }
     }, TOP_IDLE_HIDE_MS);
   }, []);
 
@@ -118,8 +123,13 @@ export function useScrollChrome(): ScrollChrome {
     if (dragging.current && returnTo !== null && y > TOP_SLOP) dismissReturn();
     if (y > TOP_SLOP) deepest.current = y;
     lastY.current = y;
-    const next = nextChrome(stateRef.current, y, v, contentSize.height, keyboardOpen);
+    let next = nextChrome(stateRef.current, y, v, contentSize.height, keyboardOpen);
     const cur = stateRef.current;
+    if (idleHiddenAt.current !== null) {
+      if (next.direction === 'down' || y < idleHiddenAt.current - 48) idleHiddenAt.current = next.direction === 'down' ? null : idleHiddenAt.current;
+      if (idleHiddenAt.current !== null && y >= idleHiddenAt.current - 48) next = { ...next, showTop: false };
+      else idleHiddenAt.current = null;
+    }
     if (next.showTop) scheduleIdleHide();
     if (next.showTop !== cur.showTop || next.direction !== cur.direction || Math.abs(next.y - cur.y) > 24 || (y <= TOP_SLOP) !== (cur.y <= TOP_SLOP)) setState(next);
     else stateRef.current = next;
